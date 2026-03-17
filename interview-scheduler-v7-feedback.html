@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Ankaadia – Interviewkreis</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+body{background:#f5f7f0;font-size:13px;color:#1a1a1a;height:100vh;overflow:hidden;display:flex;}
+
+/* NAV */
+.sidenav{width:48px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0;}
+.sidenav-logo{width:28px;height:28px;border-radius:50%;background:#2D6A4F;margin-bottom:8px;}
+.nav-item{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;}
+.nav-item:hover{background:#f0f4ef;}
+.nav-item.active{background:#1B4332;color:#fff;}
+.nav-item svg{width:18px;height:18px;}
+.nav-bottom{margin-top:auto;}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.page-header{padding:14px 20px;background:#f5f7f0;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.page-title{font-size:20px;font-weight:700;}
+.page-subtitle{font-size:12px;color:#6b7280;margin-top:1px;}
+.content{flex:1;padding:16px 20px;overflow-y:auto;}
+
+/* BUTTONS */
+.btn-primary{background:#2D6A4F;color:#fff;border:none;border-radius:4px;padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer;}
+.btn-primary:hover{background:#40916C;}
+.btn-secondary{background:transparent;color:#2D6A4F;border:1px solid #2D6A4F;border-radius:4px;padding:7px 14px;font-size:13px;cursor:pointer;}
+.btn-secondary:hover{background:#f0f9f5;}
+.btn-ghost{background:none;border:none;color:#6b7280;font-size:13px;cursor:pointer;padding:7px 14px;}
+.btn-back{background:none;border:1px solid #e5e7eb;border-radius:4px;color:#6b7280;font-size:13px;cursor:pointer;padding:7px 14px;}
+.btn-sm{padding:4px 10px;font-size:12px;}
+.btn-action{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;}
+.stat-number{font-size:22px;font-weight:700;}
+.stat-label{font-size:12px;color:#6b7280;margin-top:2px;}
+
+/* CARD */
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;}
+.card-header{padding:12px 16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.card-title{font-size:13px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:8px 16px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;font-size:12px;}
+td{padding:12px 16px;border-bottom:1px solid #e5e7eb;font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8faf8;}
+
+/* STATUS PIPELINE – das Herzstück */
+.pipeline{display:flex;align-items:center;gap:0;}
+.pipe-step{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.pipe-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.pipe-num.done{background:#2D6A4F;color:#fff;}
+.pipe-num.active{background:#2D6A4F;color:#fff;box-shadow:0 0 0 3px #e9f5ee;}
+.pipe-num.todo{background:#f3f4f6;color:#9ca3af;border:1.5px solid #e5e7eb;}
+.pipe-label{font-size:11px;color:#6b7280;white-space:nowrap;}
+.pipe-label.active{color:#2D6A4F;font-weight:700;}
+.pipe-label.done{color:#9ca3af;}
+.pipe-line{width:20px;height:2px;flex-shrink:0;border-radius:1px;}
+.pipe-line.done{background:#2D6A4F;}
+.pipe-line.todo{background:#e5e7eb;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:500;}
+.badge-yellow{background:#fef3c7;color:#92400e;}
+.badge-orange{background:#ffedd5;color:#c2410c;}
+.badge-green{background:#e9f5ee;color:#2D6A4F;}
+.badge-blue{background:#dbeafe;color:#1d4ed8;}
+.badge-gray{background:#f3f4f6;color:#6b7280;}
+.badge-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* SIDE PANEL */
+.side-panel{width:480px;background:#fff;border-left:1px solid #e5e7eb;display:none;flex-direction:column;flex-shrink:0;box-shadow:-4px 0 20px rgba(0,0,0,0.08);}
+.side-panel.open{display:flex;}
+.sp-header{padding:16px 20px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.sp-title{font-size:16px;font-weight:600;}
+.sp-subtitle{font-size:12px;color:#6b7280;margin-top:2px;}
+.sp-close{background:none;border:none;color:#6b7280;cursor:pointer;font-size:20px;line-height:1;}
+
+/* STEPPER */
+.stepper{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid #e5e7eb;flex-shrink:0;}
+.st-step{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.st-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;}
+.st-num.todo{background:#f3f4f6;color:#9ca3af;border:2px solid #e5e7eb;}
+.st-num.active{background:#2D6A4F;color:#fff;border:2px solid #2D6A4F;}
+.st-num.done{background:#e9f5ee;color:#2D6A4F;border:2px solid #2D6A4F;}
+.st-info{display:flex;flex-direction:column;}
+.st-label{font-size:12px;color:#6b7280;white-space:nowrap;}
+.st-label.active{color:#2D6A4F;font-weight:600;}
+.st-label.done{color:#9ca3af;}
+.st-sub{font-size:10px;color:#9ca3af;margin-top:1px;}
+.st-line{flex:1;height:2px;margin:0 10px;border-radius:1px;transition:background .3s;}
+.st-line.done{background:#2D6A4F;}
+.st-line.todo{background:#e5e7eb;}
+
+/* PANEL BODY */
+.sp-body{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+.panel-step{display:none;flex-direction:column;gap:16px;}
+.panel-step.active{display:flex;}
+
+/* FORM */
+.field-group{display:flex;flex-direction:column;gap:5px;}
+.field-label{font-size:12px;color:#6b7280;font-weight:500;}
+.field-input{border:1px solid #e5e7eb;border-radius:4px;padding:7px 10px;font-size:13px;color:#1a1a1a;background:#fff;width:100%;}
+.field-input:focus{outline:none;border-color:#2D6A4F;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.sec-label{font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;}
+
+/* ORG CARDS */
+.org-list{display:flex;flex-direction:column;gap:8px;}
+.org-card{border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;}
+.org-card:hover{border-color:#40916C;}
+.org-card.selected{border-color:#2D6A4F;background:#f0f9f5;}
+.org-avatar{width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.org-name{font-size:13px;font-weight:600;}
+.org-role{font-size:11px;color:#6b7280;margin-top:1px;}
+input[type=checkbox]{accent-color:#2D6A4F;width:14px;height:14px;cursor:pointer;flex-shrink:0;}
+
+/* CALENDAR */
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.cal-nav button{background:none;border:1px solid #e5e7eb;border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;}
+.cal-month{font-size:13px;font-weight:600;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-header{font-size:11px;color:#6b7280;text-align:center;padding:4px 0;font-weight:600;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:12px;cursor:pointer;}
+.cal-day:hover:not(.other){background:#f0f4ef;}
+.cal-day.selected{background:#2D6A4F;color:#fff;}
+.cal-day.other{color:#d1d5db;cursor:default;}
+
+/* SLOT CONFIG */
+.slot-box{border:1px solid #e5e7eb;border-radius:6px;padding:14px;}
+.slot-box-title{font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:12px;}
+.pause-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f3f4f6;}
+.pause-row:last-child{border-bottom:none;}
+
+/* DOODLE */
+.doodle-status{background:#f0f9f5;border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:13px;}
+.doodle-table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;}
+.doodle-table th{background:#f9fafb;padding:9px 12px;font-size:12px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;text-align:center;}
+.doodle-table th:first-child{text-align:left;}
+.doodle-table td{padding:9px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;}
+.doodle-table tr:last-child td{border-bottom:none;}
+.doodle-table td:first-child{text-align:left;}
+.vote{font-size:16px;cursor:pointer;display:inline-block;width:26px;line-height:1.4;}
+.score-bar{height:4px;background:#e5e7eb;border-radius:2px;margin-top:4px;}
+.score-fill{height:100%;border-radius:2px;}
+.link-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.link-url{font-size:11px;color:#2D6A4F;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btn-copy{background:none;border:1px solid #e5e7eb;border-radius:4px;padding:3px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* RESULTS */
+.result-card{border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;cursor:pointer;transition:all .15s;margin-bottom:8px;}
+.result-card:hover{border-color:#40916C;}
+.result-card.best{border-color:#2D6A4F;background:#f0f9f5;}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.result-date{font-size:14px;font-weight:600;}
+.progress-bar{height:6px;background:#e5e7eb;border-radius:3px;margin:6px 0;}
+.progress-fill{height:100%;border-radius:3px;}
+.result-votes{display:flex;gap:10px;flex-wrap:wrap;}
+.rvi{font-size:12px;color:#6b7280;display:flex;align-items:center;gap:3px;}
+
+/* DRAG DROP */
+.scheduler-layout{display:grid;grid-template-columns:155px 1fr;gap:14px;}
+.pool-title{font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.kand-chip{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;cursor:grab;margin-bottom:6px;transition:all .15s;}
+.kand-chip:hover:not(.assigned){border-color:#2D6A4F;box-shadow:0 2px 6px rgba(0,0,0,.08);}
+.kand-chip.assigned{opacity:.4;cursor:default;}
+.chip-name{font-size:12px;font-weight:600;}
+.chip-sub{font-size:11px;color:#6b7280;}
+.slots-wrap{display:flex;flex-direction:column;gap:5px;overflow-y:auto;max-height:440px;}
+.slot-row{display:flex;align-items:center;gap:8px;}
+.slot-time{width:44px;font-size:11px;color:#6b7280;text-align:right;flex-shrink:0;}
+.slot-drop{flex:1;border:1.5px dashed #e5e7eb;border-radius:6px;padding:6px 10px;background:#fafafa;min-height:40px;display:flex;align-items:center;transition:all .15s;}
+.slot-drop.drag-over{border-color:#2D6A4F;background:#f0f9f5;}
+.slot-drop.filled{border-style:solid;border-color:#2D6A4F;background:#e9f5ee;}
+.slot-filled-inner{display:flex;align-items:center;justify-content:space-between;width:100%;}
+.slot-name{font-size:12px;font-weight:600;color:#2D6A4F;}
+.slot-sub-text{font-size:11px;color:#6b7280;}
+.slot-rm{background:none;border:none;color:#9ca3af;cursor:pointer;font-size:15px;padding:0 2px;}
+.slot-rm:hover{color:#ef4444;}
+.slot-hint{font-size:11px;color:#d1d5db;}
+
+/* CONFIRM */
+.sum-table{width:100%;border-collapse:collapse;}
+.sum-table th{text-align:left;padding:6px 10px;font-size:12px;color:#6b7280;border-bottom:1px solid #e5e7eb;}
+.sum-table td{padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:12px;}
+.invite-preview{border:1px solid #e5e7eb;border-radius:6px;padding:14px;background:#f9fafb;}
+.irow{display:flex;gap:8px;margin-bottom:5px;font-size:12px;}
+.ikey{color:#6b7280;width:58px;flex-shrink:0;}
+.check-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;font-size:13px;}
+
+.sp-footer{padding:14px 20px;border-top:1px solid #e5e7eb;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+
+/* FEEDBACK */
+.feedback-list{display:flex;flex-direction:column;gap:10px;}
+.feedback-item{border:1px solid #e5e7eb;border-radius:6px;padding:12px 14px;}
+.feedback-item.submitted{border-color:#2D6A4F;background:#f0f9f5;}
+.feedback-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.feedback-name{font-size:13px;font-weight:600;}
+.rating-bar{display:flex;gap:8px;margin-bottom:10px;}
+.rating-btn{flex:1;padding:7px;border:1px solid #e5e7eb;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;text-align:center;background:#fff;}
+.rating-btn:hover{border-color:#2D6A4F;}
+.rating-btn.active-good{background:#e9f5ee;border-color:#2D6A4F;color:#2D6A4F;}
+.rating-btn.active-neutral{background:#fef3c7;border-color:#f59e0b;color:#92400e;}
+.rating-btn.active-bad{background:#fee2e2;border-color:#ef4444;color:#ef4444;}
+.feedback-submitted{display:flex;align-items:center;gap:6px;font-size:12px;color:#2D6A4F;}
+
+/* SUCCESS */
+.success-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;}
+.success-overlay.show{display:flex;}
+.success-box{background:#fff;border-radius:12px;padding:40px;text-align:center;max-width:360px;width:90%;}
+.success-check{width:64px;height:64px;border-radius:50%;background:#2D6A4F;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;color:#fff;}
+
+/* DETAIL PANEL HEADER INFO */
+.detail-info{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:12px 14px;}
+.detail-info-title{font-size:13px;font-weight:600;margin-bottom:6px;}
+.detail-info-row{display:flex;gap:16px;font-size:12px;color:#6b7280;flex-wrap:wrap;}
+.detail-info-item{display:flex;align-items:center;gap:4px;}
+
+/* STEP PROGRESS in panel header */
+.panel-progress{display:flex;gap:6px;margin-top:8px;align-items:center;}
+.pp-step{display:flex;align-items:center;gap:4px;}
+.pp-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.pp-dot.done{background:#2D6A4F;color:#fff;}
+.pp-dot.active{background:#2D6A4F;color:#fff;box-shadow:0 0 0 3px #e9f5ee;}
+.pp-dot.todo{background:#f3f4f6;color:#9ca3af;border:1.5px solid #e5e7eb;}
+.pp-line{width:16px;height:2px;border-radius:1px;}
+.pp-line.done{background:#2D6A4F;}
+.pp-line.todo{background:#e5e7eb;}
+.pp-label{font-size:10px;color:#6b7280;}
+.pp-label.active{color:#2D6A4F;font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-check">✓</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Einladungen versendet!</div>
+    <div style="font-size:13px;color:#6b7280;margin-bottom:20px;">8 Intervieweinladungen wurden erfolgreich versendet.</div>
+    <button class="btn-primary" style="width:100%;" onclick="document.getElementById('successOverlay').classList.remove('show');closePanel();">Zurück zur Übersicht</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="sidenav">
+  <div class="sidenav-logo"></div>
+  <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+  <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+  <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+  <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+  <div class="nav-item nav-bottom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Interviews</div>
+      <div class="page-subtitle">Interview-Abstimmungen und Terminplanungen verwalten</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-primary" onclick="openPanel('create')">+ Neu hinzufügen</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="stat-card"><div class="stat-number">4</div><div class="stat-label">Interviewkreise gesamt</div></div>
+      <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">Aktive Abstimmungen</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Interviewkreise</span>
+        <div style="display:flex;gap:8px;">
+          <input class="field-input" style="width:180px;padding:5px 10px;" placeholder="Suchen...">
+          <select class="field-input" style="width:170px;padding:5px 10px;">
+            <option>Alle Organisationen</option>
+            <option>MedStaff International</option>
+            <option>Klinikum Stuttgart</option>
+          </select>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Fortschritt</th>
+            <th>Organisationen</th>
+            <th>Kandidaten</th>
+            <th>Datum</th>
+            <th>Nächster Schritt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row 1: Abstimmung läuft -->
+          <tr>
+            <td>
+              <div style="font-weight:600;">Pflegefachkräfte Batch März 2026</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Erstellt 05.03.2026</div>
+            </td>
+            <td>
+              <div class="pipeline">
+                <div class="pipe-step"><div class="pipe-num active">1</div><span class="pipe-label active">Abstimmung</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">2</div><span class="pipe-label">Auswertung</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">3</div><span class="pipe-label">Zuweisung</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">4</div><span class="pipe-label">Versand</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">5</div><span class="pipe-label">Feedback</span></div>
+              </div>
+            </td>
+            <td>4</td><td>—</td><td>Offen</td>
+            <td>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button class="btn-secondary btn-sm btn-action" onclick="openPanel('details',0)">Details</button>
+                <button class="btn-primary btn-sm btn-action" onclick="openPanel('abstimmung',0)">Abstimmung einsehen →</button>
+              </div>
+            </td>
+          </tr>
+          <!-- Row 1b: Feedback erfassen - Versand done, Feedback active -->
+          <tr>
+            <td>
+              <div style="font-weight:600;">Pflegefachkräfte Batch März 2026</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Interview: Di. 17.03.2026 · 4 Kandidaten</div>
+            </td>
+            <td>
+              <div class="pipeline">
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Abstimmung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Auswertung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Zuweisung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Versand</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num active">5</div><span class="pipe-label active">Feedback</span></div>
+              </div>
+            </td>
+            <td>4</td><td>4</td><td>17.03.2026</td>
+            <td>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button class="btn-secondary btn-sm btn-action" onclick="openPanel('details',0)">Details</button>
+                <button class="btn-primary btn-sm btn-action" onclick="openPanel('feedback',0)">Feedback erfassen →</button>
+              </div>
+            </td>
+          </tr>
+          <!-- Row 2: Bereit zur Auswertung -->
+          <tr>
+            <td>
+              <div style="font-weight:600;">IT-Fachkräfte Q2 2026</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Erstellt 01.03.2026</div>
+            </td>
+            <td>
+              <div class="pipeline">
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Abstimmung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num active">2</div><span class="pipe-label active">Auswertung</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">3</div><span class="pipe-label">Zuweisung</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">4</div><span class="pipe-label">Versand</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">5</div><span class="pipe-label">Feedback</span></div>
+              </div>
+            </td>
+            <td>4</td><td>12</td><td>Offen</td>
+            <td>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button class="btn-secondary btn-sm btn-action" onclick="openPanel('details',1)">Details</button>
+                <button class="btn-primary btn-sm btn-action" onclick="openPanel('auswertung',1)">Termin auswerten →</button>
+              </div>
+            </td>
+          </tr>
+          <!-- Row 3: Kandidaten zuweisen -->
+          <tr>
+            <td>
+              <div style="font-weight:600;">Ärzte Batch Februar 2026</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Erstellt 20.01.2026</div>
+            </td>
+            <td>
+              <div class="pipeline">
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Abstimmung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Auswertung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num active">3</div><span class="pipe-label active">Zuweisung</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">4</div><span class="pipe-label">Versand</span></div>
+                <div class="pipe-line todo"></div>
+                <div class="pipe-step"><div class="pipe-num todo">5</div><span class="pipe-label">Feedback</span></div>
+              </div>
+            </td>
+            <td>3</td><td>6</td><td>12.02.2026</td>
+            <td>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button class="btn-secondary btn-sm btn-action" onclick="openPanel('details',2)">Details</button>
+                <button class="btn-primary btn-sm btn-action" onclick="openPanel('assign',2)">Kandidaten zuweisen →</button>
+              </div>
+            </td>
+          </tr>
+          <!-- Row 4: Abgeschlossen -->
+          <tr>
+            <td>
+              <div style="font-weight:600;">Pflegehelfer Winter 2025</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Erstellt 01.12.2025</div>
+            </td>
+            <td>
+              <div class="pipeline">
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Abstimmung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Auswertung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Zuweisung</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Versand</span></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-num done">✓</div><span class="pipe-label done">Feedback</span></div>
+              </div>
+            </td>
+            <td>2</td><td>10</td><td>15.12.2025</td>
+            <td>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button class="btn-secondary btn-sm btn-action" onclick="openPanel('details',3)">Details</button>
+                <button class="btn-primary btn-sm btn-action" onclick="openPanel('feedback',3)">Feedback ansehen →</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SIDE PANEL -->
+<div class="side-panel" id="sidePanel">
+  <div class="sp-header">
+    <div style="flex:1;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="sp-title" id="panelTitle">Interviewkreis erstellen</div>
+          <div class="sp-subtitle" id="panelSubtitle"></div>
+        </div>
+        <button class="sp-close" onclick="closePanel()">×</button>
+      </div>
+      <!-- Mini pipeline im Panel Header (für Flow-Steps) -->
+      <div class="panel-progress" id="panelProgress" style="display:none;margin-top:10px;">
+        <div class="pp-step"><div class="pp-dot" id="pp1">1</div></div>
+        <div class="pp-line" id="ppl1"></div>
+        <div class="pp-step"><div class="pp-dot" id="pp2">2</div></div>
+        <div class="pp-line" id="ppl2"></div>
+        <div class="pp-step"><div class="pp-dot" id="pp3">3</div></div>
+        <div class="pp-line" id="ppl3"></div>
+        <div class="pp-step"><div class="pp-dot" id="pp4">4</div></div>
+        <div class="pp-line" id="ppl4"></div>
+        <div class="pp-step"><div class="pp-dot" id="pp5">5</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIZARD STEPPER (nur create) -->
+  <div class="stepper" id="stepperEl" style="display:none;">
+    <div class="st-step">
+      <div class="st-num active" id="sn1" onclick="goStep(1)">1</div>
+      <div class="st-info"><span class="st-label active" id="sl1">Grunddaten</span><span class="st-sub">Name & Organisationen</span></div>
+    </div>
+    <div class="st-line done" id="stl1"></div>
+    <div class="st-step">
+      <div class="st-num todo" id="sn2" onclick="goStep(2)">2</div>
+      <div class="st-info"><span class="st-label" id="sl2">Terminplanung</span><span class="st-sub">Datum & Slot-Konfiguration</span></div>
+    </div>
+  </div>
+
+  <div class="sp-body">
+
+    <!-- ═══ CREATE SCHRITT 1 ═══ -->
+    <div class="panel-step active" id="step1">
+      <div class="field-group">
+        <label class="field-label">Name des Interviewkreises *</label>
+        <input class="field-input" type="text" placeholder="z.B. Pflegefachkräfte Batch April 2026">
+      </div>
+      <div>
+        <div class="sec-label" style="margin-bottom:8px;">Organisationen auswählen</div>
+        <div class="org-list">
+          <div class="org-card selected" onclick="toggleOrg(this)">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#dbeafe;color:#1d4ed8;">MS</div>
+            <div><div class="org-name">MedStaff International</div><div class="org-role">Agentur</div></div>
+          </div>
+          <div class="org-card selected" onclick="toggleOrg(this)">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#e9f5ee;color:#2D6A4F;">KS</div>
+            <div><div class="org-name">Klinikum Stuttgart</div><div class="org-role">Arbeitgeber</div></div>
+          </div>
+          <div class="org-card selected" onclick="toggleOrg(this)">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#fef3c7;color:#92400e;">CC</div>
+            <div><div class="org-name">CareConnect India</div><div class="org-role">Partner</div></div>
+          </div>
+          <div class="org-card selected" onclick="toggleOrg(this)">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#ede9fe;color:#6d28d9;">LD</div>
+            <div><div class="org-name">Lingua Dolmetscher GmbH</div><div class="org-role">Dolmetscher</div></div>
+          </div>
+          <div class="org-card" onclick="toggleOrg(this)">
+            <input type="checkbox" onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#f3f4f6;color:#6b7280;">PA</div>
+            <div><div class="org-name">Pflegeakademie Berlin</div><div class="org-role">Bildungsanbieter</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-label" style="margin-bottom:8px;">Kandidatenlisten auswählen</div>
+        <div style="font-size:12px;color:#6b7280;margin-bottom:8px;">Alle Kandidaten aus den gewählten Listen werden Teil dieses Interviewkreises.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="org-card selected" onclick="toggleOrg(this)">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#e9f5ee;color:#2D6A4F;font-size:16px;">📋</div>
+            <div>
+              <div class="org-name">Pflegefachkräfte Indien Q1 2026</div>
+              <div class="org-role">Standard-Liste · 8 Kandidaten</div>
+            </div>
+          </div>
+          <div class="org-card selected" onclick="toggleOrg(this)">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#e9f5ee;color:#2D6A4F;font-size:16px;">📋</div>
+            <div>
+              <div class="org-name">Projektliste Klinikum Stuttgart</div>
+              <div class="org-role">Standard-Liste · 5 Kandidaten</div>
+            </div>
+          </div>
+          <div class="org-card" onclick="toggleOrg(this)">
+            <input type="checkbox" onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#f3f4f6;color:#6b7280;font-size:16px;">📋</div>
+            <div>
+              <div class="org-name">Neue Bewerber März 2026</div>
+              <div class="org-role">Auto-Liste · 12 Kandidaten</div>
+            </div>
+          </div>
+          <div class="org-card" onclick="toggleOrg(this)">
+            <input type="checkbox" onclick="event.stopPropagation()">
+            <div class="org-avatar" style="background:#f3f4f6;color:#6b7280;font-size:16px;">📋</div>
+            <div>
+              <div class="org-name">Vorstellung Arbeitgeber XY</div>
+              <div class="org-role">Standard-Liste · 3 Kandidaten</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CREATE SCHRITT 2 ═══ -->
+    <div class="panel-step" id="step2">
+      <div>
+        <div class="sec-label" style="margin-bottom:8px;">Termine auswählen – März 2026</div>
+        <div class="cal-nav">
+          <button>‹</button><span class="cal-month">März 2026</span><button>›</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-header">Mo</div><div class="cal-header">Di</div><div class="cal-header">Mi</div><div class="cal-header">Do</div><div class="cal-header">Fr</div><div class="cal-header">Sa</div><div class="cal-header">So</div>
+          <div class="cal-day other"></div><div class="cal-day other"></div><div class="cal-day other"></div><div class="cal-day other"></div><div class="cal-day other"></div><div class="cal-day other">1</div><div class="cal-day other">2</div>
+          <div class="cal-day" onclick="toggleDay(this)">3</div><div class="cal-day" onclick="toggleDay(this)">4</div><div class="cal-day" onclick="toggleDay(this)">5</div><div class="cal-day" onclick="toggleDay(this)">6</div><div class="cal-day" onclick="toggleDay(this)">7</div><div class="cal-day other">8</div><div class="cal-day other">9</div>
+          <div class="cal-day" onclick="toggleDay(this)">10</div><div class="cal-day" onclick="toggleDay(this)">11</div><div class="cal-day" onclick="toggleDay(this)">12</div><div class="cal-day" onclick="toggleDay(this)">13</div><div class="cal-day" onclick="toggleDay(this)">14</div><div class="cal-day other">15</div><div class="cal-day other">16</div>
+          <div class="cal-day selected" onclick="toggleDay(this)">17</div><div class="cal-day selected" onclick="toggleDay(this)">18</div><div class="cal-day selected" onclick="toggleDay(this)">19</div><div class="cal-day" onclick="toggleDay(this)">20</div><div class="cal-day" onclick="toggleDay(this)">21</div><div class="cal-day other">22</div><div class="cal-day other">23</div>
+          <div class="cal-day" onclick="toggleDay(this)">24</div><div class="cal-day" onclick="toggleDay(this)">25</div><div class="cal-day" onclick="toggleDay(this)">26</div><div class="cal-day" onclick="toggleDay(this)">27</div><div class="cal-day" onclick="toggleDay(this)">28</div><div class="cal-day other">29</div><div class="cal-day other">30</div>
+          <div class="cal-day" onclick="toggleDay(this)">31</div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label" style="margin-bottom:8px;">Slot-Konfiguration</div>
+        <div class="slot-box">
+          <div class="slot-box-title">Zeiten & Dauer</div>
+          <div class="three-col" style="margin-bottom:14px;">
+            <div class="field-group"><label class="field-label">Start</label><input class="field-input" type="time" value="09:00"></div>
+            <div class="field-group"><label class="field-label">Ende</label><input class="field-input" type="time" value="18:00"></div>
+            <div class="field-group"><label class="field-label">Dauer (Min)</label><input class="field-input" type="number" value="45"></div>
+          </div>
+          <div class="field-group" style="margin-bottom:14px;">
+            <label class="field-label">Puffer zwischen Slots (Min)</label>
+            <input class="field-input" type="number" value="15" style="width:80px;">
+          </div>
+          <div class="slot-box-title">Pausen</div>
+          <div id="pauseList">
+            <div class="pause-row">
+              <input class="field-input" type="time" value="12:00" style="width:88px;">
+              <span style="font-size:12px;color:#6b7280;">–</span>
+              <input class="field-input" type="time" value="13:00" style="width:88px;">
+              <input class="field-input" value="Mittagspause" style="flex:1;">
+              <button onclick="this.closest('.pause-row').remove()" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:18px;padding:0 2px;">×</button>
+            </div>
+          </div>
+          <button onclick="addPause()" style="background:none;border:1.5px dashed #e5e7eb;border-radius:4px;padding:5px 12px;font-size:12px;color:#6b7280;cursor:pointer;width:100%;margin-top:8px;">+ Pause hinzufügen</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-label" style="margin-bottom:8px;">Benachrichtigungen</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="check-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div>
+              <div style="font-size:13px;font-weight:500;">Kalendereinladung via Outlook versenden</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Alle Beteiligten erhalten eine Outlook-Kalendereinladung mit Termin und Ort</div>
+            </div>
+          </div>
+          <div class="check-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div>
+              <div style="font-size:13px;font-weight:500;">Kandidaten per E-Mail benachrichtigen</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Kandidaten erhalten ihre individuelle Einladung mit Uhrzeit und Informationen</div>
+            </div>
+          </div>
+          <div class="check-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" checked onclick="event.stopPropagation()">
+            <div>
+              <div style="font-size:13px;font-weight:500;">Zusammenfassung an Organisationen senden</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px;">Alle beteiligten Organisationen erhalten eine Übersicht aller Kandidaten und Zeiten</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ABSTIMMUNG ═══ -->
+    <div class="panel-step" id="stepAbstimmung">
+      <div class="detail-info">
+        <div class="detail-info-title">Pflegefachkräfte Batch März 2026</div>
+        <div class="detail-info-row">
+          <span class="detail-info-item">📅 17., 18., 19. März 2026</span>
+          <span class="detail-info-item">👥 4 Organisationen</span>
+          <span class="detail-info-item">⏱ 45 Min Slots</span>
+        </div>
+      </div>
+      <div class="doodle-status">
+        <span style="width:8px;height:8px;border-radius:50%;background:#2D6A4F;display:inline-block;"></span>
+        <span style="width:8px;height:8px;border-radius:50%;background:#2D6A4F;display:inline-block;"></span>
+        <span style="width:8px;height:8px;border-radius:50%;border:2px solid #d1d5db;display:inline-block;"></span>
+        <span style="width:8px;height:8px;border-radius:50%;border:2px solid #d1d5db;display:inline-block;"></span>
+        <span style="font-weight:500;margin-left:4px;">2 von 4 haben abgestimmt</span>
+      </div>
+      <table class="doodle-table">
+        <thead><tr><th>Organisation</th><th>Di 17.03.</th><th>Mi 18.03.</th><th>Do 19.03.</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div style="font-weight:500;">MedStaff</div><div style="font-size:11px;color:#6b7280;">Agentur</div></td>
+            <td><span class="vote" style="color:#2D6A4F;">✓</span></td>
+            <td><span class="vote" style="color:#2D6A4F;">✓</span></td>
+            <td><span class="vote" style="color:#f59e0b;">?</span></td>
+          </tr>
+          <tr style="background:#fafffe;">
+            <td><div style="font-weight:600;color:#2D6A4F;">Klinikum Stuttgart ✎</div><div style="font-size:11px;color:#2D6A4F;">Klicken zum Abstimmen</div></td>
+            <td><span class="vote" id="v1" onclick="cycleVote('v1')" style="color:#d1d5db;cursor:pointer;">—</span></td>
+            <td><span class="vote" id="v2" onclick="cycleVote('v2')" style="color:#d1d5db;cursor:pointer;">—</span></td>
+            <td><span class="vote" id="v3" onclick="cycleVote('v3')" style="color:#d1d5db;cursor:pointer;">—</span></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">CareConnect India</div><div style="font-size:11px;color:#6b7280;">Partner</div></td>
+            <td><span class="vote" style="color:#2D6A4F;">✓</span></td>
+            <td><span class="vote" style="color:#ef4444;">✗</span></td>
+            <td><span class="vote" style="color:#2D6A4F;">✓</span></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">Lingua Dolmetscher</div><div style="font-size:11px;color:#6b7280;">Dolmetscher</div></td>
+            <td><span class="vote" style="color:#2D6A4F;">✓</span></td>
+            <td><span class="vote" style="color:#2D6A4F;">✓</span></td>
+            <td><span class="vote" style="color:#2D6A4F;">✓</span></td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="font-size:11px;color:#6b7280;font-weight:600;">Ergebnis</td>
+            <td id="sc1"></td><td id="sc2"></td><td id="sc3"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        <div class="sec-label" style="margin-bottom:6px;">Abstimmungs-Link teilen</div>
+        <div class="link-card">
+          <span class="link-url">https://ankaadia.com/interview/pflegefachkraefte-maerz-2026</span>
+          <button class="btn-copy" onclick="this.textContent='Kopiert ✓'">Kopieren</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ AUSWERTUNG ═══ -->
+    <div class="panel-step" id="stepAuswertung">
+      <div class="detail-info">
+        <div class="detail-info-title">IT-Fachkräfte Q2 2026</div>
+        <div class="detail-info-row">
+          <span class="detail-info-item">📅 3 Terminoptionen</span>
+          <span class="detail-info-item">👥 4 Organisationen</span>
+          <span class="detail-info-item">✅ Alle haben abgestimmt</span>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#6b7280;">Basierend auf allen Abstimmungen wurde der beste Termin ermittelt. Wähle einen Termin aus um fortzufahren.</div>
+      <div id="resultCards"></div>
+    </div>
+
+    <!-- ═══ KANDIDATEN ZUWEISEN ═══ -->
+    <div class="panel-step" id="stepAssign">
+      <div class="detail-info">
+        <div class="detail-info-title">Ärzte Batch Februar 2026</div>
+        <div class="detail-info-row">
+          <span class="detail-info-item">📅 Di. 12. Feb 2026</span>
+          <span class="detail-info-item">⏱ 09:00–18:00 Uhr</span>
+          <span class="detail-info-item">🗓 8 Slots verfügbar</span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#6b7280;">Kandidaten per Drag & Drop in die Zeitslots ziehen.</div>
+      <div class="scheduler-layout">
+        <div>
+          <div class="pool-title">Kandidaten</div>
+          <div id="kandPool">
+            <div class="kand-chip" draggable="true" data-id="1" ondragstart="dragStart(event)"><div class="chip-name">Jauch, Günther</div><div class="chip-sub">SF-220010</div></div>
+            <div class="kand-chip" draggable="true" data-id="2" ondragstart="dragStart(event)"><div class="chip-name">Santos, Maria</div><div class="chip-sub">SF-220014</div></div>
+            <div class="kand-chip" draggable="true" data-id="3" ondragstart="dragStart(event)"><div class="chip-name">Kim, Ji-Young</div><div class="chip-sub">SF-220018</div></div>
+            <div class="kand-chip" draggable="true" data-id="4" ondragstart="dragStart(event)"><div class="chip-name">Okonkwo, Chidi</div><div class="chip-sub">SF-220021</div></div>
+            <div class="kand-chip" draggable="true" data-id="5" ondragstart="dragStart(event)"><div class="chip-name">Patel, Riya</div><div class="chip-sub">SF-220025</div></div>
+            <div class="kand-chip" draggable="true" data-id="6" ondragstart="dragStart(event)"><div class="chip-name">Lopez, Ana</div><div class="chip-sub">SF-220027</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="pool-title">Zeitslots</div>
+          <div class="slots-wrap" id="slotsWrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ EINLADUNGEN VERSENDEN ═══ -->
+    <div class="panel-step" id="stepConfirm">
+      <div class="detail-info">
+        <div class="detail-info-title">Einladungen versenden</div>
+        <div class="detail-info-row">
+          <span class="detail-info-item">📅 Di. 17. März 2026</span>
+          <span class="detail-info-item">👤 8 Kandidaten zugewiesen</span>
+        </div>
+      </div>
+      <table class="sum-table">
+        <thead><tr><th>#</th><th>Kandidat</th><th>Uhrzeit</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Jauch, Günther</td><td>09:00</td></tr>
+          <tr><td>2</td><td>Santos, Maria</td><td>09:45</td></tr>
+          <tr><td>3</td><td>Kim, Ji-Young</td><td>10:30</td></tr>
+          <tr><td>4</td><td>Okonkwo, Chidi</td><td>11:15</td></tr>
+        </tbody>
+      </table>
+      <div class="invite-preview">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Kalendereinladung Vorschau</div>
+        <div class="irow"><span class="ikey">Betreff</span><span>Vorstellungsgespräch – Pflegefachkräfte Batch März 2026</span></div>
+        <div class="irow"><span class="ikey">Datum</span><span>Di. 17. März 2026, 09:00–18:00 Uhr</span></div>
+        <div class="irow"><span class="ikey">Ort</span><span>Online (Teams-Link wird mitgesendet)</span></div>
+        <div class="irow"><span class="ikey">Von</span><span>Ankaadia – Dario Kniesel</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="check-item"><input type="checkbox" checked><span>Kalendereinladungen an alle Beteiligten senden</span></div>
+        <div class="check-item"><input type="checkbox" checked><span>Kandidaten per E-Mail benachrichtigen</span></div>
+        <div class="check-item"><input type="checkbox" checked><span>Zusammenfassung an Organisationen senden</span></div>
+      </div>
+    </div>
+
+    <!-- ═══ FEEDBACK ═══ -->
+    <div class="panel-step" id="stepFeedback">
+      <div class="detail-info">
+        <div class="detail-info-title">Pflegefachkräfte Batch März 2026</div>
+        <div class="detail-info-row">
+          <span class="detail-info-item">📅 Di. 17. März 2026</span>
+          <span class="detail-info-item">👤 4 Kandidaten · Klinikum Stuttgart</span>
+        </div>
+      </div>
+
+      <!-- Tabs: Übersicht / Feedback erfassen -->
+      <div style="display:flex;border-bottom:1px solid #e5e7eb;margin-bottom:4px;">
+        <div id="ftab1" onclick="switchFTab(1)" style="padding:8px 14px;font-size:13px;color:#2D6A4F;border-bottom:2px solid #2D6A4F;font-weight:500;cursor:pointer;">Übersicht</div>
+        <div id="ftab2" onclick="switchFTab(2)" style="padding:8px 14px;font-size:13px;color:#6b7280;border-bottom:2px solid transparent;cursor:pointer;">Feedback erfassen</div>
+      </div>
+
+      <!-- TAB 1: ÜBERSICHT -->
+      <div id="ftabContent1">
+
+        <!-- Arbeitgeber Header Row (wie Ankaadia Tabelle) -->
+        <div style="display:grid;grid-template-columns:1fr auto;padding:6px 12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px 6px 0 0;margin-top:4px;">
+          <span style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Arbeitgeber</span>
+          <span style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Datum/Zeit</span>
+        </div>
+
+        <!-- Arbeitgeber: Klinikum Stuttgart -->
+        <div style="border:1px solid #e5e7eb;border-top:none;border-radius:0 0 6px 6px;margin-bottom:16px;">
+
+          <!-- AG Header Row -->
+          <div style="display:grid;grid-template-columns:1fr auto;align-items:center;padding:10px 12px;border-bottom:1px solid #e5e7eb;cursor:pointer;background:#fff;" onclick="toggleGroup('grp1')">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="grp1-arrow" style="font-size:9px;color:#6b7280;transition:.2s;">▾</span>
+              <div style="font-size:13px;font-weight:600;color:#1a1a1a;">Klinikum Stuttgart</div>
+            </div>
+            <div style="font-size:12px;color:#6b7280;">17.03.26, 09:00</div>
+          </div>
+
+          <!-- Feedback Rows -->
+          <div id="grp1">
+
+            <!-- Feedback 1: Jauch -->
+            <div style="border-bottom:1px solid #f3f4f6;">
+              <!-- Akkordeon Header -->
+              <div style="display:grid;grid-template-columns:20px 1fr auto;align-items:center;padding:8px 12px 8px 28px;cursor:pointer;background:#fafafa;" onclick="toggleFeedback('fbd1')">
+                <span id="fbd1-arrow" style="font-size:9px;color:#9ca3af;">▸</span>
+                <div style="font-size:12px;color:#6b7280;">Feedback 1</div>
+                <div style="font-size:12px;color:#6b7280;">17.03.26, 09:00</div>
+              </div>
+              <!-- Feedback Detail -->
+              <div id="fbd1" style="display:none;padding:12px 28px;background:#fff;border-top:1px solid #f3f4f6;">
+                <div style="display:grid;grid-template-columns:160px 1fr;gap:6px 12px;font-size:13px;">
+                  <div style="color:#6b7280;font-weight:500;">Kandidat</div>
+                  <div style="font-weight:600;">Jauch, Günther <span style="color:#9ca3af;font-weight:400;">· SF-220010</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Teilnehmer</div>
+                  <div style="color:#3b82f6;">Simon, Manfred · Kandidat XY · Dolmetscher</div>
+                  <div style="color:#6b7280;font-weight:500;">Bewertung-Arbeitgeber</div>
+                  <div><span class="badge badge-green">Positiv</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Feedback-Arbeitgeber</div>
+                  <div>Sehr gut — überzeugende fachliche Kenntnisse</div>
+                  <div style="color:#6b7280;font-weight:500;">Bewertung-Kandidat</div>
+                  <div><span class="badge badge-green">Positiv</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Feedback-Kandidat</div>
+                  <div>Ja, ich mag den AG — gute Atmosphäre</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feedback 2: Santos -->
+            <div style="border-bottom:1px solid #f3f4f6;">
+              <div style="display:grid;grid-template-columns:20px 1fr auto;align-items:center;padding:8px 12px 8px 28px;cursor:pointer;background:#fafafa;" onclick="toggleFeedback('fbd2')">
+                <span id="fbd2-arrow" style="font-size:9px;color:#9ca3af;">▸</span>
+                <div style="font-size:12px;color:#6b7280;">Feedback 2</div>
+                <div style="font-size:12px;color:#6b7280;">17.03.26, 09:45</div>
+              </div>
+              <div id="fbd2" style="display:none;padding:12px 28px;background:#fff;border-top:1px solid #f3f4f6;">
+                <div style="display:grid;grid-template-columns:160px 1fr;gap:6px 12px;font-size:13px;">
+                  <div style="color:#6b7280;font-weight:500;">Kandidat</div>
+                  <div style="font-weight:600;">Santos, Maria <span style="color:#9ca3af;font-weight:400;">· SF-220014</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Teilnehmer</div>
+                  <div style="color:#3b82f6;">Simon, Manfred · Kandidat XY · Dolmetscher</div>
+                  <div style="color:#6b7280;font-weight:500;">Bewertung-Arbeitgeber</div>
+                  <div><span class="badge badge-green">Positiv</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Feedback-Arbeitgeber</div>
+                  <div>Sehr motiviert, gute Sprachkenntnisse</div>
+                  <div style="color:#6b7280;font-weight:500;">Bewertung-Kandidat</div>
+                  <div><span class="badge badge-green">Positiv</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Feedback-Kandidat</div>
+                  <div>Sehr gutes Gespräch, klare Erwartungen</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feedback 3: Kim -->
+            <div style="border-bottom:1px solid #f3f4f6;">
+              <div style="display:grid;grid-template-columns:20px 1fr auto;align-items:center;padding:8px 12px 8px 28px;cursor:pointer;background:#fafafa;" onclick="toggleFeedback('fbd3')">
+                <span id="fbd3-arrow" style="font-size:9px;color:#9ca3af;">▸</span>
+                <div style="font-size:12px;color:#6b7280;">Feedback 3</div>
+                <div style="font-size:12px;color:#6b7280;">17.03.26, 10:30</div>
+              </div>
+              <div id="fbd3" style="display:none;padding:12px 28px;background:#fff;border-top:1px solid #f3f4f6;">
+                <div style="display:grid;grid-template-columns:160px 1fr;gap:6px 12px;font-size:13px;">
+                  <div style="color:#6b7280;font-weight:500;">Kandidat</div>
+                  <div style="font-weight:600;">Kim, Ji-Young <span style="color:#9ca3af;font-weight:400;">· SF-220018</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Teilnehmer</div>
+                  <div style="color:#3b82f6;">Simon, Manfred · Kandidat XY · Dolmetscher</div>
+                  <div style="color:#6b7280;font-weight:500;">Bewertung-Arbeitgeber</div>
+                  <div><span style="background:#fee2e2;color:#ef4444;display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500;">Negativ</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Feedback-Arbeitgeber</div>
+                  <div>Sprachbarriere zu groß, fehlende Erfahrung</div>
+                  <div style="color:#6b7280;font-weight:500;">Bewertung-Kandidat</div>
+                  <div><span class="badge badge-yellow">Neutral</span></div>
+                  <div style="color:#6b7280;font-weight:500;">Feedback-Kandidat</div>
+                  <div>Unsicher, ob die Stelle passt</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feedback 4: Okonkwo — ausstehend -->
+            <div>
+              <div style="display:grid;grid-template-columns:20px 1fr auto;align-items:center;padding:8px 12px 8px 28px;background:#fafafa;">
+                <span style="font-size:9px;color:#d1d5db;">▸</span>
+                <div style="font-size:12px;color:#9ca3af;">Okonkwo, Chidi · SF-220021 · 11:15 Uhr</div>
+                <span class="badge badge-yellow">Ausstehend</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: FEEDBACK ERFASSEN -->
+      <div id="ftabContent2" style="display:none;">
+        <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">Feedback pro Kandidat erfassen. Wird automatisch ins Kandidatenprofil übernommen.</div>
+        <div class="feedback-list">
+          <div class="feedback-item" id="fb1">
+            <div class="feedback-header">
+              <div>
+                <div class="feedback-name">Jauch, Günther <span style="font-size:11px;color:#6b7280;font-weight:400;">· SF-220010</span></div>
+                <div style="font-size:11px;color:#6b7280;margin-top:2px;">09:00 Uhr · Klinikum Stuttgart</div>
+              </div>
+              <span class="badge badge-green" id="fb1-status">Gespeichert</span>
+            </div>
+            <div class="feedback-submitted">✓ Feedback bereits erfasst — im Kandidatenprofil sichtbar</div>
+          </div>
+          <div class="feedback-item" id="fb2">
+            <div class="feedback-header">
+              <div>
+                <div class="feedback-name">Santos, Maria <span style="font-size:11px;color:#6b7280;font-weight:400;">· SF-220014</span></div>
+                <div style="font-size:11px;color:#6b7280;margin-top:2px;">09:45 Uhr · Klinikum Stuttgart</div>
+              </div>
+              <span class="badge badge-green" id="fb2-status">Gespeichert</span>
+            </div>
+            <div class="feedback-submitted">✓ Feedback bereits erfasst — im Kandidatenprofil sichtbar</div>
+          </div>
+          <div class="feedback-item" id="fb3">
+            <div class="feedback-header">
+              <div>
+                <div class="feedback-name">Kim, Ji-Young <span style="font-size:11px;color:#6b7280;font-weight:400;">· SF-220018</span></div>
+                <div style="font-size:11px;color:#6b7280;margin-top:2px;">10:30 Uhr · Klinikum Stuttgart</div>
+              </div>
+              <span class="badge badge-green" id="fb3-status">Gespeichert</span>
+            </div>
+            <div class="feedback-submitted">✓ Feedback bereits erfasst — im Kandidatenprofil sichtbar</div>
+          </div>
+          <div class="feedback-item" id="fb4">
+            <div class="feedback-header">
+              <div>
+                <div class="feedback-name">Okonkwo, Chidi <span style="font-size:11px;color:#6b7280;font-weight:400;">· SF-220021</span></div>
+                <div style="font-size:11px;color:#6b7280;margin-top:2px;">11:15 Uhr · Klinikum Stuttgart</div>
+              </div>
+              <span class="badge badge-yellow" id="fb4-status">Ausstehend</span>
+            </div>
+            <div class="rating-bar" id="fb4-rating">
+              <div class="rating-btn" onclick="setRating('fb4','good',this)">👍 Gut</div>
+              <div class="rating-btn" onclick="setRating('fb4','neutral',this)">➡️ Neutral</div>
+              <div class="rating-btn" onclick="setRating('fb4','bad',this)">👎 Schlecht</div>
+            </div>
+            <div class="field-group" style="margin-bottom:8px;">
+              <label class="field-label">Kommentar Arbeitgeber</label>
+              <textarea class="field-input" rows="2" placeholder="Feedback des Arbeitgebers..."></textarea>
+            </div>
+            <div class="two-col">
+              <div class="field-group">
+                <label class="field-label">Datum</label>
+                <input class="field-input" type="date" value="2026-03-17">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Arbeitgeber</label>
+                <select class="field-input"><option>Klinikum Stuttgart</option></select>
+              </div>
+            </div>
+            <button class="btn-primary" style="width:100%;margin-top:8px;" onclick="submitFeedback('fb4')">Feedback speichern</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DETAILS ═══ -->
+    <div class="panel-step" id="stepDetails">
+      <div class="detail-info">
+        <div class="detail-info-title" id="detailsTitle">Interviewkreis Details</div>
+        <div class="detail-info-row" id="detailsRow"></div>
+      </div>
+      <table class="sum-table">
+        <thead><tr><th>Feld</th><th>Wert</th></tr></thead>
+        <tbody id="detailsBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="sp-footer">
+    <button class="btn-ghost" onclick="closePanel()">× Schließen</button>
+    <button class="btn-back" id="btnBack" onclick="prevStep()" style="display:none;">← Zurück</button>
+    <button class="btn-primary" id="btnNext" onclick="nextStep()">Weiter →</button>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let wStep=1, mode='create', dragId=null;
+const vSt={v1:0,v2:0,v3:0};
+const vSym=['—','✓','?','✗'];
+const vCol=['#d1d5db','#2D6A4F','#f59e0b','#ef4444'];
+const vVal=[0,1,0.5,-1];
+const fixedV={d1:[1,1,1],d2:[1,-1,1],d3:[0.5,1,1]};
+const slotA={};
+const slotTimes=['09:00','09:45','10:30','11:15','12:00','13:00','13:45','14:30'];
+
+// Pipeline positions: 1=Erstellt, 2=Abstimmung, 3=Auswertung, 4=Zuweisung, 5=Versand
+const flowLabels=['Erstellt','Abstimmung','Auswertung','Zuweisung','Versand'];
+const flowModes={'abstimmung':2,'auswertung':3,'assign':4,'confirm':5,'details':0};
+
+function setHeaderProgress(activePos){
+  const prog=document.getElementById('panelProgress');
+  if(!activePos){prog.style.display='none';return;}
+  prog.style.display='flex';
+  for(let i=1;i<=5;i++){
+    const dot=document.getElementById('pp'+i);
+    dot.textContent=i<activePos?'✓':i;
+    dot.className='pp-dot '+(i<activePos?'done':i===activePos?'active':'todo');
+    if(i<5){
+      const line=document.getElementById('ppl'+i);
+      line.className='pp-line '+(i<activePos?'done':'todo');
+    }
+  }
+}
+
+// ── PANEL OPEN/CLOSE ──
+function openPanel(m, rowIdx){
+  mode=m;
+  document.getElementById('sidePanel').classList.add('open');
+  const stepper=document.getElementById('stepperEl');
+  const btnBack=document.getElementById('btnBack');
+  const btnNext=document.getElementById('btnNext');
+
+  stepper.style.display='none';
+  btnBack.style.display='none';
+
+  if(m==='create'){
+    document.getElementById('panelTitle').textContent='Interviewkreis erstellen';
+    document.getElementById('panelSubtitle').textContent='Schritt 1 von 2';
+    stepper.style.display='flex';
+    setHeaderProgress(0);
+    wStep=1; renderWizard();
+  } else if(m==='abstimmung'){
+    document.getElementById('panelTitle').textContent='Abstimmung einsehen';
+    document.getElementById('panelSubtitle').textContent='Pflegefachkräfte Batch März 2026';
+    setHeaderProgress(2);
+    showStep('stepAbstimmung');
+    btnNext.textContent='Abstimmung abschließen →';
+    updateScores();
+  } else if(m==='auswertung'){
+    document.getElementById('panelTitle').textContent='Termin auswerten';
+    document.getElementById('panelSubtitle').textContent='IT-Fachkräfte Q2 2026';
+    setHeaderProgress(3);
+    showStep('stepAuswertung');
+    buildResults();
+    btnNext.textContent='Termin bestätigen →';
+  } else if(m==='assign'){
+    document.getElementById('panelTitle').textContent='Kandidaten zuweisen';
+    document.getElementById('panelSubtitle').textContent='Ärzte Batch Februar 2026';
+    setHeaderProgress(4);
+    showStep('stepAssign');
+    buildSlots();
+    btnNext.textContent='Zuweisung speichern →';
+  } else if(m==='confirm'){
+    document.getElementById('panelTitle').textContent='Einladungen versenden';
+    document.getElementById('panelSubtitle').textContent='Pflegefachkräfte Batch März 2026';
+    setHeaderProgress(5);
+    showStep('stepConfirm');
+    btnNext.textContent='✓ Einladungen versenden';
+  } else if(m==='feedback'){
+    document.getElementById('panelTitle').textContent='Interviewfeedback';
+    document.getElementById('panelSubtitle').textContent='Pflegefachkräfte Batch März 2026 · 17.03.2026';
+    setHeaderProgress(5);
+    showStep('stepFeedback');
+    btnNext.style.display='none';
+    return;
+  } else if(m==='details'){
+    document.getElementById('panelTitle').textContent='Details';
+    document.getElementById('panelSubtitle').textContent='';
+    setHeaderProgress(0);
+    showStep('stepDetails');
+    fillDetails(rowIdx);
+    btnNext.style.display='none';
+    return;
+  }
+  btnNext.style.display='block';
+}
+
+function closePanel(){
+  document.getElementById('sidePanel').classList.remove('open');
+  document.getElementById('btnNext').style.display='block';
+}
+
+function showStep(id){
+  ['step1','step2','stepAbstimmung','stepAuswertung','stepAssign','stepConfirm','stepFeedback','stepDetails'].forEach(s=>{
+    document.getElementById(s).classList.toggle('active',s===id);
+  });
+}
+
+// ── WIZARD ──
+function renderWizard(){
+  showStep('step'+wStep);
+  document.getElementById('panelSubtitle').textContent='Schritt '+wStep+' von 2';
+  const stLine=document.getElementById('stl1');
+
+  for(let i=1;i<=2;i++){
+    const sn=document.getElementById('sn'+i), sl=document.getElementById('sl'+i);
+    if(i<wStep){sn.className='st-num done';sn.textContent='✓';sl.className='st-label done';}
+    else if(i===wStep){sn.className='st-num active';sn.textContent=i;sl.className='st-label active';}
+    else{sn.className='st-num todo';sn.textContent=i;sl.className='st-label';}
+  }
+  stLine.className='st-line '+(wStep>1?'done':'todo');
+  document.getElementById('btnBack').style.display=wStep>1?'block':'none';
+  document.getElementById('btnNext').textContent=wStep===1?'Weiter: Terminplanung →':'Interviewkreis erstellen ✓';
+}
+
+function nextStep(){
+  if(mode==='create'){
+    if(wStep<2){wStep++;renderWizard();}
+    else closePanel();
+  } else if(mode==='confirm'){
+    document.getElementById('successOverlay').classList.add('show');
+  } else {
+    closePanel();
+  }
+}
+function prevStep(){if(mode==='create'&&wStep>1){wStep--;renderWizard();}}
+function goStep(n){if(mode==='create'){wStep=n;renderWizard();}}
+
+// ── CALENDAR ──
+function toggleDay(el){if(!el.classList.contains('other'))el.classList.toggle('selected');}
+
+// ── PAUSE ──
+function addPause(){
+  const r=document.createElement('div');r.className='pause-row';
+  r.innerHTML=`<input class="field-input" type="time" value="15:00" style="width:88px;"><span style="font-size:12px;color:#6b7280;">–</span><input class="field-input" type="time" value="15:30" style="width:88px;"><input class="field-input" placeholder="Bezeichnung" style="flex:1;"><button onclick="this.closest('.pause-row').remove()" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:18px;padding:0 2px;">×</button>`;
+  document.getElementById('pauseList').appendChild(r);
+}
+
+// ── ORGS ──
+function toggleOrg(card){
+  card.classList.toggle('selected');
+  card.querySelector('input[type=checkbox]').checked=card.classList.contains('selected');
+}
+
+// ── DOODLE ──
+function cycleVote(id){
+  vSt[id]=(vSt[id]+1)%4;
+  const el=document.getElementById(id);
+  el.textContent=vSym[vSt[id]];el.style.color=vCol[vSt[id]];
+  updateScores();
+}
+function getScore(dayKey,kIdx){
+  const kv=vVal[vSt['v'+(kIdx+1)]];
+  return Math.max(0,Math.round(((fixedV[dayKey].reduce((a,b)=>a+b,0)+kv)/4)*100));
+}
+function updateScores(){
+  ['d1','d2','d3'].forEach((d,i)=>{
+    const pct=getScore(d,i);
+    const col=pct>=75?'#2D6A4F':pct>=50?'#f59e0b':'#ef4444';
+    const el=document.getElementById('sc'+(i+1));
+    if(el) el.innerHTML=`<div style="font-size:11px;font-weight:600;color:${col};">${pct}%</div><div class="score-bar"><div class="score-fill" style="width:${pct}%;background:${col};"></div></div>`;
+  });
+}
+
+// ── RESULTS ──
+const dayLabels=['Di. 17. März','Mi. 18. März','Do. 19. März'];
+const dayKeys=['d1','d2','d3'];
+const fixedVH=[
+  ['<span style="color:#2D6A4F;">✓</span> MedStaff','<span style="color:#2D6A4F;">✓</span> CareConnect','<span style="color:#2D6A4F;">✓</span> Lingua'],
+  ['<span style="color:#2D6A4F;">✓</span> MedStaff','<span style="color:#ef4444;">✗</span> CareConnect','<span style="color:#2D6A4F;">✓</span> Lingua'],
+  ['<span style="color:#f59e0b;">?</span> MedStaff','<span style="color:#2D6A4F;">✓</span> CareConnect','<span style="color:#2D6A4F;">✓</span> Lingua'],
+];
+function buildResults(){
+  // Use fixed scores for IT demo
+  const scores=[{i:0,pct:100},{i:1,pct:75},{i:2,pct:50}];
+  const container=document.getElementById('resultCards'); container.innerHTML='';
+  scores.forEach((s,rank)=>{
+    const col=s.pct>=75?'#2D6A4F':s.pct>=50?'#f59e0b':'#ef4444';
+    const isBest=rank===0;
+    const div=document.createElement('div');
+    div.className='result-card'+(isBest?' best':'');
+    div.innerHTML=`
+      <div class="result-header">
+        <div>${isBest?'<span style="color:#f59e0b;margin-right:4px;">★</span>':''}<span class="result-date">${dayLabels[s.i]}</span></div>
+        <span style="font-size:13px;font-weight:600;color:${col};">${s.pct}% Übereinstimmung</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${s.pct}%;background:${col};"></div></div>
+      <div class="result-votes">
+        ${fixedVH[s.i].join('')}
+        <span class="rvi"><span style="color:#2D6A4F;">✓</span> Klinikum</span>
+      </div>
+      ${isBest?'<div style="font-size:11px;color:#6b7280;margin-top:6px;">14 Interviewslots · 09:00–18:00 Uhr</div>':''}
+    `;
+    div.onclick=()=>{container.querySelectorAll('.result-card').forEach(c=>c.classList.remove('best'));div.classList.add('best');};
+    container.appendChild(div);
+  });
+}
+
+// ── DRAG DROP ──
+function buildSlots(){
+  const wrap=document.getElementById('slotsWrap'); wrap.innerHTML='';
+  slotTimes.forEach(t=>{
+    const row=document.createElement('div'); row.className='slot-row';
+    const time=document.createElement('div'); time.className='slot-time'; time.textContent=t;
+    const drop=document.createElement('div'); drop.className='slot-drop'; drop.dataset.time=t;
+    if(slotA[t]) renderFilled(drop,t);
+    else drop.innerHTML='<span class="slot-hint">Kandidat hierher ziehen</span>';
+    drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag-over');});
+    drop.addEventListener('dragleave',()=>drop.classList.remove('drag-over'));
+    drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag-over');dropSlot(drop,t);});
+    row.appendChild(time); row.appendChild(drop); wrap.appendChild(row);
+  });
+}
+function renderFilled(drop,t){
+  const a=slotA[t];
+  drop.classList.add('filled');
+  drop.innerHTML=`<div class="slot-filled-inner"><div><div class="slot-name">${a.name}</div><div class="slot-sub-text">${a.sub}</div></div><button class="slot-rm" onclick="removeSlot('${t}')">×</button></div>`;
+}
+function dragStart(e){dragId=e.currentTarget.dataset.id;e.currentTarget.style.opacity='.4';setTimeout(()=>e.currentTarget.style.opacity='',0);}
+function dropSlot(drop,t){
+  if(!dragId) return;
+  const chip=document.querySelector(`.kand-chip[data-id="${dragId}"]`);
+  if(!chip) return;
+  Object.keys(slotA).forEach(k=>{if(slotA[k]&&slotA[k].id===dragId)delete slotA[k];});
+  slotA[t]={id:dragId,name:chip.querySelector('.chip-name').textContent,sub:chip.querySelector('.chip-sub').textContent};
+  document.querySelectorAll('.kand-chip').forEach(c=>c.classList.toggle('assigned',!!Object.values(slotA).find(a=>a&&a.id===c.dataset.id)));
+  buildSlots(); dragId=null;
+}
+function removeSlot(t){
+  delete slotA[t];
+  document.querySelectorAll('.kand-chip').forEach(c=>c.classList.toggle('assigned',!!Object.values(slotA).find(a=>a&&a.id===c.dataset.id)));
+  buildSlots();
+}
+
+// ── DETAILS ──
+const rowData=[
+  {title:'Pflegefachkräfte Batch März 2026',sub:'Abstimmung läuft · 4 Organisationen',rows:[['Status','Abstimmung läuft'],['Erstellt','05.03.2026'],['Organisationen','MedStaff, Klinikum, CareConnect, Lingua'],['Vorgeschlagene Termine','17., 18., 19. März 2026'],['Slot-Dauer','45 Minuten'],['Puffer','15 Minuten']]},
+  {title:'IT-Fachkräfte Q2 2026',sub:'Bereit zur Auswertung · 4 Organisationen',rows:[['Status','Alle haben abgestimmt'],['Erstellt','01.03.2026'],['Organisationen','4 Organisationen'],['Bester Termin','Di. 17. März 2026 (100%)'],['Kandidaten','12 vorgemerkt']]},
+  {title:'Ärzte Batch Februar 2026',sub:'Kandidaten zuweisen · 3 Organisationen',rows:[['Status','Termin bestätigt'],['Termin','Di. 12. Feb 2026'],['Organisationen','3 Organisationen'],['Kandidaten','6 zugewiesen']]},
+  {title:'Pflegehelfer Winter 2025',sub:'Abgeschlossen',rows:[['Status','Abgeschlossen'],['Termin','Di. 15. Dez 2025'],['Kandidaten','10 eingeladen'],['Erfolgsquote','90%']]},
+];
+function fillDetails(idx){
+  const d=rowData[idx]||rowData[0];
+  document.getElementById('detailsTitle').textContent=d.title;
+  document.getElementById('detailsRow').textContent=d.sub;
+  document.getElementById('detailsBody').innerHTML=d.rows.map(r=>`<tr><td style="color:#6b7280;width:120px;">${r[0]}</td><td style="font-weight:500;">${r[1]}</td></tr>`).join('');
+}
+
+// ── FEEDBACK TABS ──
+function switchFTab(n){
+  document.getElementById('ftabContent1').style.display = n===1?'block':'none';
+  document.getElementById('ftabContent2').style.display = n===2?'block':'none';
+  const t1 = document.getElementById('ftab1');
+  const t2 = document.getElementById('ftab2');
+  if(n===1){
+    t1.style.cssText='padding:8px 14px;font-size:13px;color:#2D6A4F;border-bottom:2px solid #2D6A4F;font-weight:500;cursor:pointer;';
+    t2.style.cssText='padding:8px 14px;font-size:13px;color:#6b7280;border-bottom:2px solid transparent;cursor:pointer;';
+  } else {
+    t1.style.cssText='padding:8px 14px;font-size:13px;color:#6b7280;border-bottom:2px solid transparent;cursor:pointer;';
+    t2.style.cssText='padding:8px 14px;font-size:13px;color:#2D6A4F;border-bottom:2px solid #2D6A4F;font-weight:500;cursor:pointer;';
+  }
+}
+function toggleGroup(id){
+  const el = document.getElementById(id);
+  const arrow = document.getElementById(id+'-arrow');
+  if(el.style.display==='none'){el.style.display='block';arrow.textContent='▾';}
+  else{el.style.display='none';arrow.textContent='▸';}
+}
+function toggleFeedback(id){
+  const el = document.getElementById(id);
+  const arrow = document.getElementById(id+'-arrow');
+  if(el.style.display==='none'){el.style.display='block';arrow.textContent='▾';}
+  else{el.style.display='none';arrow.textContent='▸';}
+}
+
+// ── FEEDBACK ──
+const ratings = {};
+function setRating(id, val, btn){
+  ratings[id] = val;
+  const bar = document.getElementById(id+'-rating');
+  bar.querySelectorAll('.rating-btn').forEach(b => b.className='rating-btn');
+  if(val==='good') btn.className='rating-btn active-good';
+  else if(val==='neutral') btn.className='rating-btn active-neutral';
+  else btn.className='rating-btn active-bad';
+}
+function submitFeedback(id){
+  if(!ratings[id]){ alert('Bitte zuerst eine Bewertung auswählen.'); return; }
+  const item = document.getElementById(id);
+  const statusEl = document.getElementById(id+'-status');
+  const labels = {good:'👍 Gut', neutral:'➡️ Neutral', bad:'👎 Schlecht'};
+  const badgeClass = {good:'badge-green', neutral:'badge-yellow', bad:'badge-red'};
+  statusEl.textContent = labels[ratings[id]];
+  statusEl.className = 'badge ' + (ratings[id]==='good'?'badge-green':ratings[id]==='neutral'?'badge-yellow':'');
+  if(ratings[id]==='bad') statusEl.style.cssText='background:#fee2e2;color:#ef4444;';
+  item.classList.add('submitted');
+  item.querySelector('button').textContent = '✓ Gespeichert — wird ins Kandidatenprofil übernommen';
+  item.querySelector('button').disabled = true;
+  item.querySelector('button').style.background='#9ca3af';
+}
+
+// init
+updateScores();
+</script>
+</body>
+</html>
