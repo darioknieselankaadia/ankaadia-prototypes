@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ankaadia – Interviewkreis</title>
+<style>
+/* ==========================================
+   ANKAADIA DESIGN SYSTEM
+   ========================================== */
+:root {
+  --primary: #2D6A4F;
+  --primary-light: #40916C;
+  --primary-dark: #1B4332;
+  --bg-app: #f5f7f0;
+  --bg-card: #ffffff;
+  --bg-hover: #f0f4ef;
+  --text: #1a1a1a;
+  --text-sec: #6b7280;
+  --text-muted: #6b7280;
+  --text-link: #2D6A4F;
+  --border: #e5e7eb;
+  --border-focus: #2D6A4F;
+  --success: #2D6A4F;
+  --success-light: #e9f5ee;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --info: #3b82f6;
+  --badge-bg: #e9f5ee;
+  --badge-text: #2D6A4F;
+  --de: #2D6A4F;
+  --at: #ef4444;
+  --ch: #b91c1c;
+  --nav-w: 48px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg-app); color:var(--text); font-size:13px; line-height:1.5; height:100vh; display:flex; overflow:hidden; }
+
+/* ==========================================
+   APP SHELL – Sidebar + Main
+   ========================================== */
+.app-nav { width:var(--nav-w); min-width:var(--nav-w); background:#ffffff; border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:10px 0; gap:4px; z-index:10; }
+.nav-logo { width:32px; height:32px; background:var(--primary); border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; margin-bottom:14px; }
+.nav-item { width:38px; height:38px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--text-sec); cursor:pointer; transition:all .15s; position:relative; }
+.nav-item:hover { background:var(--bg-hover); color:var(--primary); }
+.nav-item.active { background:var(--primary-dark); color:#fff; }
+.nav-item svg { width:18px; height:18px; fill:currentColor; }
+
+.app-main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+/* Page Header – light, not dark */
+.header { background:#ffffff; border-bottom:1px solid var(--border); padding:0 24px; height:48px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.header-left { display:flex; align-items:center; gap:12px; }
+.header h1 { font-size:22px; font-weight:700; color:var(--text); }
+.header-badge { background:var(--badge-bg); color:var(--badge-text); font-size:11px; padding:2px 8px; border-radius:12px; font-weight:500; }
+.header-right { font-size:12px; color:var(--text-sec); }
+
+/* ==========================================
+   DASHBOARD
+   ========================================== */
+.dashboard { display:none; flex:1; overflow-y:auto; padding:24px 32px; }
+.dashboard.active { display:block; }
+.dash-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.dash-title { font-size:22px; font-weight:700; color:var(--text); }
+.dash-subtitle { font-size:13px; color:var(--text-sec); margin-top:4px; }
+.dash-stats { display:flex; gap:16px; margin-bottom:20px; }
+.stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 20px; flex:1; }
+.stat-value { font-size:26px; font-weight:700; color:var(--text); }
+.stat-label { font-size:12px; color:var(--text-sec); margin-top:2px; }
+.stat-card.highlight { border-left:3px solid var(--primary); }
+.dash-table { width:100%; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.dash-table table { width:100%; border-collapse:collapse; font-size:13px; }
+.dash-table th { text-align:left; font-size:12px; color:var(--text-sec); font-weight:600; padding:8px 12px; border-bottom:1px solid var(--border); }
+.dash-table td { padding:10px 12px; border-bottom:1px solid var(--border); }
+.dash-table tr:hover td { background:var(--bg-hover); }
+.dash-table tr { cursor:pointer; }
+.status-pill { font-size:11px; font-weight:500; padding:2px 8px; border-radius:12px; }
+.status-active { background:var(--badge-bg); color:var(--badge-text); }
+.status-voting { background:var(--warning-light); color:#92400e; }
+.status-draft { background:#f3f4f6; color:var(--text-sec); }
+.status-done { background:var(--badge-bg); color:var(--badge-text); }
+
+/* Inline Step Flow in Dashboard Table */
+.dash-steps-wrap { display:flex; align-items:center; gap:6px; }
+.dash-steps { display:flex; align-items:center; }
+.dash-step { display:flex; align-items:center; position:relative; }
+.dash-step-circle { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; border:2px solid var(--border); color:var(--text-sec); background:#fff; transition:all .15s; flex-shrink:0; cursor:default; }
+.dash-step.step-done .dash-step-circle { background:var(--primary); border-color:var(--primary); color:#fff; font-size:8px; }
+.dash-step.step-active .dash-step-circle { background:var(--primary); border-color:var(--primary); color:#fff; width:22px; height:22px; font-size:10px; }
+.dash-step.step-locked .dash-step-circle { background:#f9fafb; border-color:#e5e7eb; color:#9ca3af; }
+.dash-step.clickable { cursor:pointer; }
+.dash-step.clickable:hover .dash-step-circle { border-color:var(--primary-light); color:var(--primary); background:var(--success-light); }
+.dash-step.step-done.clickable:hover .dash-step-circle { background:var(--primary-light); border-color:var(--primary-light); color:#fff; }
+.dash-step.step-active.clickable:hover .dash-step-circle { background:var(--primary-light); border-color:var(--primary-light); }
+.dash-step-line { width:12px; height:1px; background:#e5e7eb; flex-shrink:0; }
+.dash-step-line.done { background:var(--primary); }
+.dash-active-label { font-size:11px; color:var(--primary); font-weight:600; white-space:nowrap; padding:2px 7px; background:var(--success-light); border-radius:10px; }
+
+/* ==========================================
+   WIZARD
+   ========================================== */
+.wizard-container { display:none; flex:1; flex-direction:column; overflow:hidden; }
+.wizard-container.active { display:flex; }
+.wizard-bar { background:var(--bg-card); border-bottom:1px solid var(--border); padding:14px 40px; flex-shrink:0; }
+.wizard-steps { display:flex; align-items:center; justify-content:center; max-width:900px; margin:0 auto; }
+.wizard-step { display:flex; flex-direction:column; align-items:center; cursor:pointer; min-width:80px; }
+.wizard-step-circle { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; transition:all .3s; border:2px solid var(--border); color:var(--text-sec); background:#fff; }
+.wizard-step.active .wizard-step-circle { background:var(--primary); border-color:var(--primary); color:#fff; }
+.wizard-step.completed .wizard-step-circle { background:var(--primary); border-color:var(--primary); color:#fff; font-size:0; }
+.wizard-step.completed .wizard-step-circle::after { content:'\2713'; font-size:14px; }
+.wizard-step-label { margin-top:5px; font-size:11px; font-weight:500; color:var(--text-sec); }
+.wizard-step.active .wizard-step-label { color:var(--primary); font-weight:600; }
+.wizard-step.completed .wizard-step-label { color:var(--primary); }
+.wizard-line { flex:1; height:2px; background:var(--border); margin:0 6px; margin-bottom:18px; }
+.wizard-line.done { background:var(--primary); }
+
+/* Step Content & Footer */
+.step-wrapper { flex:1; overflow:hidden; position:relative; }
+.step-content { display:none; position:absolute; inset:0; overflow-y:auto; padding:24px 32px; }
+.step-content.active { display:block; }
+.step-content.step4-layout.active { display:flex; padding:0; overflow:hidden; }
+.wizard-footer { height:52px; background:var(--bg-card); border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 32px; flex-shrink:0; }
+
+/* Buttons – Ankaadia style */
+.btn { padding:7px 14px; border:none; border-radius:4px; font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; display:inline-flex; align-items:center; gap:6px; }
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:hover { background:var(--primary-light); }
+.btn-outline { background:transparent; border:1px solid var(--primary); color:var(--primary); }
+.btn-outline:hover { background:var(--bg-hover); }
+.btn-success { background:var(--primary); color:#fff; }
+.btn-success:hover { background:var(--primary-light); }
+.btn-sm { padding:5px 12px; font-size:12px; }
+
+/* ==========================================
+   STEP 1 – Erstellen
+   ========================================== */
+.s1-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:1060px; margin:0 auto; }
+.s1-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px; }
+.s1-card h3 { font-size:13px; font-weight:600; color:var(--text); margin-bottom:12px; }
+.s1-input { width:100%; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-size:13px; color:var(--text); background:white; outline:none; }
+.s1-input:focus { border-color:var(--border-focus); }
+.datepicker { width:100%; border-collapse:collapse; margin-top:8px; }
+.datepicker th { font-size:11px; color:var(--text-sec); font-weight:500; padding:6px 0; text-align:center; }
+.datepicker td { text-align:center; padding:3px; }
+.datepicker .day-cell { width:34px; height:34px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; transition:all .15s; color:var(--text); }
+.datepicker .day-cell:hover { background:var(--bg-hover); }
+.datepicker .day-cell.selected { background:var(--primary); color:#fff; font-weight:600; }
+.datepicker .day-cell.weekend { color:var(--text-sec); }
+.datepicker .day-cell.empty { visibility:hidden; }
+.s1-form-row { display:flex; gap:10px; margin-bottom:10px; }
+.s1-form-group { flex:1; }
+.s1-form-group label { display:block; font-size:12px; color:var(--text-sec); margin-bottom:3px; }
+.s1-form-group input, .s1-form-group select { width:100%; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-size:13px; }
+.s1-form-group input:focus { outline:none; border-color:var(--border-focus); }
+.org-card { display:flex; align-items:center; padding:10px 12px; border:1px solid var(--border); border-radius:6px; margin-bottom:8px; gap:10px; }
+.org-icon { width:34px; height:34px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.org-info { flex:1; }
+.org-name { font-size:13px; font-weight:600; color:var(--text); }
+.org-role { font-size:11px; color:var(--text-sec); }
+.role-badge { font-size:10px; font-weight:500; padding:2px 8px; border-radius:12px; }
+.ext-link-card { background:var(--bg-hover); border:1px dashed var(--border); border-radius:6px; padding:12px; margin-top:12px; }
+.ext-link-url { font-size:12px; color:var(--text-link); font-family:monospace; word-break:break-all; }
+.ext-link-copy { font-size:12px; color:var(--text-link); cursor:pointer; font-weight:600; margin-top:6px; display:inline-block; }
+.cand-mini { display:flex; align-items:center; padding:5px 8px; gap:8px; border-radius:4px; margin-bottom:3px; }
+.cand-mini:hover { background:var(--bg-hover); }
+.cand-mini-avatar { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; }
+.cand-mini-name { font-size:13px; font-weight:500; color:var(--text); flex:1; }
+.cand-mini .country-badge { font-size:10px; padding:1px 6px; }
+
+/* ==========================================
+   STEP 2 – Doodle
+   ========================================== */
+.s2-container { max-width:800px; margin:0 auto; }
+.vote-status { display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:12px 16px; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; }
+.vote-status-text { font-size:13px; font-weight:600; color:var(--text); flex:1; }
+.vote-dots { display:flex; gap:6px; }
+.vote-dot { width:10px; height:10px; border-radius:50%; background:var(--border); }
+.vote-dot.voted { background:var(--primary); }
+.doodle-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.doodle-table { width:100%; border-collapse:collapse; }
+.doodle-table th,.doodle-table td { padding:10px 14px; text-align:center; border-bottom:1px solid var(--border); }
+.doodle-table thead th { font-size:13px; font-weight:600; color:var(--text-sec); }
+.doodle-table thead th:first-child { text-align:left; }
+.doodle-table .org-col { text-align:left; font-weight:600; font-size:13px; }
+.doodle-table .org-col .org-role-sm { font-size:11px; color:var(--text-sec); font-weight:400; display:block; }
+.doodle-cell { width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px; font-size:20px; cursor:default; transition:all .15s; }
+.doodle-cell.interactive { cursor:pointer; border:2px dashed var(--border); background:var(--bg-hover); }
+.doodle-cell.interactive:hover { border-color:var(--primary); background:var(--success-light); }
+.doodle-cell.vote-yes { background:var(--success-light); color:var(--primary); }
+.doodle-cell.vote-no { background:var(--danger-light); color:var(--danger); }
+.doodle-cell.vote-maybe { background:var(--warning-light); color:#b45309; }
+.doodle-result { font-size:13px; font-weight:700; }
+.doodle-result-bar { height:4px; border-radius:2px; background:var(--border); margin-top:6px; overflow:hidden; }
+.doodle-result-fill { height:100%; border-radius:2px; transition:width .4s ease; }
+.s2-ext-card { margin-top:16px; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:14px 18px; display:flex; align-items:center; gap:14px; }
+.s2-ext-icon { width:36px; height:36px; background:var(--badge-bg); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+
+/* ==========================================
+   STEP 3 – Auswahl
+   ========================================== */
+.s3-container { max-width:700px; margin:0 auto; }
+.s3-heading { font-size:22px; font-weight:700; color:var(--text); margin-bottom:16px; }
+.result-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; cursor:pointer; transition:all .2s; }
+.result-card:hover { border-color:var(--primary); }
+.result-card.best { border-color:var(--primary); border-width:2px; }
+.result-card.selected { border-color:var(--primary); border-width:2px; background:var(--success-light); }
+.result-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.result-card-date { font-size:15px; font-weight:700; color:var(--text); }
+.result-badge-best { font-size:11px; font-weight:500; padding:2px 8px; border-radius:12px; background:var(--badge-bg); color:var(--badge-text); }
+.result-score { display:flex; align-items:center; gap:10px; }
+.result-score-pct { font-size:18px; font-weight:700; color:var(--primary); }
+.result-score-bar { width:120px; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+.result-score-fill { height:100%; border-radius:3px; background:var(--primary); transition:width .5s ease; }
+.result-votes { display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; }
+.result-vote { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-sec); }
+.result-vote-icon { font-size:15px; }
+.result-slots-info { font-size:12px; color:var(--text-sec); margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+
+/* ==========================================
+   STEP 4 – Zuweisung (FullCalendar)
+   ========================================== */
+.s4-sidebar { width:300px; min-width:300px; background:var(--bg-card); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; }
+.s4-section { padding:14px; border-bottom:1px solid var(--border); }
+.s4-section h3 { font-size:13px; font-weight:600; color:var(--text); margin-bottom:10px; }
+.s4-calendar-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.s4-cal-header { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:var(--bg-card); border-bottom:1px solid var(--border); }
+.s4-cal-title { font-size:13px; font-weight:600; color:var(--text); }
+.s4-multi-org { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-sec); padding:8px 16px; background:var(--badge-bg); border-bottom:1px solid var(--border); }
+.s4-multi-dot { width:8px; height:8px; border-radius:50%; }
+.s4-day-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); background:var(--bg-card); }
+.s4-day-tab { padding:8px 14px; font-size:13px; font-weight:500; color:var(--text-sec); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; white-space:nowrap; }
+.s4-day-tab:hover { background:var(--bg-hover); }
+.s4-day-tab.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:600; }
+.s4-day-tab .tab-count { font-size:10px; background:var(--border); color:var(--text-sec); padding:1px 6px; border-radius:8px; margin-left:4px; }
+.s4-day-tab.active .tab-count { background:var(--badge-bg); color:var(--badge-text); }
+.s4-cal-wrap { flex:1; padding:10px 14px; overflow-y:auto; background:var(--bg-app); }
+#calendar { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; }
+.legend { display:flex; gap:10px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--text-sec); }
+.legend-dot { width:8px; height:8px; border-radius:50%; }
+.legend-dot.free { border:2px dashed var(--text-sec); background:transparent; }
+.legend-dot.pause { background:var(--warning); }
+.legend-dot.de { background:var(--de); }
+.legend-dot.at { background:var(--at); }
+.legend-dot.ch { background:var(--ch); }
+.s4-form-row { display:flex; gap:8px; margin-bottom:8px; }
+.s4-fg { flex:1; }
+.s4-fg label { display:block; font-size:12px; color:var(--text-sec); margin-bottom:2px; }
+.s4-fg input { width:100%; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-size:13px; }
+.s4-fg input:focus { outline:none; border-color:var(--border-focus); }
+.s4-check { display:flex; align-items:center; gap:6px; margin-bottom:8px; font-size:12px; color:var(--text-sec); }
+.s4-check input { accent-color:var(--primary); }
+.s4-btn-gen { width:100%; padding:7px; background:var(--primary); color:#fff; border:none; border-radius:4px; font-size:13px; font-weight:500; cursor:pointer; }
+.s4-btn-gen:hover { background:var(--primary-light); }
+.s4-cand-subtitle { font-size:11px; color:var(--text-sec); margin-bottom:8px; }
+.candidate-card { display:flex; align-items:center; padding:7px 10px; border:1px solid var(--border); border-radius:6px; margin-bottom:5px; cursor:grab; background:var(--bg-card); transition:all .15s; user-select:none; }
+.candidate-card:hover { border-color:var(--primary); background:var(--bg-hover); }
+.candidate-card.assigned { opacity:.5; cursor:default; }
+.candidate-avatar { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; margin-right:8px; flex-shrink:0; }
+.candidate-info { flex:1; min-width:0; }
+.candidate-name { font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.candidate-role { font-size:11px; color:var(--text-sec); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.country-badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; color:#fff; flex-shrink:0; margin-left:6px; }
+.country-badge.de { background:var(--de); }
+.country-badge.at { background:var(--at); }
+.country-badge.ch { background:var(--ch); }
+.time-badge { font-size:10px; font-weight:500; padding:2px 6px; border-radius:4px; background:var(--badge-bg); color:var(--badge-text); margin-left:4px; flex-shrink:0; white-space:nowrap; }
+
+/* FullCalendar Overrides */
+.fc { font-family:inherit; }
+.fc .fc-toolbar { display:none !important; }
+.fc .fc-timegrid-slot { height:28px; }
+.fc .fc-timegrid-slot-label-cushion { font-size:12px; color:var(--text-sec); }
+.fc .fc-timegrid-axis { width:56px; }
+.fc .fc-col-header-cell { display:none; }
+.fc .fc-timegrid-divider { display:none; }
+.fc .fc-scrollgrid { border:none !important; }
+.fc .fc-scrollgrid td,.fc .fc-scrollgrid th { border-color:var(--border) !important; }
+.fc .fc-timegrid-now-indicator-line,.fc .fc-timegrid-now-indicator-arrow { display:none; }
+.fc .fc-event { border:none !important; border-radius:4px !important; font-size:12px; }
+.slot-free { background:var(--bg-hover) !important; border:2px dashed var(--text-sec) !important; border-radius:4px !important; cursor:pointer; }
+.slot-free .fc-event-main { color:var(--text-sec); font-size:12px; text-align:center; display:flex; align-items:center; justify-content:center; }
+.slot-free:hover { border-color:var(--primary) !important; background:var(--success-light) !important; }
+.slot-free:hover .fc-event-main { color:var(--primary); }
+.slot-assigned .fc-event-main { color:#fff; font-size:12px; padding:3px 8px; }
+.slot-assigned-de { background:var(--de) !important; }
+.slot-assigned-at { background:var(--at) !important; }
+.slot-assigned-ch { background:var(--ch) !important; }
+.slot-pause { background:var(--warning-light) !important; border:1px solid var(--warning) !important; cursor:not-allowed; }
+.slot-pause .fc-event-main { color:#92400e; font-size:12px; display:flex; align-items:center; justify-content:center; }
+.fc-highlight { background:var(--success-light) !important; }
+
+/* Slot Dropdown */
+.slot-dropdown { position:fixed; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; z-index:9999; min-width:240px; max-height:300px; overflow-y:auto; padding:4px; }
+.slot-dropdown-header { padding:8px 12px; font-size:12px; font-weight:600; color:var(--text-sec); border-bottom:1px solid var(--border); }
+.slot-dropdown-item { display:flex; align-items:center; padding:6px 10px; border-radius:4px; cursor:pointer; transition:background .1s; gap:8px; }
+.slot-dropdown-item:hover { background:var(--bg-hover); }
+.slot-dropdown-item.disabled { opacity:.35; cursor:not-allowed; pointer-events:none; }
+.dd-avatar { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; }
+.dd-info { flex:1; }
+.dd-name { font-size:12px; font-weight:600; color:var(--text); }
+.dd-role { font-size:10px; color:var(--text-sec); }
+
+/* ==========================================
+   STEP 5 – Bestaetigung
+   ========================================== */
+.s5-grid { display:grid; grid-template-columns:1fr 360px; gap:16px; max-width:1060px; margin:0 auto; }
+.s5-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px; }
+.s5-card h3 { font-size:13px; font-weight:600; color:var(--text); margin-bottom:12px; }
+.s5-table { width:100%; border-collapse:collapse; font-size:13px; }
+.s5-table th { text-align:left; font-size:12px; color:var(--text-sec); font-weight:600; padding:8px 10px; border-bottom:1px solid var(--border); }
+.s5-table td { padding:10px; border-bottom:1px solid var(--border); }
+.s5-table .td-name { font-weight:600; }
+.s5-table tr:hover td { background:var(--bg-hover); }
+.s5-invite-card { background:var(--bg-hover); border:1px solid var(--border); border-left:3px solid var(--primary); border-radius:6px; padding:14px; margin-bottom:14px; }
+.s5-invite-title { font-size:14px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.s5-invite-row { font-size:13px; color:var(--text-sec); margin-bottom:4px; display:flex; gap:8px; }
+.s5-invite-icon { width:18px; text-align:center; }
+.s5-checks { margin-top:12px; }
+.s5-check { display:flex; align-items:center; gap:8px; padding:6px 0; font-size:13px; color:var(--text); }
+.s5-check input { width:16px; height:16px; accent-color:var(--primary); }
+.s5-participant { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+.s5-part-dot { width:8px; height:8px; border-radius:50%; }
+.s5-part-name { flex:1; font-size:13px; font-weight:500; }
+.s5-part-status { font-size:11px; padding:2px 8px; border-radius:12px; font-weight:500; }
+
+/* ==========================================
+   FEEDBACK MODAL
+   ========================================== */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center; z-index:10000; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; width:680px; max-width:90vw; max-height:85vh; overflow:hidden; display:flex; flex-direction:column; }
+.modal-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.modal-title { font-size:13px; font-weight:600; color:var(--text); }
+.modal-close { width:28px; height:28px; border:1px solid var(--border); background:#fff; border-radius:4px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--text-sec); }
+.modal-close:hover { background:var(--bg-hover); }
+.modal-body { flex:1; overflow-y:auto; padding:16px 20px; }
+.modal-footer { padding:12px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+.fb-cand-row { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+.fb-cand-info { width:160px; flex-shrink:0; }
+.fb-cand-name { font-size:13px; font-weight:600; color:var(--text); }
+.fb-cand-role { font-size:12px; color:var(--text-sec); }
+.fb-fields { flex:1; display:flex; flex-direction:column; gap:8px; }
+.fb-rating { display:flex; gap:3px; }
+.fb-star { width:26px; height:26px; border:1px solid var(--border); border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; transition:all .15s; background:#fff; }
+.fb-star:hover,.fb-star.active { background:var(--warning-light); border-color:var(--warning); color:#b45309; }
+.fb-textarea { width:100%; padding:7px 10px; border:1px solid var(--border); border-radius:4px; font-size:13px; resize:vertical; min-height:34px; font-family:inherit; }
+.fb-textarea:focus { outline:none; border-color:var(--border-focus); }
+.fb-status-select { padding:5px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; }
+
+/* ==========================================
+   SUCCESS OVERLAY
+   ========================================== */
+.success-overlay { position:fixed; inset:0; background:rgba(255,255,255,.97); display:none; align-items:center; justify-content:center; flex-direction:column; z-index:10000; }
+.success-overlay.active { display:flex; animation:fadeIn .3s ease; }
+.success-spinner { width:44px; height:44px; border:4px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite; }
+.success-done { display:none; text-align:center; }
+.success-done.show { display:block; animation:scaleIn .4s ease; }
+.success-check-svg { width:72px; height:72px; margin-bottom:14px; }
+.success-check-circle { fill:none; stroke:var(--primary); stroke-width:3; stroke-dasharray:260; stroke-dashoffset:260; animation:drawCircle .6s ease forwards; }
+.success-check-mark { fill:none; stroke:var(--primary); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:50; stroke-dashoffset:50; animation:drawCheck .4s .5s ease forwards; }
+.success-title { font-size:22px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.success-sub { font-size:13px; color:var(--text-sec); margin-bottom:16px; }
+.success-close { padding:7px 24px; background:var(--primary); color:#fff; border:none; border-radius:4px; font-size:13px; font-weight:500; cursor:pointer; }
+.toast { position:fixed; bottom:72px; left:50%; transform:translateX(-50%); background:var(--text); color:#fff; padding:8px 18px; border-radius:4px; font-size:13px; font-weight:500; z-index:10001; opacity:0; transition:opacity .3s; pointer-events:none; }
+.toast.show { opacity:1; }
+
+/* Step 6: Feedback */
+.fb-header { display:flex; gap:16px; margin-bottom:20px; }
+.fb-stat { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:14px 20px; flex:1; }
+.fb-stat-val { font-size:24px; font-weight:700; color:var(--text); }
+.fb-stat-lbl { font-size:12px; color:var(--text-sec); margin-top:2px; }
+.fb-table-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.fb-table { width:100%; border-collapse:collapse; font-size:13px; }
+.fb-table th { text-align:left; font-size:11px; color:var(--text-sec); font-weight:600; text-transform:uppercase; letter-spacing:.4px; padding:12px 14px; border-bottom:2px solid var(--border); background:var(--bg-hover); }
+.fb-table td { padding:12px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+.fb-table tr:last-child td { border-bottom:none; }
+.fb-table tr:hover td { background:var(--bg-hover); }
+.fb-cand-name { font-weight:600; color:var(--text); display:flex; align-items:center; gap:6px; }
+.fb-profile-btn { width:22px; height:22px; border-radius:4px; background:var(--badge-bg); border:none; color:var(--primary); cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s; }
+.fb-profile-btn:hover { background:var(--primary); color:#fff; }
+.fb-slot { font-size:12px; color:var(--text-sec); margin-top:2px; }
+.fb-btns { display:flex; gap:5px; margin-bottom:5px; }
+.fb-btn { padding:4px 12px; border-radius:4px; border:1px solid var(--border); font-size:12px; font-weight:600; cursor:pointer; background:#fff; color:var(--text-sec); transition:all .15s; }
+.fb-btn.pos.active { background:#dcfce7; border-color:#16a34a; color:#15803d; }
+.fb-btn.neg.active { background:#fee2e2; border-color:#ef4444; color:#dc2626; }
+.fb-btn:not(.active):hover { background:var(--bg-hover); }
+.fb-comment { width:100%; border:1px solid var(--border); border-radius:4px; font-size:12px; padding:5px 8px; resize:none; color:var(--text); font-family:inherit; margin-top:4px; }
+.fb-comment:focus { outline:none; border-color:var(--primary); }
+.fb-status-badge { font-size:11px; font-weight:500; padding:2px 8px; border-radius:10px; }
+.fb-status-pending { background:#f3f4f6; color:var(--text-sec); }
+.fb-status-pos { background:#dcfce7; color:#15803d; }
+.fb-status-neg { background:#fee2e2; color:#dc2626; }
+.fb-status-mix { background:#fef3c7; color:#92400e; }
+
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn { from{transform:scale(.8);opacity:0} to{transform:scale(1);opacity:1} }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes drawCircle { to{stroke-dashoffset:0} }
+@keyframes drawCheck { to{stroke-dashoffset:0} }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text-sec); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar Navigation – 48px, weiss, gruener aktiver State -->
+<nav class="app-nav">
+  <div class="nav-logo">A</div>
+  <div class="nav-item" title="Dashboard"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></div>
+  <div class="nav-item" title="Kandidaten"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+  <div class="nav-item active" title="Interviews"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg></div>
+  <div class="nav-item" title="Prozesse"><svg viewBox="0 0 24 24"><path d="M22 11V3h-7v3H9V3H2v8h7V8h2v10h4v3h7v-8h-7v3h-2V8h2v3h7zM7 9H4V5h3v4zm10 6h3v4h-3v-4zm0-10h3v4h-3V5z"/></svg></div>
+  <div class="nav-item" title="Einstellungen"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+</nav>
+
+<!-- Hauptbereich -->
+<div class="app-main">
+  <!-- Page Header – hell, nicht dunkel -->
+  <header class="header">
+    <div class="header-left">
+      <h1>Interviews</h1>
+      <span class="header-badge" id="headerBadge">Interviewkreise</span>
+    </div>
+    <div class="header-right">Ankaadia Recruiting Platform</div>
+  </header>
+
+  <!-- Dashboard-Ansicht -->
+  <div class="dashboard active" id="dashboardView">
+    <div class="dash-header">
+      <div>
+        <div class="dash-title">Interviewkreise</div>
+        <div class="dash-subtitle">Alle Interview-Abstimmungen und Terminplanungen verwalten</div>
+      </div>
+      <button class="btn btn-primary" onclick="startNewCircle()">+ Neu hinzufuegen</button>
+    </div>
+    <div class="dash-stats">
+      <div class="stat-card highlight"><div class="stat-value">3</div><div class="stat-label">Aktive Interviewkreise</div></div>
+      <div class="stat-card"><div class="stat-value">24</div><div class="stat-label">Geplante Interviews</div></div>
+    </div>
+    <div class="dash-table">
+      <table>
+        <thead><tr><th>Name</th><th>Workflow-Schritte</th><th>Kandidaten</th><th>Datum</th><th>Erstellt</th></tr></thead>
+        <tbody id="dashTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Wizard-Ansicht -->
+  <div class="wizard-container" id="wizardView">
+    <div class="wizard-bar">
+      <div class="wizard-steps">
+        <div class="wizard-step active" onclick="goToStep(1)"><div class="wizard-step-circle">1</div><div class="wizard-step-label">Erstellen</div></div>
+        <div class="wizard-line" id="wline1"></div>
+        <div class="wizard-step" onclick="goToStep(2)"><div class="wizard-step-circle">2</div><div class="wizard-step-label">Abstimmung</div></div>
+        <div class="wizard-line" id="wline2"></div>
+        <div class="wizard-step" onclick="goToStep(3)"><div class="wizard-step-circle">3</div><div class="wizard-step-label">Auswahl</div></div>
+        <div class="wizard-line" id="wline3"></div>
+        <div class="wizard-step" onclick="goToStep(4)"><div class="wizard-step-circle">4</div><div class="wizard-step-label">Zuweisung</div></div>
+        <div class="wizard-line" id="wline4"></div>
+        <div class="wizard-step" onclick="goToStep(5)"><div class="wizard-step-circle">5</div><div class="wizard-step-label">Versand</div></div>
+        <div class="wizard-line" id="wline5"></div>
+        <div class="wizard-step" onclick="goToStep(6)"><div class="wizard-step-circle">6</div><div class="wizard-step-label">Feedback</div></div>
+      </div>
+    </div>
+
+    <div class="step-wrapper">
+      <!-- SCHRITT 1: Interviewkreis erstellen -->
+      <div class="step-content active" id="step-1">
+        <div class="s1-grid">
+          <div>
+            <div class="s1-card" style="margin-bottom:16px;">
+              <h3>Interviewkreis benennen</h3>
+              <input class="s1-input" id="circleName" placeholder="z.B. Pflegefachkraefte Batch Maerz 2026" value="Pflegefachkraefte Batch Maerz 2026">
+              <div style="margin-top:10px;">
+                <label class="s1-form-group"><span style="font-size:12px;color:var(--text-sec);">Meeting-Link (optional)</span>
+                <input class="s1-input" id="meetingLink" placeholder="https://teams.microsoft.com/..." value="https://teams.microsoft.com/meet/ik-2026-03" style="margin-top:3px;">
+                </label>
+              </div>
+            </div>
+            <div class="s1-card" style="margin-bottom:16px;">
+              <h3>Interview-Termine</h3>
+              <div id="termCalendar"></div>
+              <div id="termineList" style="margin-top:12px;"></div>
+              <div style="font-size:11px;color:var(--text-sec);margin-top:6px;">Klicke auf einen Tag um einen Termin hinzuzufuegen. Mehrere Tage koennen zu einem Termin zusammengefasst werden.</div>
+            </div>
+            <div class="s1-card">
+              <h3>Slot-Konfiguration</h3>
+              <div class="s1-form-row">
+                <div class="s1-form-group"><label>Start</label><input type="time" id="s1Start" value="09:00"></div>
+                <div class="s1-form-group"><label>Ende</label><input type="time" id="s1End" value="18:00"></div>
+                <div class="s1-form-group"><label>Dauer (Min)</label><input type="number" id="s1Duration" value="30" min="5" step="5"></div>
+                <div class="s1-form-group"><label>Puffer</label><input type="number" id="s1Buffer" value="5" min="0" step="5"></div>
+              </div>
+              <label class="s4-check"><input type="checkbox" id="s1PauseActive" checked> Mittagspause</label>
+              <div class="s1-form-row" id="s1PauseFields">
+                <div class="s1-form-group"><label>Pause von</label><input type="time" id="s1PauseStart" value="12:00"></div>
+                <div class="s1-form-group"><label>Pause bis</label><input type="time" id="s1PauseEnd" value="13:00"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="s1-card" style="margin-bottom:16px;">
+              <h3>Beteiligte Organisationen</h3>
+              <div id="orgList"></div>
+              <button class="btn btn-outline btn-sm" style="width:100%;margin-top:8px;margin-bottom:8px;" onclick="addOrgPrompt()">+ Organisation hinzufuegen</button>
+              <div class="ext-link-card">
+                <div style="font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:6px;">Externen Teilnehmer einladen</div>
+                <div class="ext-link-url">https://ankaadia.com/interview/ik-mfb2026</div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                  <div class="ext-link-copy" onclick="copyLink()">Link kopieren</div>
+                  <div class="ext-link-copy" style="color:var(--primary-light);" onclick="openExternalView()">Externe Ansicht simulieren</div>
+                </div>
+              </div>
+            </div>
+            <div class="s1-card">
+              <h3>Kandidatenliste</h3>
+              <div style="display:flex;gap:6px;margin-bottom:8px;">
+                <select class="s1-input" id="s1ListSelect" onchange="onListSelect()" style="flex:1;">
+                  <option value="">Liste auswaehlen...</option>
+                  <option value="pflege-maerz" selected>Pflegefachkraefte Maerz 2026 (8 Kandidaten)</option>
+                  <option value="pflege-april">Pflegefachkraefte April 2026 (5 Kandidaten)</option>
+                  <option value="intensiv-q2">Intensivpflege Q2 2026 (11 Kandidaten)</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="toggleNewListForm()" id="btnNewList" title="Neue Liste anlegen" style="white-space:nowrap;">+ Neue Liste</button>
+              </div>
+              <div id="newListForm" style="display:none;background:var(--bg-hover);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;">
+                <div style="font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:6px;">Neue Kandidatenliste anlegen</div>
+                <input class="s1-input" id="newListName" placeholder="Listenname, z.B. Chirurgie Q3 2026" style="margin-bottom:6px;">
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-primary btn-sm" onclick="saveNewList()" style="flex:1;">Anlegen</button>
+                  <button class="btn btn-outline btn-sm" onclick="toggleNewListForm()">Abbrechen</button>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--text-sec);margin-bottom:6px;" id="s1CandHint">8 Kandidaten aus gewaehlter Liste</div>
+              <div id="s1CandidatePreview"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHRITT 2: Doodle-Abstimmung -->
+      <div class="step-content" id="step-2">
+        <div class="s2-container">
+          <div class="vote-status" id="voteStatus"></div>
+          <div class="doodle-card"><table class="doodle-table" id="doodleTable"></table></div>
+          <div class="s2-ext-card">
+            <div class="s2-ext-icon">&#128279;</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:var(--text);">Externer Teilnehmer-Link</div>
+              <div style="font-size:12px;color:var(--text-sec);">Teilnehmer ohne Ankaadia-Account koennen ueber diesen Link abstimmen</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+              <div class="ext-link-copy" onclick="copyLink()">Kopieren</div>
+              <div class="ext-link-copy" style="font-size:11px;" onclick="openExternalView()">Extern simulieren</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHRITT 3: Automatische Terminauswahl -->
+      <div class="step-content" id="step-3">
+        <div class="s3-container">
+          <div class="s3-heading">Ergebnis der Terminabstimmung</div>
+          <div id="resultCards"></div>
+        </div>
+      </div>
+
+      <!-- SCHRITT 4: Kandidatenzuweisung -->
+      <div class="step-content step4-layout" id="step-4">
+        <div class="s4-sidebar">
+          <div class="s4-section">
+            <h3>Slot-Konfiguration</h3>
+            <div class="s4-form-row">
+              <div class="s4-fg"><label>Start</label><input type="time" id="startTime" value="09:00"></div>
+              <div class="s4-fg"><label>Ende</label><input type="time" id="endTime" value="18:00"></div>
+            </div>
+            <div class="s4-form-row">
+              <div class="s4-fg"><label>Dauer (Min)</label><input type="number" id="slotDuration" value="30" min="5" step="5"></div>
+              <div class="s4-fg"><label>Puffer</label><input type="number" id="bufferTime" value="5" min="0" step="5"></div>
+            </div>
+            <label class="s4-check"><input type="checkbox" id="pauseActive" checked> Mittagspause</label>
+            <div class="s4-form-row" id="pauseFields">
+              <div class="s4-fg"><label>Von</label><input type="time" id="pauseStart" value="12:00"></div>
+              <div class="s4-fg"><label>Bis</label><input type="time" id="pauseEnd" value="13:00"></div>
+            </div>
+            <button class="s4-btn-gen" onclick="generateSlots()">Slots generieren</button>
+          </div>
+          <div class="s4-section" style="flex:1;overflow-y:auto;">
+            <h3>Kandidaten zuweisen</h3>
+            <div class="s4-cand-subtitle">Drag &amp; Drop oder Klick auf freien Slot</div>
+            <div id="candidateList"></div>
+          </div>
+        </div>
+        <div class="s4-calendar-area">
+          <div class="s4-multi-org">
+            <div class="s4-multi-dot" style="background:var(--primary);"></div>
+            <div class="s4-multi-dot" style="background:var(--primary-light);"></div>
+            <div class="s4-multi-dot" style="background:var(--primary-dark);"></div>
+            Gleichzeitige Zuweisung durch mehrere Organisationen aktiv
+          </div>
+          <div class="s4-day-tabs" id="dayTabs"></div>
+          <div class="s4-cal-header">
+            <div class="s4-cal-title" id="calendarTitle">Dienstag, 17. Maerz 2026</div>
+            <div class="legend">
+              <div class="legend-item"><div class="legend-dot free"></div>Frei</div>
+              <div class="legend-item"><div class="legend-dot pause"></div>Pause</div>
+            </div>
+          </div>
+          <div class="s4-cal-wrap">
+            <div id="calendar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHRITT 5: Bestaetigung & Versand -->
+      <div class="step-content" id="step-5">
+        <div class="s5-grid">
+          <div>
+            <div class="s5-card" style="margin-bottom:16px;">
+              <h3>Zuweisungsuebersicht</h3>
+              <table class="s5-table" id="s5SummaryTable"></table>
+            </div>
+            <div class="s5-card" style="margin-bottom:16px;">
+              <h3>Versandoptionen</h3>
+              <div class="s5-checks">
+                <label class="s5-check"><input type="checkbox" checked> Outlook/Google Kalendereinladung versenden</label>
+                <label class="s5-check"><input type="checkbox" checked> Kandidaten per E-Mail benachrichtigen</label>
+                <label class="s5-check"><input type="checkbox" checked> Zusammenfassung an alle Beteiligten senden</label>
+                <label class="s5-check"><input type="checkbox" checked> Termin in Kandidaten-Reiter uebertragen</label>
+              </div>
+            </div>
+            <div class="s5-card">
+              <h3>Feedback erfassen</h3>
+              <div style="font-size:13px;color:var(--text-sec);margin-bottom:10px;">Erfassen Sie Feedback fuer mehrere Kandidaten gleichzeitig</div>
+              <button class="btn btn-outline btn-sm" onclick="openFeedbackModal()">Feedback fuer alle Kandidaten</button>
+            </div>
+          </div>
+          <div>
+            <div class="s5-card" style="margin-bottom:16px;">
+              <h3>Kalendereinladung - Vorschau</h3>
+              <div class="s5-invite-card" id="s5InvitePreview"></div>
+            </div>
+            <div class="s5-card">
+              <h3>Teilnehmer-Status</h3>
+              <div id="s5Participants"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHRITT 6: Feedback -->
+      <div class="step-content" id="step-6">
+        <div id="step6Content"></div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Wizard Footer -->
+    <div class="wizard-footer">
+      <div>
+        <button class="btn btn-outline" id="btnBackDash" onclick="backToDashboard()" style="margin-right:8px;">Uebersicht</button>
+        <button class="btn btn-outline" id="btnBack" onclick="prevStep()" style="visibility:hidden;">&#8592; Zurueck</button>
+      </div>
+      <button class="btn btn-primary" id="btnNext" onclick="nextStep()">Abstimmung starten &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<!-- Overlays -->
+<div class="slot-dropdown" id="slotDropdown" style="display:none;"></div>
+<div class="toast" id="toast"></div>
+<div class="success-overlay" id="successOverlay">
+  <div class="success-spinner" id="successSpinner"></div>
+  <div class="success-done" id="successDone">
+    <svg class="success-check-svg" viewBox="0 0 100 100"><circle class="success-check-circle" cx="50" cy="50" r="40"/><path class="success-check-mark" d="M30 52 L44 66 L70 36"/></svg>
+    <div class="success-title">Einladungen versendet!</div>
+    <div class="success-sub" id="successSub">8 Interviewtermine wurden erfolgreich geplant</div>
+    <button class="success-close" onclick="closeSuccess()">Fertig</button>
+  </div>
+</div>
+
+<!-- Externe Teilnehmer-Ansicht -->
+<div class="modal-overlay" id="externalModal" style="align-items:stretch;justify-content:stretch;padding:0;">
+  <div style="width:100%;height:100%;background:var(--bg-app);display:flex;flex-direction:column;overflow:hidden;">
+    <div style="background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;">A</div>
+        <span style="font-size:13px;font-weight:600;color:var(--text);">Ankaadia - Terminabstimmung</span>
+        <span style="background:var(--badge-bg);color:var(--badge-text);font-size:11px;padding:2px 8px;border-radius:12px;font-weight:500;">Externer Zugang</span>
+      </div>
+      <button onclick="closeExternalView()" style="background:var(--bg-hover);border:1px solid var(--border);color:var(--text-sec);padding:5px 12px;border-radius:4px;cursor:pointer;font-size:12px;">Schliessen</button>
+    </div>
+    <div style="background:#fff;border-bottom:1px solid var(--border);padding:12px 40px;display:flex;align-items:center;justify-content:center;gap:0;flex-shrink:0;">
+      <div id="extStep1Ind" class="wizard-step active"><div class="wizard-step-circle">1</div><div class="wizard-step-label">Identifikation</div></div>
+      <div class="wizard-line" id="extLine1"></div>
+      <div id="extStep2Ind" class="wizard-step"><div class="wizard-step-circle">2</div><div class="wizard-step-label">Abstimmung</div></div>
+      <div class="wizard-line" id="extLine2"></div>
+      <div id="extStep3Ind" class="wizard-step"><div class="wizard-step-circle">3</div><div class="wizard-step-label">Bestaetigung</div></div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:32px;">
+      <!-- Ext Schritt 1: Identifikation -->
+      <div id="extViewStep1" style="max-width:480px;margin:0 auto;">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px;">
+          <div style="font-size:12px;font-weight:600;color:var(--primary);margin-bottom:4px;">Schritt 1 von 3</div>
+          <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px;">Willkommen zur Terminabstimmung</div>
+          <div style="font-size:13px;color:var(--text-sec);margin-bottom:20px;line-height:1.6;">Sie wurden von <strong>MedStaff Agentur</strong> eingeladen, an der Terminplanung fuer den Interviewkreis <strong id="extCircleName">-</strong> teilzunehmen.</div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;color:var(--text-sec);margin-bottom:3px;">Ihre Organisation / Ihr Name *</label>
+            <input id="extOrgName" class="s1-input" placeholder="z.B. Klinikum Heilbronn">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;color:var(--text-sec);margin-bottom:3px;">Ansprechpartner *</label>
+            <input id="extContactName" class="s1-input" placeholder="Vor- und Nachname">
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:12px;color:var(--text-sec);margin-bottom:3px;">E-Mail-Adresse *</label>
+            <input id="extEmail" class="s1-input" type="email" placeholder="name@organisation.de">
+          </div>
+          <div style="background:var(--success-light);border:1px solid var(--primary);border-radius:6px;padding:10px;font-size:12px;color:var(--primary-dark);margin-bottom:16px;">
+            Ihre Daten werden ausschliesslich fuer diese Terminabstimmung verwendet.
+          </div>
+          <button class="btn btn-primary" style="width:100%;padding:9px;justify-content:center;" onclick="extGoToStep2()">Weiter zur Abstimmung</button>
+        </div>
+      </div>
+      <!-- Ext Schritt 2: Abstimmung -->
+      <div id="extViewStep2" style="max-width:680px;margin:0 auto;display:none;">
+        <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;" id="extVoteTitle">Terminabstimmung</div>
+        <div style="font-size:13px;color:var(--text-sec);margin-bottom:16px;">Bitte markieren Sie fuer jeden Termin, ob Sie verfuegbar sind.</div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:12px;font-weight:600;color:var(--text-sec);">Moegliche Termine</div>
+          </div>
+          <div id="extVoteSlots" style="padding:6px 0;"></div>
+        </div>
+        <div style="background:var(--warning-light);border:1px solid var(--warning);border-radius:6px;padding:10px;font-size:12px;color:#92400e;margin-bottom:16px;">
+          Kein Ankaadia-Account erforderlich - Sie stimmen direkt ueber diesen Link ab.
+        </div>
+        <button class="btn btn-primary" style="width:100%;padding:9px;justify-content:center;" onclick="extSubmitVote()">Abstimmung absenden</button>
+      </div>
+      <!-- Ext Schritt 3: Bestaetigung -->
+      <div id="extViewStep3" style="max-width:480px;margin:0 auto;display:none;text-align:center;">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:32px 24px;">
+          <div style="width:48px;height:48px;background:var(--badge-bg);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;color:var(--primary);">&#10003;</div>
+          <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px;">Abstimmung erfolgreich!</div>
+          <div style="font-size:13px;color:var(--text-sec);margin-bottom:20px;line-height:1.6;">Vielen Dank, <strong id="extConfirmName">-</strong>! Ihre Verfuegbarkeiten wurden erfolgreich uebermittelt.</div>
+          <div style="background:var(--success-light);border:1px solid var(--primary);border-radius:6px;padding:14px;margin-bottom:20px;">
+            <div style="font-size:12px;font-weight:600;color:var(--primary-dark);margin-bottom:6px;">Ihre Antworten:</div>
+            <div id="extConfirmSummary" style="font-size:13px;color:var(--primary-dark);"></div>
+          </div>
+          <div style="font-size:12px;color:var(--text-sec);margin-bottom:16px;">Die koordinierende Agentur wird Sie ueber den finalen Termin informieren.</div>
+          <button class="btn btn-outline" onclick="closeExternalView()">Fenster schliessen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal-overlay" id="feedbackModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Feedback - Multi-Select</div>
+      <button class="modal-close" onclick="closeFeedbackModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="feedbackBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeFeedbackModal()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="saveFeedback()">Feedback speichern</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<script>
+// ============================================
+// KONSTANTEN & MOCK-DATEN
+// ============================================
+var AVATAR_COLORS = ['#2D6A4F','#40916C','#1B4332','#52B788','#74C69D','#95D5B2','#B7E4C7','#D8F3DC'];
+
+var ORGS = [
+  { id:1, name:'MedStaff Agentur', role:'Agentur', color:'#2D6A4F', icon:'\u{1F3E2}' },
+  { id:2, name:'Klinikum Stuttgart', role:'Arbeitgeber', color:'#40916C', icon:'\u{1F3E5}' },
+  { id:3, name:'CareConnect India', role:'Partner', color:'#1B4332', icon:'\u{1F91D}' },
+  { id:4, name:'LinguaServe GmbH', role:'Uebersetzungsdienstleister', color:'#f59e0b', icon:'\u{1F310}' },
+];
+
+var DAYS_DATA = [
+  { date:'2026-03-16', short:'Mo. 16.03.', full:'Montag, 16. Maerz 2026', dayName:'Mo' },
+  { date:'2026-03-17', short:'Di. 17.03.', full:'Dienstag, 17. Maerz 2026', dayName:'Di' },
+  { date:'2026-03-18', short:'Mi. 18.03.', full:'Mittwoch, 18. Maerz 2026', dayName:'Mi' },
+  { date:'2026-03-19', short:'Do. 19.03.', full:'Donnerstag, 19. Maerz 2026', dayName:'Do' },
+  { date:'2026-03-20', short:'Fr. 20.03.', full:'Freitag, 20. Maerz 2026', dayName:'Fr' },
+  { date:'2026-03-23', short:'Mo. 23.03.', full:'Montag, 23. Maerz 2026', dayName:'Mo' },
+  { date:'2026-03-24', short:'Di. 24.03.', full:'Dienstag, 24. Maerz 2026', dayName:'Di' },
+];
+
+var candidates = [
+  { id:1, name:'Priya Sharma', role:'Gesundheits- und Krankenpflegerin', country:'de', assignedSlot:null, assignedDay:null },
+  { id:2, name:'Ananya Patel', role:'Altenpflegerin', country:'at', assignedSlot:null, assignedDay:null },
+  { id:3, name:'Rajesh Kumar', role:'Intensivpfleger', country:'de', assignedSlot:null, assignedDay:null },
+  { id:4, name:'Meera Nair', role:'Gesundheits- und Krankenpflegerin', country:'ch', assignedSlot:null, assignedDay:null },
+  { id:5, name:'Vikram Singh', role:'OP-Pfleger', country:'de', assignedSlot:null, assignedDay:null },
+  { id:6, name:'Deepika Reddy', role:'Altenpflegerin', country:'at', assignedSlot:null, assignedDay:null },
+  { id:7, name:'Arjun Menon', role:'Intensivpfleger', country:'ch', assignedSlot:null, assignedDay:null },
+  { id:8, name:'Kavitha Das', role:'Gesundheits- und Krankenpflegerin', country:'de', assignedSlot:null, assignedDay:null },
+];
+
+// Votes keyed by orgId -> dateStr -> vote
+var PRESET_VOTES = {
+  1: { '2026-03-16':'yes', '2026-03-17':'yes',  '2026-03-18':'maybe',
+       '2026-03-19':'yes', '2026-03-20':'maybe', '2026-03-23':'yes' },
+  3: { '2026-03-16':'yes', '2026-03-17':'yes',  '2026-03-18':'no',
+       '2026-03-19':'yes', '2026-03-20':'yes',   '2026-03-23':'maybe' },
+  4: { '2026-03-16':'maybe','2026-03-17':'yes', '2026-03-18':'yes',
+       '2026-03-19':'yes', '2026-03-20':'yes',   '2026-03-23':'yes' },
+};
+
+var DASHBOARD_DATA = [
+  { name:'Pflegefachkraefte Batch Maerz 2026', step:4, cands:8, date:'17.03.2026', created:'05.03.2026', interactive:true },
+  { name:'IT-Fachkraefte Q2 2026', step:2, cands:12, date:'Offen', created:'01.03.2026', interactive:false },
+  { name:'Aerzte Batch Februar 2026', step:7, cands:6, date:'12.02.2026', created:'20.01.2026', interactive:false },
+  { name:'Pflegehelfer Winter 2025', step:7, cands:10, date:'15.12.2025', created:'01.12.2025', interactive:false },
+];
+
+var feedbackData = {};
+
+// ============================================
+// STATE
+// ============================================
+var currentView = 'dashboard';
+var currentStep = 1;
+// termGroups: Array of { id, label, dates[] }
+var termGroups = [
+  { id:1, label:'Termin 1', dates:['2026-03-16','2026-03-17','2026-03-18'] },
+  { id:2, label:'Termin 2', dates:['2026-03-18','2026-03-19','2026-03-20'] },
+  { id:3, label:'Termin 3', dates:['2026-03-23'] },
+];
+var nextTermGroupId = 4;
+var activeTermId = 1; // which Termin calendar clicks add to
+// Keep selectedDates as flat computed array for backward-compat
+var selectedDates = [];
+var votes = {};
+var selectedDate = '2026-03-17';
+function computeSelectedDates() {
+  var all = [];
+  termGroups.forEach(function(g){ g.dates.forEach(function(d){ if(all.indexOf(d)<0) all.push(d); }); });
+  all.sort();
+  selectedDates = all;
+}
+var calendar = null;
+var calendarInitialized = false;
+var currentDay = 0;
+var slotsPerDay = {};
+
+// ============================================
+// DASHBOARD
+// ============================================
+var STEP_NAMES = ['Erstellen','Abstimmung','Auswahl','Zuweisung','Versand','Feedback'];
+
+function buildDashSteps(d) {
+  var html = '<div class="dash-steps-wrap">';
+  html += '<div class="dash-steps">';
+  for (var s=1; s<=6; s++) {
+    var stateClass = s < d.step ? 'step-done' : (s===d.step ? 'step-active' : 'step-locked');
+    var clickClass = (d.interactive && s <= d.step) ? ' clickable' : '';
+    var onclick = (d.interactive && s <= d.step) ? ' onclick="event.stopPropagation();openCircleStep('+s+')"' : '';
+    var content = s < d.step ? '&#10003;' : s;
+    var lineClass = s < d.step ? ' done' : '';
+    html += '<div class="dash-step '+stateClass+clickClass+'"'+onclick+' title="'+STEP_NAMES[s-1]+'">';
+    html += '<div class="dash-step-circle">'+content+'</div></div>';
+    if (s < 6) html += '<div class="dash-step-line'+lineClass+'"></div>';
+  }
+  html += '</div>';
+  var activeLabel = d.step > 6 ? 'Abgeschlossen' : STEP_NAMES[d.step-1];
+  var labelStyle = d.step > 6 ? ' style="background:#f3f4f6;color:var(--text-sec);"' : '';
+  html += '<span class="dash-active-label"'+labelStyle+'>'+activeLabel+'</span>';
+  html += '</div>';
+  return html;
+}
+
+function renderDashboard() {
+  var tbody = document.getElementById('dashTableBody');
+  tbody.innerHTML = DASHBOARD_DATA.map(function(d,i) {
+    var rowClick = d.interactive ? 'openCircleStep('+d.step+')' : '';
+    return '<tr onclick="'+rowClick+'">'
+      +'<td style="font-weight:600;max-width:240px;">'+d.name+'</td>'
+      +'<td>'+buildDashSteps(d)+'</td>'
+      +'<td>'+d.cands+'</td>'
+      +'<td>'+d.date+'</td>'
+      +'<td style="color:var(--text-sec);">'+d.created+'</td></tr>';
+  }).join('');
+}
+
+function openCircleStep(step) {
+  currentView = 'wizard';
+  document.getElementById('dashboardView').classList.remove('active');
+  document.getElementById('wizardView').classList.add('active');
+  document.getElementById('headerBadge').textContent = DASHBOARD_DATA[0].name;
+  goToStep(step);
+}
+
+function startNewCircle() {
+  openCircleStep(1);
+  document.getElementById('headerBadge').textContent = 'Neuer Interviewkreis';
+}
+
+function backToDashboard() {
+  currentView = 'dashboard';
+  document.getElementById('wizardView').classList.remove('active');
+  document.getElementById('dashboardView').classList.add('active');
+  document.getElementById('headerBadge').textContent = 'Interviewkreise';
+}
+
+// ============================================
+// WIZARD NAVIGATION
+// ============================================
+var STEP_LABELS = {
+  1:'Abstimmung starten \u2192',
+  2:'Ergebnis auswerten \u2192',
+  3:'Zuweisung starten \u2192',
+  4:'Zuweisung abschliessen \u2192',
+  5:'Weiter zu Feedback \u2192',
+  6:'Abschliessen',
+};
+
+function goToStep(n) {
+  if(n<1||n>6) return;
+  document.getElementById('step-'+currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step-'+currentStep).classList.add('active');
+  updateWizard();
+  renderCurrentStep();
+}
+
+function nextStep() { if(currentStep===5){sendInvitations();}else if(currentStep===6){showToast('Interviewkreis abgeschlossen!');return;} goToStep(currentStep+1); }
+function prevStep() { if(currentStep>1) goToStep(currentStep-1); }
+
+function updateWizard() {
+  document.querySelectorAll('#wizardView > .wizard-bar .wizard-step').forEach(function(el,i) {
+    var s = i+1;
+    el.className = 'wizard-step'+(s===currentStep?' active':s<currentStep?' completed':'');
+  });
+  for(var i=1;i<=5;i++) {
+    document.getElementById('wline'+i).className = 'wizard-line'+(i<currentStep?' done':'');
+  }
+  document.getElementById('btnBack').style.visibility = currentStep===1?'hidden':'visible';
+  var btn = document.getElementById('btnNext');
+  btn.textContent = STEP_LABELS[currentStep];
+  btn.className = 'btn btn-primary';
+  var name = document.getElementById('circleName')?.value||'Neuer Interviewkreis';
+  document.getElementById('headerBadge').textContent = currentStep>1?name:'Neuer Interviewkreis';
+}
+
+function renderCurrentStep() {
+  switch(currentStep) {
+    case 1: renderStep1(); break;
+    case 2: renderStep2(); break;
+    case 3: renderStep3(); break;
+    case 4: renderStep4(); break;
+    case 5: renderStep5(); break;
+    case 6: renderStep6(); break;
+  }
+}
+
+// ============================================
+// STEP 1 - Erstellen
+// ============================================
+function renderStep1() { computeSelectedDates(); renderTermCalendar(); renderTermineList(); renderOrgList(); renderCandidatePreview(); }
+
+// DAY LABEL HELPER
+function dayLabel(dateStr) {
+  var d = DAYS_DATA.find(function(dd){ return dd.date===dateStr; });
+  if(d) return d.dayName+' '+d.short.split(' ')[1];
+  // Fallback for any date not in DAYS_DATA
+  var dt = new Date(dateStr+'T00:00:00');
+  var dn = ['So','Mo','Di','Mi','Do','Fr','Sa'][dt.getDay()];
+  var dd2 = String(dt.getDate()).padStart(2,'0');
+  var mm = String(dt.getMonth()+1).padStart(2,'0');
+  return dn+' '+dd2+'.'+mm+'.';
+}
+
+// Find which Termin a date belongs to (returns termGroup or null)
+function findTermForDate(dateStr) {
+  return termGroups.find(function(g){ return g.dates.indexOf(dateStr)>=0; }) || null;
+}
+
+// ---- Kalender-Render ----
+function renderTermCalendar() {
+  var year=2026, month=2;
+  var activeTerm=termGroups.find(function(g){return g.id===activeTermId;});
+  var activeLabel=activeTerm?activeTerm.label:'Neuer Termin';
+  var firstDay=new Date(year,month,1).getDay();
+  var daysInMonth=new Date(year,month+1,0).getDate();
+  var offset=(firstDay+6)%7;
+  var heads=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  var html='<div style="font-size:11px;color:var(--text-sec);margin-bottom:6px;">Aktiv: <strong style="color:var(--primary);">'+activeLabel+'</strong> — Klick hinzufuegen &nbsp;|&nbsp; erneuter Klick entfernt</div>';
+  html+='<table class="datepicker"><thead><tr>';
+  heads.forEach(function(h){ html+='<th>'+h+'</th>'; });
+  html+='</tr></thead><tbody><tr>';
+  for(var i=0;i<offset;i++) html+='<td><span class="day-cell empty"></span></td>';
+  for(var d=1;d<=daysInMonth;d++){
+    var dow=(offset+d-1)%7;
+    var dateStr='2026-03-'+String(d).padStart(2,'0');
+    var term=findTermForDate(dateStr);
+    var isWeekend=dow>=5;
+    var cls='day-cell'+(term?' selected':'')+(isWeekend?' weekend':'');
+    // Badge: show Termin number for non-active Termine so user sees which date belongs where
+    var badge='';
+    if(term && term.id!==activeTermId){
+      var tIdx=termGroups.indexOf(term)+1;
+      badge='<sup style="font-size:8px;font-weight:700;vertical-align:super;line-height:0;">'+tIdx+'</sup>';
+    }
+    var title=term?(term.id===activeTermId?'Entfernen aus '+term.label:'Gehoert zu '+term.label):'Zu '+activeLabel+' hinzufuegen';
+    html+='<td><span class="'+cls+'" onclick="calToggleDate(\''+dateStr+'\')" title="'+title+'">'+d+badge+'</span></td>';
+    if(dow===6&&d<daysInMonth) html+='</tr><tr>';
+  }
+  html+='</tr></tbody></table>';
+  var el=document.getElementById('termCalendar');
+  if(el) el.innerHTML=html;
+}
+
+// Calendar click: add to active Termin OR remove if already in active Termin
+function calToggleDate(dateStr) {
+  var existing=findTermForDate(dateStr);
+  if(existing && existing.id===activeTermId){
+    // Remove from active Termin
+    existing.dates=existing.dates.filter(function(d){return d!==dateStr;});
+    if(existing.dates.length===0){
+      termGroups=termGroups.filter(function(g){return g.id!==existing.id;});
+      renumberTerms();
+      activeTermId=termGroups.length>0?termGroups[termGroups.length-1].id:null;
+    }
+  } else if(existing){
+    // Already in another Termin — move to active
+    existing.dates=existing.dates.filter(function(d){return d!==dateStr;});
+    if(existing.dates.length===0){
+      termGroups=termGroups.filter(function(g){return g.id!==existing.id;});
+      renumberTerms();
+    }
+    var target=termGroups.find(function(g){return g.id===activeTermId;});
+    if(!target){ var id=nextTermGroupId++; target={id:id,label:'Termin '+(termGroups.length+1),dates:[]}; termGroups.push(target); activeTermId=id; }
+    if(target.dates.indexOf(dateStr)<0){ target.dates.push(dateStr); target.dates.sort(); }
+  } else {
+    // Add to active Termin (create if none)
+    var target2=termGroups.find(function(g){return g.id===activeTermId;});
+    if(!target2){ var id2=nextTermGroupId++; target2={id:id2,label:'Termin '+(termGroups.length+1),dates:[]}; termGroups.push(target2); activeTermId=id2; }
+    if(target2.dates.indexOf(dateStr)<0){ target2.dates.push(dateStr); target2.dates.sort(); }
+  }
+  computeSelectedDates();
+  renderTermCalendar();
+  renderTermineList();
+}
+
+function setActiveTerm(id){ activeTermId=id; renderTermCalendar(); renderTermineList(); }
+
+function addNewTerm(){
+  var id=nextTermGroupId++;
+  termGroups.push({id:id,label:'Termin '+(termGroups.length+1),dates:[]});
+  activeTermId=id;
+  renderTermCalendar();
+  renderTermineList();
+}
+
+// ---- Termine-Liste unter dem Kalender ----
+function renderTermineList() {
+  var el=document.getElementById('termineList');
+  if(!el) return;
+  var html='<div style="display:flex;flex-direction:column;gap:5px;">';
+  if(termGroups.length===0){
+    html+='<div style="font-size:12px;color:var(--text-sec);padding:4px 0;">Noch keine Termine — klicke oben im Kalender auf einen Tag</div>';
+  }
+  termGroups.forEach(function(g){
+    var isActive=g.id===activeTermId;
+    html+='<div onclick="setActiveTerm('+g.id+')" style="display:flex;align-items:center;gap:7px;border-radius:6px;padding:7px 10px;cursor:pointer;'
+      +(isActive?'background:var(--badge-bg);border:1px solid var(--primary-light);':'background:var(--bg-hover);border:1px solid var(--border);')
+      +'">'
+      +'<span style="font-size:11px;font-weight:700;color:'+(isActive?'var(--primary)':'var(--text-sec)')+';min-width:54px;">'+g.label+'</span>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:4px;flex:1;">';
+    if(g.dates.length===0){
+      html+='<span style="font-size:11px;color:var(--text-muted);font-style:italic;">Klicke Tage im Kalender</span>';
+    }
+    g.dates.forEach(function(d){
+      html+='<span style="display:inline-flex;align-items:center;gap:3px;background:'+(isActive?'#fff':'var(--badge-bg)')+';color:var(--primary-dark);border:1px solid var(--border);border-radius:3px;padding:2px 7px;font-size:11px;font-weight:500;">'
+        +dayLabel(d)
+        +'<span style="cursor:pointer;color:var(--text-muted);margin-left:1px;" onclick="event.stopPropagation();removeDateFromTerm('+g.id+',\''+d+'\')">&#10005;</span>'
+        +'</span>';
+    });
+    html+='</div>'
+      +(isActive?'<span style="font-size:10px;color:var(--primary);white-space:nowrap;font-weight:600;">Aktiv</span>':'')
+      +'<span style="font-size:11px;color:var(--danger);cursor:pointer;padding:2px 4px;" onclick="event.stopPropagation();removeTermById('+g.id+')">&#10005;</span>'
+      +'</div>';
+  });
+  html+='<button class="btn btn-outline btn-sm" onclick="addNewTerm()" style="margin-top:4px;width:100%;">+ Neuer Termin</button>';
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function renumberTerms() {
+  termGroups.forEach(function(g,i){ g.label='Termin '+(i+1); });
+}
+
+function removeTermById(id) {
+  termGroups=termGroups.filter(function(g){return g.id!==id;});
+  renumberTerms();
+  computeSelectedDates();
+  renderTermCalendar();
+  renderTermineList();
+}
+
+function removeDateFromTerm(groupId, dateStr) {
+  var g=termGroups.find(function(g){return g.id===groupId;});
+  if(!g) return;
+  g.dates=g.dates.filter(function(d){return d!==dateStr;});
+  if(g.dates.length===0){
+    termGroups=termGroups.filter(function(x){return x.id!==groupId;});
+    renumberTerms();
+  }
+  computeSelectedDates();
+  renderTermCalendar();
+  renderTermineList();
+}
+
+function addDateToTerm(groupId, dateStr) {
+  if(!dateStr) return;
+  var g=termGroups.find(function(g){return g.id===groupId;});
+  if(g && g.dates.indexOf(dateStr)<0){ g.dates.push(dateStr); g.dates.sort(); }
+  computeSelectedDates();
+  renderTermCalendar();
+  renderTermineList();
+}
+
+// Keep old names as aliases so Doodle grid still works
+function addTermGroup() {
+  var id=nextTermGroupId++;
+  termGroups.push({id:id,label:'Termin '+(termGroups.length+1),dates:[]});
+  computeSelectedDates();
+  renderTermCalendar();
+  renderTermineList();
+}
+function removeTermGroup(id){ removeTermById(id); }
+function addDateToGroup(gId,d){ addDateToTerm(gId,d); }
+function removeDateFromGroup(gId,d){ removeDateFromTerm(gId,d); }
+
+function toggleNewListForm() {
+  var f=document.getElementById('newListForm');
+  f.style.display = f.style.display==='none' ? 'block' : 'none';
+  if(f.style.display==='block') document.getElementById('newListName').focus();
+}
+
+function saveNewList() {
+  var name=document.getElementById('newListName').value.trim();
+  if(!name){ showToast('Bitte einen Listennamen eingeben'); return; }
+  var sel=document.getElementById('s1ListSelect');
+  var val='custom-'+Date.now();
+  var opt=document.createElement('option');
+  opt.value=val; opt.textContent=name+' (0 Kandidaten)'; opt.selected=true;
+  sel.appendChild(opt);
+  document.getElementById('s1CandHint').textContent='0 Kandidaten in neuer Liste';
+  document.getElementById('newListName').value='';
+  toggleNewListForm();
+  showToast('Liste "'+name+'" wurde angelegt');
+}
+
+function renderOrgList() {
+  var el=document.getElementById('orgList');
+  var roleColors={'Agentur':'var(--primary)','Arbeitgeber':'var(--primary-light)','Partner':'var(--primary-dark)','Uebersetzungsdienstleister':'var(--warning)','Sonstiges':'var(--text-sec)'};
+  el.innerHTML=ORGS.map(function(o){var rc=roleColors[o.role]||o.color;return '<div class="org-card"><div class="org-icon" style="background:'+o.color+'15;color:'+o.color+';">'+o.icon+'</div><div class="org-info"><div class="org-name">'+o.name+'</div><div class="org-role">'+o.role+'</div></div><span class="role-badge" style="background:'+rc+'15;color:'+rc+';">'+o.role+'</span></div>';}).join('');
+}
+
+function renderCandidatePreview() {
+  var el=document.getElementById('s1CandidatePreview');
+  el.innerHTML=candidates.map(function(c,i){
+    var color=AVATAR_COLORS[i%AVATAR_COLORS.length];
+    var initials=c.name.split(' ').map(function(n){return n[0];}).join('');
+    return '<div class="cand-mini"><div class="cand-mini-avatar" style="background:'+color+'">'+initials+'</div><div class="cand-mini-name">'+c.name+'</div><span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span></div>';
+  }).join('');
+}
+
+function copyLink() { showToast('Link in Zwischenablage kopiert!'); }
+
+function addOrgPrompt() {
+  var name=prompt('Name der Organisation:');
+  if(!name||!name.trim())return;
+  var role=prompt('Rolle (Arbeitgeber, Partner, Uebersetzungsdienstleister, Sonstiges):','Partner');
+  if(!role)return;
+  var icons={'Arbeitgeber':'\u{1F3E5}','Partner':'\u{1F91D}','Uebersetzungsdienstleister':'\u{1F310}','Agentur':'\u{1F3E2}'};
+  var colors=['#40916C','#52B788','#74C69D','#95D5B2','#B7E4C7'];
+  var newOrg={id:ORGS.length+1,name:name.trim(),role:role.trim(),color:colors[ORGS.length%colors.length],icon:icons[role.trim()]||'\u{1F3E2}'};
+  ORGS.push(newOrg);
+  renderOrgList();
+  showToast(name.trim()+' wurde hinzugefuegt');
+}
+
+function onListSelect() {
+  var sel=document.getElementById('s1ListSelect').value;
+  var hint=document.getElementById('s1CandHint');
+  if(sel==='pflege-maerz'){hint.textContent='8 Kandidaten aus gewaehlter Liste';}
+  else if(sel==='pflege-april'){hint.textContent='5 Kandidaten aus gewaehlter Liste';}
+  else if(sel==='intensiv-q2'){hint.textContent='11 Kandidaten aus gewaehlter Liste';}
+  else{hint.textContent='Bitte eine Liste auswaehlen';}
+  renderCandidatePreview();
+}
+
+// ============================================
+// STEP 2 - Doodle-Abstimmung
+// ============================================
+function renderStep2() {
+  computeSelectedDates();
+  renderVoteStatus();
+  renderDoodleGrid();
+}
+
+function renderVoteStatus() {
+  var voted=ORGS.filter(function(o){
+    var v=votes[o.id]||{};
+    return selectedDates.every(function(d){return v[d];});
+  }).length;
+  document.getElementById('voteStatus').innerHTML='<div class="vote-status-text">'+voted+' von '+ORGS.length+' Organisationen haben abgestimmt</div><div class="vote-dots">'+ORGS.map(function(o){var v=votes[o.id]||{};var done=selectedDates.every(function(d){return v[d];});return '<div class="vote-dot'+(done?' voted':'')+'" title="'+o.name+'"></div>';}).join('')+'</div>';
+}
+
+function renderDoodleGrid() {
+  computeSelectedDates();
+  var html='<thead>';
+  // Row 1: Group headers (colspan per group)
+  html+='<tr><th style="width:190px;text-align:left;border-right:2px solid var(--border);">Organisation</th>';
+  termGroups.forEach(function(g,gi){
+    if(!g.dates.length) return;
+    var borderL = gi>0 ? 'border-left:2px solid var(--border);' : '';
+    html+='<th colspan="'+g.dates.length+'" style="background:var(--badge-bg);color:var(--primary);font-size:12px;font-weight:700;'+borderL+'">'+g.label+'</th>';
+  });
+  html+='</tr>';
+  // Row 2: individual date sub-headers
+  html+='<tr><th style="text-align:left;border-right:2px solid var(--border);font-size:11px;color:var(--text-sec);">–</th>';
+  termGroups.forEach(function(g,gi){
+    g.dates.forEach(function(d,di){
+      var day=DAYS_DATA.find(function(dd){return dd.date===d;});
+      var borderL=(gi>0&&di===0)?'border-left:2px solid var(--border);':'';
+      var lbl=dayLabel(d); var parts=lbl.split(' ');
+      html+='<th style="'+borderL+'">'+(parts[0]||lbl)+'<br><span style="font-weight:400;font-size:10px;color:var(--text-sec);">'+(parts[1]||'')+'</span></th>';
+    });
+  });
+  html+='</tr></thead><tbody>';
+  // Org rows
+  ORGS.forEach(function(o){
+    var isInteractive=true; // alle Orgs koennen abstimmen
+    html+='<tr><td class="org-col" style="border-right:2px solid var(--border);">'+o.name+'<span class="org-role-sm">'+o.role+'</span></td>';
+    termGroups.forEach(function(g,gi){
+      g.dates.forEach(function(d,di){
+        var vote=(votes[o.id]||{})[d]||null;
+        var cellCls='doodle-cell';
+        var icon='';
+        if(vote==='yes'){cellCls+=' vote-yes';icon='\u2713';}
+        else if(vote==='no'){cellCls+=' vote-no';icon='\u2717';}
+        else if(vote==='maybe'){cellCls+=' vote-maybe';icon='?';}
+        if(isInteractive) cellCls+=' interactive';
+        var onclick=isInteractive?'onclick="cycleVote('+o.id+',\''+d+'\')"':'';
+        var borderL=(gi>0&&di===0)?'border-left:2px solid var(--border);':'';
+        html+='<td style="'+borderL+'"><div class="'+cellCls+'" '+onclick+'>'+icon+'</div></td>';
+      });
+    });
+    html+='</tr>';
+  });
+  // Result row
+  html+='<tr style="background:var(--bg-hover);"><td class="org-col" style="color:var(--text-sec);border-right:2px solid var(--border);">Ergebnis</td>';
+  termGroups.forEach(function(g,gi){
+    g.dates.forEach(function(d,di){
+      var yes=0,total=ORGS.length;
+      ORGS.forEach(function(o){var v=(votes[o.id]||{})[d];if(v==='yes')yes++;else if(v==='maybe')yes+=0.5;});
+      var pct=Math.round((yes/total)*100);
+      var color=pct>=66?'var(--primary)':pct>=33?'var(--warning)':'var(--danger)';
+      var borderL=(gi>0&&di===0)?'border-left:2px solid var(--border);':'';
+      html+='<td style="'+borderL+'"><div class="doodle-result" style="color:'+color+'">'+pct+'%</div><div class="doodle-result-bar"><div class="doodle-result-fill" style="width:'+pct+'%;background:'+color+';"></div></div></td>';
+    });
+  });
+  html+='</tr></tbody>';
+  document.getElementById('doodleTable').innerHTML=html;
+}
+
+function cycleVote(orgId,dateStr) {
+  var cur=(votes[orgId]||{})[dateStr]||null;
+  var cycle={null:'yes','yes':'maybe','maybe':'no','no':null};
+  if(!votes[orgId]) votes[orgId]={};
+  votes[orgId][dateStr]=cycle[cur];
+  renderVoteStatus();
+  renderDoodleGrid();
+}
+
+// ============================================
+// STEP 3 - Auswahl
+// ============================================
+function scoreDate(dateStr) {
+  var score=0;
+  ORGS.forEach(function(o){ var v=(votes[o.id]||{})[dateStr]||null; if(v==='yes')score+=1;else if(v==='maybe')score+=0.5; });
+  return Math.round((score/ORGS.length)*100);
+}
+
+function renderStep3() {
+  computeSelectedDates();
+  var voteIcons={yes:'\u2713',no:'\u2717',maybe:'?'};
+  var voteColors={yes:'var(--primary)',no:'var(--danger)',maybe:'#b45309'};
+  var voteLabels={yes:'Verfuegbar',no:'Nicht verfuegbar',maybe:'Vielleicht',null:'Keine Antwort'};
+  var slotCount=computeSlotCount();
+
+  // Pre-compute all term scores to find best
+  var termData = termGroups.map(function(g) {
+    if (!g.dates.length) return null;
+    var dateResults = g.dates.map(function(dateStr) {
+      var day = DAYS_DATA.find(function(d){ return d.date===dateStr; });
+      var score = scoreDate(dateStr);
+      var orgVotes = ORGS.map(function(o){ return {org:o,vote:(votes[o.id]||{})[dateStr]||null}; });
+      return {date:dateStr,day:day,score:score,orgVotes:orgVotes};
+    }).sort(function(a,b){ return b.score-a.score; });
+    var termScore = Math.min.apply(null, dateResults.map(function(r){ return r.score; }));
+    return {g:g, dateResults:dateResults, termScore:termScore};
+  });
+
+  // Find index of highest-scoring term
+  var bestIdx = 0;
+  termData.forEach(function(td, i) {
+    if (td && termData[bestIdx] && td.termScore > termData[bestIdx].termScore) bestIdx = i;
+  });
+  // Set selectedDate to best day of best term
+  if (!selectedDate && termData[bestIdx]) selectedDate = termData[bestIdx].dateResults[0].date;
+
+  var html='';
+  termData.forEach(function(td, gi) {
+    if (!td) return;
+    var g = td.g;
+    var dateResults = td.dateResults;
+    var termScore = td.termScore;
+    var isBest = gi === bestIdx;
+
+    var isSingleDay=g.dates.length===1;
+    var termScoreColor=termScore>=66?'var(--primary)':termScore>=33?'var(--warning)':'var(--danger)';
+
+    html+='<div class="result-card'+(isBest?' best':'')+'" style="margin-bottom:16px;">';
+
+    // Termin header with aggregated score
+    html+='<div class="result-card-header">'
+      +'<div style="display:flex;align-items:center;gap:10px;">'
+      +'<span style="background:var(--badge-bg);color:var(--primary);border-radius:4px;padding:2px 10px;font-size:12px;font-weight:700;">'+g.label+'</span>'
+      +(isSingleDay
+        ? '<span class="result-card-date">'+(dateResults[0].day?dateResults[0].day.full:dateResults[0].date)+'</span>'
+        : '<span style="font-size:12px;color:var(--text-sec);">'+g.dates.length+' moegliche Tage</span>'
+       )
+      +(isBest?'<span class="result-badge-best">Empfohlen</span>':'')
+      +'</div>'
+      +'<div class="result-score">'
+      +'<div class="result-score-pct" style="color:'+termScoreColor+'">'+termScore+'%</div>'
+      +'<div class="result-score-bar"><div class="result-score-fill" style="width:'+termScore+'%;background:'+termScoreColor+'"></div></div>'
+      +(isSingleDay?'':'<div style="font-size:10px;color:var(--text-sec);text-align:right;margin-top:2px;">bester Tag</div>')
+      +'</div>'
+      +'</div>';
+
+    if(isSingleDay){
+      // Single day: show org votes directly
+      html+='<div class="result-votes">'+dateResults[0].orgVotes.map(function(ov){
+        return '<div class="result-vote"><span class="result-vote-icon" style="color:'+(voteColors[ov.vote]||'var(--text-sec)')+';">'+(voteIcons[ov.vote]||'\u2014')+'</span>'+ov.org.name+': '+(voteLabels[ov.vote]||'Keine Antwort')+'</div>';
+      }).join('')+'</div>';
+      html+='<div class="result-slots-info">'+slotCount+' Interviewslots (09:00-18:00, 30 Min. + 5 Min. Puffer)</div>';
+    } else {
+      // Multi-day: show each day as sub-row, clickable to select best day
+      html+='<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;">'
+        +'<div style="font-size:11px;font-weight:600;color:var(--text-sec);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;">Tagoptionen — besten Tag auswaehlen:</div>';
+      dateResults.forEach(function(r,ri){
+        var isBestDay=ri===0;
+        var isSelDay=r.date===selectedDate;
+        var sc=r.score;
+        var sc_color=sc>=66?'var(--primary)':sc>=33?'var(--warning)':'var(--danger)';
+        html+='<div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:5px;margin-bottom:4px;cursor:pointer;'
+          +(isSelDay?'background:var(--badge-bg);border:1px solid var(--primary-light);':'background:var(--bg-hover);border:1px solid transparent;')
+          +'" onclick="selectResultDate(\''+r.date+'\')">'
+          +'<div style="flex:1;">'
+          +'<div style="font-size:12px;font-weight:600;color:var(--text);">'+(r.day?r.day.full:r.date)
+          +(isBestDay?'<span style="margin-left:6px;font-size:10px;background:var(--badge-bg);color:var(--primary);border-radius:3px;padding:1px 5px;">Bester Tag</span>':'')+'</div>'
+          +'<div style="font-size:11px;color:var(--text-sec);margin-top:2px;">'+r.orgVotes.map(function(ov){
+            return '<span style="color:'+(voteColors[ov.vote]||'var(--text-muted)')+';">'+(voteIcons[ov.vote]||'\u2014')+'</span> '+ov.org.name.split(' ')[0];
+          }).join(' &nbsp; ')+'</div>'
+          +'</div>'
+          +'<div style="text-align:right;">'
+          +'<div style="font-size:14px;font-weight:700;color:'+sc_color+'">'+sc+'%</div>'
+          +'<div style="width:60px;height:3px;background:var(--border);border-radius:2px;margin-top:3px;"><div style="width:'+sc+'%;height:100%;background:'+sc_color+';border-radius:2px;"></div></div>'
+          +'</div>'
+          +'</div>';
+      });
+      html+='</div>';
+      if(dateResults.some(function(r){return r.date===selectedDate;})){
+        html+='<div class="result-slots-info">'+slotCount+' Interviewslots fuer '+
+          (DAYS_DATA.find(function(d){return d.date===selectedDate;})||{full:selectedDate}).full+
+          ' (30 Min. + 5 Min. Puffer)</div>';
+      }
+    }
+    html+='</div>';
+  });
+
+  document.getElementById('resultCards').innerHTML=html || '<div style="color:var(--text-sec);padding:16px;text-align:center;">Keine Termine konfiguriert</div>';
+}
+
+function selectResultDate(dateStr) { selectedDate=dateStr; renderStep3(); }
+
+function computeSlotCount() {
+  var count=0,cur=540;
+  while(cur+30<=1080){
+    if(cur<780&&cur+30>720){cur=780;continue;}
+    count++;cur+=35;
+  }
+  return count;
+}
+
+// ============================================
+// STEP 4 - Zuweisung (FullCalendar)
+// ============================================
+function renderStep4() {
+  computeSelectedDates();
+  var dayIdx=DAYS_DATA.findIndex(function(d){return d.date===selectedDate;});
+  currentDay=dayIdx>=0?dayIdx:0;
+  renderDayTabs();
+  document.getElementById('calendarTitle').textContent=DAYS_DATA[currentDay]?.full||'';
+  document.getElementById('startTime').value=document.getElementById('s1Start').value;
+  document.getElementById('endTime').value=document.getElementById('s1End').value;
+  document.getElementById('slotDuration').value=document.getElementById('s1Duration').value;
+  document.getElementById('bufferTime').value=document.getElementById('s1Buffer').value;
+  document.getElementById('pauseActive').checked=document.getElementById('s1PauseActive').checked;
+  document.getElementById('pauseStart').value=document.getElementById('s1PauseStart').value;
+  document.getElementById('pauseEnd').value=document.getElementById('s1PauseEnd').value;
+
+  if(!calendarInitialized){
+    loadFullCalendarCSS();
+    setTimeout(function(){
+      initCalendar();
+      calendarInitialized=true;
+      generateSlots();
+      renderCandidates();
+    },100);
+  } else {
+    calendar.gotoDate(DAYS_DATA[currentDay].date);
+    setTimeout(function(){calendar.updateSize();renderCalendarEvents();renderCandidates();},50);
+  }
+}
+
+function renderDayTabs() {
+  var html='';
+  selectedDates.forEach(function(dateStr,i){
+    var day=DAYS_DATA.find(function(d){return d.date===dateStr;});
+    var dayIdx=DAYS_DATA.indexOf(day);
+    var assigned=candidates.filter(function(c){return c.assignedDay===dayIdx;}).length;
+    var label=day?day.short:dateStr;
+    html+='<div class="s4-day-tab'+(dayIdx===currentDay?' active':'')+'" onclick="switchDay('+dayIdx+')">'+label;
+    if(assigned>0) html+='<span class="tab-count">'+assigned+'</span>';
+    html+='</div>';
+  });
+  document.getElementById('dayTabs').innerHTML=html;
+}
+
+function switchDay(dayIdx) {
+  currentDay=dayIdx;
+  document.getElementById('calendarTitle').textContent=DAYS_DATA[currentDay]?.full||'';
+  renderDayTabs();
+  if(calendar){
+    calendar.gotoDate(DAYS_DATA[currentDay].date);
+    setTimeout(function(){
+      if(!slotsPerDay[currentDay]) generateSlots();
+      else renderCalendarEvents();
+      renderCandidates();
+    },50);
+  }
+}
+
+function loadFullCalendarCSS() {
+  try {
+    var link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css';
+    document.head.appendChild(link);
+  } catch(e) {}
+}
+
+function initCalendar() {
+  var el=document.getElementById('calendar');
+  calendar=new FullCalendar.Calendar(el,{
+    initialView:'timeGridDay',initialDate:DAYS_DATA[currentDay].date,locale:'de',
+    headerToolbar:false,allDaySlot:false,slotMinTime:'08:00:00',slotMaxTime:'18:00:00',
+    slotDuration:'00:15:00',slotLabelInterval:'01:00:00',height:'auto',
+    editable:false,selectable:false,eventOverlap:false,slotEventOverlap:false,
+    eventClick:handleEventClick,droppable:true,eventContent:renderEventContent,
+  });
+  calendar.render();
+  setupDragDrop();
+}
+
+var draggedCandidate=null;
+function setupDragDrop() {
+  document.addEventListener('dragstart',function(e){
+    var card=e.target.closest('.candidate-card');
+    if(!card||card.classList.contains('assigned')){e.preventDefault();return;}
+    draggedCandidate=candidates.find(function(c){return c.id===parseInt(card.dataset.id);});
+    card.classList.add('dragging');
+    e.dataTransfer.setData('text/plain',card.dataset.id);
+    e.dataTransfer.effectAllowed='move';
+  });
+  document.addEventListener('dragend',function(e){
+    var card=e.target.closest('.candidate-card');
+    if(card)card.classList.remove('dragging');
+    draggedCandidate=null;
+  });
+  var wrap=document.querySelector('.s4-cal-wrap');
+  if(wrap){
+    wrap.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move';});
+    wrap.addEventListener('drop',handleCalDrop);
+  }
+}
+
+function handleCalDrop(e) {
+  e.preventDefault();
+  if(!draggedCandidate)return;
+  var slots=slotsPerDay[currentDay]||[];
+  var freeSlot=slots.find(function(s){return !s.candidateId;});
+  if(freeSlot)assignCandidate(freeSlot,draggedCandidate.id);
+  draggedCandidate=null;
+}
+
+function generateSlots() {
+  var start=document.getElementById('startTime').value;
+  var end=document.getElementById('endTime').value;
+  var dur=parseInt(document.getElementById('slotDuration').value)||30;
+  var buf=parseInt(document.getElementById('bufferTime').value)||0;
+  var pauseOn=document.getElementById('pauseActive').checked;
+  var pStart=document.getElementById('pauseStart').value;
+  var pEnd=document.getElementById('pauseEnd').value;
+  candidates.forEach(function(c){if(c.assignedDay===currentDay){c.assignedSlot=null;c.assignedDay=null;}});
+  var sM=timeToMin(start),eM=timeToMin(end);
+  var psM=pauseOn?timeToMin(pStart):-1,peM=pauseOn?timeToMin(pEnd):-1;
+  var slots=[],id=0,cur=sM;
+  while(cur+dur<=eM){
+    if(pauseOn&&cur<peM&&cur+dur>psM){cur=peM;continue;}
+    slots.push({id:id++,start:minToTime(cur),end:minToTime(cur+dur),candidateId:null});
+    cur+=dur+buf;
+  }
+  slotsPerDay[currentDay]=slots;
+  if(calendar){renderCalendarEvents();renderCandidates();renderDayTabs();}
+}
+
+function renderCalendarEvents() {
+  if(!calendar)return;
+  calendar.getEvents().forEach(function(e){e.remove();});
+  var dateStr=DAYS_DATA[currentDay].date;
+  var slots=slotsPerDay[currentDay]||[];
+  var pauseOn=document.getElementById('pauseActive').checked;
+  if(pauseOn){
+    calendar.addEvent({id:'pause',title:'Mittagspause',start:dateStr+'T'+document.getElementById('pauseStart').value+':00',end:dateStr+'T'+document.getElementById('pauseEnd').value+':00',display:'block',editable:false,classNames:['slot-pause'],extendedProps:{type:'pause'}});
+  }
+  slots.forEach(function(slot){
+    var cand=slot.candidateId?candidates.find(function(c){return c.id===slot.candidateId;}):null;
+    calendar.addEvent({
+      id:'slot-'+slot.id,title:cand?cand.name:'+ Klicken zum Zuweisen',
+      start:dateStr+'T'+slot.start+':00',end:dateStr+'T'+slot.end+':00',display:'block',editable:false,
+      classNames:cand?['slot-assigned','slot-assigned-'+cand.country]:['slot-free'],
+      extendedProps:{type:cand?'assigned':'free',slotId:slot.id,candidateId:slot.candidateId,country:cand?.country},
+    });
+  });
+}
+
+function renderEventContent(arg) {
+  var props=arg.event.extendedProps;
+  if(props.type==='pause')return{html:'<div style="text-align:center;padding:4px;">Mittagspause</div>'};
+  if(props.type==='assigned'){
+    var c=candidates.find(function(x){return x.id===props.candidateId;});
+    var s=arg.event.start,e=arg.event.end;
+    var t=pad(s.getHours())+':'+pad(s.getMinutes())+' \u2013 '+pad(e.getHours())+':'+pad(e.getMinutes());
+    return{html:'<div style="padding:3px 8px;line-height:1.3;"><div style="font-weight:600;font-size:12px;">'+c.name+' <span style="opacity:.8;font-size:10px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px;margin-left:4px;">'+(props.country||'').toUpperCase()+'</span></div><div style="font-size:11px;opacity:.85;">'+c.role+' \u00b7 '+t+'</div></div>'};
+  }
+  return{html:'<div style="text-align:center;font-size:12px;color:var(--text-sec);padding:6px 0;">+ Klicken zum Zuweisen</div>'};
+}
+
+function handleEventClick(info) {
+  var props=info.event.extendedProps;
+  if(props.type==='pause')return;
+  if(props.type==='assigned'){
+    var slot=(slotsPerDay[currentDay]||[]).find(function(s){return s.id===props.slotId;});
+    if(slot){var c=candidates.find(function(x){return x.id===slot.candidateId;});if(c){c.assignedSlot=null;c.assignedDay=null;}slot.candidateId=null;renderCalendarEvents();renderCandidates();renderDayTabs();}
+    return;
+  }
+  if(props.type==='free')showSlotDropdown(info.jsEvent,props.slotId);
+}
+
+function showSlotDropdown(evt,slotId) {
+  closeDropdown();
+  var dd=document.getElementById('slotDropdown');
+  var html='<div class="slot-dropdown-header">Kandidat zuweisen</div>';
+  candidates.forEach(function(c,i){
+    var dis=c.assignedSlot!==null;
+    html+='<div class="slot-dropdown-item'+(dis?' disabled':'')+'" data-c="'+c.id+'" data-s="'+slotId+'"><div class="dd-avatar" style="background:'+AVATAR_COLORS[i%AVATAR_COLORS.length]+'">'+c.name.split(' ').map(function(n){return n[0];}).join('')+'</div><div class="dd-info"><div class="dd-name">'+c.name+'</div><div class="dd-role">'+c.role+'</div></div><span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span></div>';
+  });
+  dd.innerHTML=html;dd.style.display='block';
+  dd.style.left=Math.min(evt.clientX,innerWidth-260)+'px';
+  dd.style.top=Math.min(evt.clientY,innerHeight-320)+'px';
+  dd.querySelectorAll('.slot-dropdown-item:not(.disabled)').forEach(function(it){
+    it.addEventListener('click',function(){assignCandidate((slotsPerDay[currentDay]||[]).find(function(s){return s.id===parseInt(it.dataset.s);}),parseInt(it.dataset.c));closeDropdown();});
+  });
+  setTimeout(function(){document.addEventListener('click',outsideClick);},10);
+}
+
+function outsideClick(e){if(!document.getElementById('slotDropdown').contains(e.target))closeDropdown();}
+function closeDropdown(){document.getElementById('slotDropdown').style.display='none';document.removeEventListener('click',outsideClick);}
+
+function assignCandidate(slot,cId) {
+  var c=candidates.find(function(x){return x.id===cId;});
+  if(!c||c.assignedSlot!==null||!slot)return;
+  slot.candidateId=cId;c.assignedSlot=slot.start+' \u2013 '+slot.end;c.assignedDay=currentDay;
+  renderCalendarEvents();renderCandidates();renderDayTabs();
+}
+
+function renderCandidates() {
+  var el=document.getElementById('candidateList');
+  if(!el)return;
+  el.innerHTML=candidates.map(function(c,i){
+    var asgn=c.assignedSlot!==null;
+    return '<div class="candidate-card'+(asgn?' assigned':'')+'" draggable="'+(!asgn)+'" data-id="'+c.id+'"><div class="candidate-avatar" style="background:'+AVATAR_COLORS[i%AVATAR_COLORS.length]+'">'+c.name.split(' ').map(function(n){return n[0];}).join('')+'</div><div class="candidate-info"><div class="candidate-name">'+c.name+'</div><div class="candidate-role">'+c.role+'</div></div><span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span>'+(asgn?'<span class="time-badge">'+c.assignedSlot+'</span>':'')+'</div>';
+  }).join('');
+}
+
+// ============================================
+// STEP 5 - Bestaetigung
+// ============================================
+function renderStep5() {
+  var assigned=candidates.filter(function(c){return c.assignedSlot;});
+  var day=DAYS_DATA.find(function(d){return d.date===selectedDate;});
+  var meetLink=document.getElementById('meetingLink')?.value||'';
+
+  var rows='<thead><tr><th>#</th><th>Kandidat</th><th>Land</th><th>Uhrzeit</th><th>Tag</th></tr></thead><tbody>';
+  assigned.forEach(function(c,i){
+    var dayInfo=c.assignedDay!==null?DAYS_DATA[c.assignedDay]:null;
+    rows+='<tr><td>'+(i+1)+'</td><td class="td-name">'+c.name+'</td><td><span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span></td><td>'+c.assignedSlot+'</td><td>'+(dayInfo?dayInfo.short:'')+'</td></tr>';
+  });
+  if(!assigned.length) rows+='<tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:20px;">Keine passenden Eintraege gefunden</td></tr>';
+  rows+='</tbody>';
+  document.getElementById('s5SummaryTable').innerHTML=rows;
+
+  document.getElementById('s5InvitePreview').innerHTML=
+    '<div class="s5-invite-title">Interviewkreis: '+(document.getElementById('circleName')?.value||'')+'</div>'
+    +'<div class="s5-invite-row"><span class="s5-invite-icon">\u{1F4C5}</span>'+(day?day.full:selectedDate)+'</div>'
+    +'<div class="s5-invite-row"><span class="s5-invite-icon">\u{1F550}</span>09:00 \u2013 18:00 Uhr</div>'
+    +'<div class="s5-invite-row"><span class="s5-invite-icon">\u{1F4CD}</span>'+(meetLink?'Online: '+meetLink:'Online (Microsoft Teams)')+'</div>'
+    +'<div class="s5-invite-row"><span class="s5-invite-icon">\u{1F465}</span>'+assigned.length+' Interviewtermine</div>';
+
+  var statuses=[
+    {org:ORGS[0],status:'Organisator',color:'var(--primary-dark)',bg:'var(--badge-bg)'},
+    {org:ORGS[1],status:'Bestaetigt',color:'var(--primary)',bg:'var(--badge-bg)'},
+    {org:ORGS[2],status:'Eingeladen',color:'var(--warning)',bg:'var(--warning-light)'},
+    {org:ORGS[3],status:'Bestaetigt',color:'var(--primary)',bg:'var(--badge-bg)'},
+  ];
+  document.getElementById('s5Participants').innerHTML=statuses.map(function(s){
+    return '<div class="s5-participant"><div class="s5-part-dot" style="background:'+s.color+';"></div><div class="s5-part-name">'+s.org.name+'</div><span class="s5-part-status" style="background:'+s.bg+';color:'+s.color+';">'+s.status+'</span></div>';
+  }).join('');
+
+  document.getElementById('successSub').textContent=assigned.length+' Interviewtermine wurden erfolgreich geplant';
+}
+
+function sendInvitations() {
+  var ov=document.getElementById('successOverlay');
+  ov.classList.add('active');
+  document.getElementById('successSpinner').style.display='';
+  document.getElementById('successDone').classList.remove('show');
+  setTimeout(function(){
+    document.getElementById('successSpinner').style.display='none';
+    document.getElementById('successDone').classList.add('show');
+  },1500);
+}
+
+function closeSuccess() { document.getElementById('successOverlay').classList.remove('active'); }
+
+// ============================================
+// STEP 6 - Feedback
+// ============================================
+// feedbackState: { [candidateId]: { ag: 'pos'|'neg'|null, agComment:'', cand:'pos'|'neg'|null, candComment:'' } }
+var feedbackState = {};
+
+function renderStep6() {
+  candidates.forEach(function(c){
+    if(!feedbackState[c.id]) feedbackState[c.id]={ag:null,agComment:'',cand:null,candComment:''};
+  });
+
+  var assigned=candidates.filter(function(c){return c.assignedSlot;});
+  var totalFb=assigned.filter(function(c){var f=feedbackState[c.id];return f.ag||f.cand;}).length;
+  var posAg=assigned.filter(function(c){return feedbackState[c.id].ag==='pos';}).length;
+  var posCand=assigned.filter(function(c){return feedbackState[c.id].cand==='pos';}).length;
+
+  var html='<div style="max-width:980px;margin:0 auto;">';
+
+
+  // Legend hint
+  html+='<div style="font-size:12px;color:var(--text-sec);margin-bottom:12px;display:flex;align-items:center;gap:16px;">'
+    +'<span>&#128100; = Kandidat sieht nur seinen eigenen Termin &nbsp;|&nbsp; &#127970; = Arbeitgeber sieht alle Kandidaten</span>'
+    +'</div>';
+
+  // Feedback table
+  html+='<div class="fb-table-wrap"><table class="fb-table">'
+    +'<thead><tr>'
+    +'<th style="width:200px;">Kandidat</th>'
+    +'<th style="width:150px;">Interviewtermin</th>'
+    +'<th>&#127970; Arbeitgeber-Feedback</th>'
+    +'<th>&#128100; Kandidaten-Feedback</th>'
+    +'<th style="width:100px;">Status</th>'
+    +'</tr></thead><tbody>';
+
+  if(assigned.length===0){
+    html+='<tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:24px;">Noch keine Kandidaten zugewiesen</td></tr>';
+  }
+
+  assigned.forEach(function(c,i){
+    var f=feedbackState[c.id];
+    var color=AVATAR_COLORS[i%AVATAR_COLORS.length];
+    var initials=c.name.split(' ').map(function(n){return n[0];}).join('');
+    var dayInfo=c.assignedDay!==null?DAYS_DATA[c.assignedDay]:null;
+    var slotLabel=c.assignedSlot+(dayInfo?' · '+dayLabel(dayInfo.date):'');
+
+    // Status
+    var statusHtml='<span class="fb-status-badge fb-status-pending">Ausstehend</span>';
+    if(f.ag&&f.cand){
+      var both=(f.ag==='pos'&&f.cand==='pos');
+      var bothNeg=(f.ag==='neg'&&f.cand==='neg');
+      statusHtml='<span class="fb-status-badge '+(both?'fb-status-pos':bothNeg?'fb-status-neg':'fb-status-mix')+'">'+(both?'Positiv':bothNeg?'Negativ':'Gemischt')+'</span>';
+    } else if(f.ag||f.cand){
+      var v=f.ag||f.cand;
+      statusHtml='<span class="fb-status-badge '+(v==='pos'?'fb-status-pos':'fb-status-neg')+'">'+(v==='pos'?'Positiv':'Negativ')+' (teilw.)</span>';
+    }
+
+    html+='<tr>'
+      // Kandidat-Spalte
+      +'<td>'
+      +'<div class="fb-cand-name">'
+      +'<span style="width:26px;height:26px;border-radius:50%;background:'+color+';color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">'+initials+'</span>'
+      +c.name
+      +'<button class="fb-profile-btn" onclick="openCandidateProfile('+c.id+')" title="Kandidatenprofil in Ankaadia oeffnen">&#128279;</button>'
+      +'</div>'
+      +'<div class="fb-slot" style="margin-left:32px;"><span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span> '+c.role+'</div>'
+      +'</td>'
+      // Termin-Spalte
+      +'<td>'
+      +'<div style="font-weight:600;font-size:12px;color:var(--text);">'+c.assignedSlot+'</div>'
+      +(dayInfo?'<div style="font-size:11px;color:var(--text-sec);">'+dayLabel(dayInfo.date)+'</div>':'')
+      +'</td>'
+      // Arbeitgeber-Feedback
+      +'<td>'
+      +'<div class="fb-btns">'
+      +'<button class="fb-btn pos'+(f.ag==='pos'?' active':'')+'" onclick="setFeedback('+c.id+',\'ag\',\'pos\')">&#128077; Positiv</button>'
+      +'<button class="fb-btn neg'+(f.ag==='neg'?' active':'')+'" onclick="setFeedback('+c.id+',\'ag\',\'neg\')">&#128078; Negativ</button>'
+      +'</div>'
+      +'<textarea class="fb-comment" rows="2" placeholder="Kommentar des Arbeitgebers..." onchange="setComment('+c.id+',\'ag\',this.value)">'+f.agComment+'</textarea>'
+      +'</td>'
+      // Kandidaten-Feedback
+      +'<td>'
+      +'<div class="fb-btns">'
+      +'<button class="fb-btn pos'+(f.cand==='pos'?' active':'')+'" onclick="setFeedback('+c.id+',\'cand\',\'pos\')">&#128077; Positiv</button>'
+      +'<button class="fb-btn neg'+(f.cand==='neg'?' active':'')+'" onclick="setFeedback('+c.id+',\'cand\',\'neg\')">&#128078; Negativ</button>'
+      +'</div>'
+      +'<textarea class="fb-comment" rows="2" placeholder="Kommentar des Kandidaten..." onchange="setComment('+c.id+',\'cand\',this.value)">'+f.candComment+'</textarea>'
+      +'</td>'
+      // Status
+      +'<td>'+statusHtml+'</td>'
+      +'</tr>';
+  });
+
+  html+='</tbody></table></div></div>';
+  document.getElementById('step6Content').innerHTML=html;
+}
+
+function setFeedback(candId, role, val) {
+  if(!feedbackState[candId]) feedbackState[candId]={ag:null,agComment:'',cand:null,candComment:''};
+  // Toggle off if clicking same value again
+  feedbackState[candId][role] = feedbackState[candId][role]===val ? null : val;
+  renderStep6();
+}
+
+function setComment(candId, role, val) {
+  if(!feedbackState[candId]) feedbackState[candId]={ag:null,agComment:'',cand:null,candComment:''};
+  var key = role==='ag' ? 'agComment' : 'candComment';
+  feedbackState[candId][key] = val;
+}
+
+function openCandidateProfile(candId) {
+  var c=candidates.find(function(x){return x.id===candId;});
+  showToast('Kandidatenprofil: '+c.name+' — oeffnet in Ankaadia');
+}
+
+// ============================================
+// EXTERNE TEILNEHMER-ANSICHT
+// ============================================
+var extCurrentStep=1;
+var extVotes={};
+
+function openExternalView() {
+  extCurrentStep=1; extVotes={};
+  document.getElementById('extViewStep1').style.display='';
+  document.getElementById('extViewStep2').style.display='none';
+  document.getElementById('extViewStep3').style.display='none';
+  document.getElementById('extOrgName').value='';
+  document.getElementById('extContactName').value='';
+  document.getElementById('extEmail').value='';
+  var name=document.getElementById('circleName')?document.getElementById('circleName').value:'Pflegefachkraefte Batch Maerz 2026';
+  document.getElementById('extCircleName').textContent=name||'Pflegefachkraefte Batch Maerz 2026';
+  updateExtStepIndicator(1);
+  document.getElementById('externalModal').classList.add('active');
+}
+
+function closeExternalView() { document.getElementById('externalModal').classList.remove('active'); }
+
+function updateExtStepIndicator(step) {
+  ['extStep1Ind','extStep2Ind','extStep3Ind'].forEach(function(id,i){
+    var el=document.getElementById(id);
+    var s=i+1;
+    el.className='wizard-step'+(s===step?' active':s<step?' completed':'');
+  });
+  document.getElementById('extLine1').className='wizard-line'+(step>1?' done':'');
+  document.getElementById('extLine2').className='wizard-line'+(step>2?' done':'');
+}
+
+function extGoToStep2() {
+  var orgName=document.getElementById('extOrgName').value.trim();
+  var contact=document.getElementById('extContactName').value.trim();
+  var email=document.getElementById('extEmail').value.trim();
+  if(!orgName||!contact||!email){showToast('Bitte alle Pflichtfelder ausfuellen');return;}
+  document.getElementById('extVoteTitle').textContent='Terminabstimmung fuer '+orgName;
+  renderExtVoteSlots();
+  document.getElementById('extViewStep1').style.display='none';
+  document.getElementById('extViewStep2').style.display='';
+  updateExtStepIndicator(2);
+}
+
+function renderExtVoteSlots() {
+  var html='';
+  selectedDates.forEach(function(dateStr){
+    var day=DAYS_DATA.find(function(d){return d.date===dateStr;});
+    var label=day?day.full:dateStr;
+    var val=extVotes[dateStr]||null;
+    html+='<div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:14px;">'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+label+'</div><div style="font-size:12px;color:var(--text-sec);">09:00 - 18:00 Uhr</div></div>'
+      +'<div style="display:flex;gap:6px;">'
+      +'<button onclick="setExtVote(\''+dateStr+'\',\'yes\')" style="padding:7px 14px;border-radius:4px;border:1px solid '+(val==='yes'?'var(--primary)':'var(--border)')+';background:'+(val==='yes'?'var(--badge-bg)':'#fff')+';color:'+(val==='yes'?'var(--primary)':'var(--text-sec)')+';font-weight:500;font-size:13px;cursor:pointer;">Verfuegbar</button>'
+      +'<button onclick="setExtVote(\''+dateStr+'\',\'maybe\')" style="padding:7px 14px;border-radius:4px;border:1px solid '+(val==='maybe'?'var(--warning)':'var(--border)')+';background:'+(val==='maybe'?'var(--warning-light)':'#fff')+';color:'+(val==='maybe'?'#92400e':'var(--text-sec)')+';font-weight:500;font-size:13px;cursor:pointer;">Eventuell</button>'
+      +'<button onclick="setExtVote(\''+dateStr+'\',\'no\')" style="padding:7px 14px;border-radius:4px;border:1px solid '+(val==='no'?'var(--danger)':'var(--border)')+';background:'+(val==='no'?'var(--danger-light)':'#fff')+';color:'+(val==='no'?'var(--danger)':'var(--text-sec)')+';font-weight:500;font-size:13px;cursor:pointer;">Nicht verfuegbar</button>'
+      +'</div></div>';
+  });
+  document.getElementById('extVoteSlots').innerHTML=html;
+}
+
+function setExtVote(dateStr,val) { extVotes[dateStr]=val; renderExtVoteSlots(); }
+
+function extSubmitVote() {
+  var allVoted=selectedDates.every(function(d){return extVotes[d];});
+  if(!allVoted){showToast('Bitte fuer jeden Termin abstimmen');return;}
+  var orgName=document.getElementById('extOrgName').value.trim();
+  var contact=document.getElementById('extContactName').value.trim();
+  var newId=ORGS.length+1;
+  ORGS.push({id:newId,name:orgName,role:'Arbeitgeber',color:'#52B788',icon:'\u{1F3E5}'});
+  if(!votes[newId])votes[newId]={};
+  Object.assign(votes[newId],extVotes);
+  document.getElementById('extConfirmName').textContent=contact+' ('+orgName+')';
+  var voteLabels={yes:'Verfuegbar',maybe:'Eventuell',no:'Nicht verfuegbar'};
+  var summary=selectedDates.map(function(d){
+    var day=DAYS_DATA.find(function(dd){return dd.date===d;});
+    return '<div style="margin-bottom:4px;"><strong>'+(day?day.short:d)+'</strong>: '+(voteLabels[extVotes[d]]||'\u2013')+'</div>';
+  }).join('');
+  document.getElementById('extConfirmSummary').innerHTML=summary;
+  document.getElementById('extViewStep2').style.display='none';
+  document.getElementById('extViewStep3').style.display='';
+  updateExtStepIndicator(3);
+  if(currentStep===2){renderVoteStatus();renderDoodleGrid();}
+}
+
+// ============================================
+// FEEDBACK MODAL
+// ============================================
+function openFeedbackModal() {
+  var assigned=candidates.filter(function(c){return c.assignedSlot;});
+  if(!assigned.length){showToast('Keine zugewiesenen Kandidaten vorhanden');return;}
+  var html=assigned.map(function(c,i){
+    var fb=feedbackData[c.id]||{rating:0,status:'',notes:''};
+    var stars='';
+    for(var s=1;s<=5;s++){
+      stars+='<div class="fb-star'+(s<=fb.rating?' active':'')+'" onclick="setRating('+c.id+','+s+')" data-cid="'+c.id+'" data-star="'+s+'">\u2605</div>';
+    }
+    return '<div class="fb-cand-row"><div class="fb-cand-info"><div class="fb-cand-name">'+c.name+'</div><div class="fb-cand-role">'+c.role+'</div><span class="country-badge '+c.country+'" style="margin:4px 0 0;display:inline-block;">'+c.country.toUpperCase()+'</span></div>'
+      +'<div class="fb-fields"><div style="display:flex;gap:10px;align-items:center;"><div class="fb-rating" id="rating-'+c.id+'">'+stars+'</div>'
+      +'<select class="fb-status-select" id="fbstatus-'+c.id+'" onchange="setFbStatus('+c.id+',this.value)"><option value="">Status...</option><option value="accepted"'+(fb.status==='accepted'?' selected':'')+'>Angenommen</option><option value="rejected"'+(fb.status==='rejected'?' selected':'')+'>Abgelehnt</option><option value="waitlist"'+(fb.status==='waitlist'?' selected':'')+'>Warteliste</option><option value="followup"'+(fb.status==='followup'?' selected':'')+'>Folgegespraech</option></select></div>'
+      +'<textarea class="fb-textarea" id="fbnotes-'+c.id+'" placeholder="Notizen zum Kandidaten..." rows="2">'+(fb.notes||'')+'</textarea></div></div>';
+  }).join('');
+  document.getElementById('feedbackBody').innerHTML=html;
+  document.getElementById('feedbackModal').classList.add('active');
+}
+
+function setRating(cId,stars) {
+  if(!feedbackData[cId])feedbackData[cId]={rating:0,status:'',notes:''};
+  feedbackData[cId].rating=stars;
+  var container=document.getElementById('rating-'+cId);
+  if(container){container.querySelectorAll('.fb-star').forEach(function(el){el.classList.toggle('active',parseInt(el.dataset.star)<=stars);});}
+}
+
+function setFbStatus(cId,val) {
+  if(!feedbackData[cId])feedbackData[cId]={rating:0,status:'',notes:''};
+  feedbackData[cId].status=val;
+}
+
+function saveFeedback() {
+  candidates.filter(function(c){return c.assignedSlot;}).forEach(function(c){
+    var notesEl=document.getElementById('fbnotes-'+c.id);
+    var statusEl=document.getElementById('fbstatus-'+c.id);
+    if(!feedbackData[c.id])feedbackData[c.id]={rating:0,status:'',notes:''};
+    if(notesEl)feedbackData[c.id].notes=notesEl.value;
+    if(statusEl)feedbackData[c.id].status=statusEl.value;
+  });
+  closeFeedbackModal();
+  showToast('Feedback fuer '+Object.keys(feedbackData).length+' Kandidaten gespeichert');
+}
+
+function closeFeedbackModal() { document.getElementById('feedbackModal').classList.remove('active'); }
+
+// ============================================
+// HILFSFUNKTIONEN
+// ============================================
+function timeToMin(t){var p=t.split(':').map(Number);return p[0]*60+p[1];}
+function minToTime(m){return pad(Math.floor(m/60))+':'+pad(m%60);}
+function pad(n){return n.toString().padStart(2,'0');}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2000);
+}
+
+// ============================================
+// INITIALISIERUNG
+// ============================================
+document.addEventListener('DOMContentLoaded',function(){
+  // Initialize votes from preset data so they're available even when skipping step 2
+  votes = {};
+  ORGS.forEach(function(o){ votes[o.id]={}; });
+  Object.entries(PRESET_VOTES).forEach(function(e){ votes[parseInt(e[0])]=Object.assign({},e[1]); });
+  renderDashboard();
+});
+</script>
+</body>
+</html>
