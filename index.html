@@ -1211,13 +1211,6 @@ function onListSelect() {
 // ============================================
 function renderStep2() {
   computeSelectedDates();
-  if(!votes[1]) {
-    votes={};
-    ORGS.forEach(function(o){votes[o.id]={};});
-    Object.entries(PRESET_VOTES).forEach(function(e){
-      votes[parseInt(e[0])]=Object.assign({},e[1]);
-    });
-  }
   renderVoteStatus();
   renderDoodleGrid();
 }
@@ -1313,28 +1306,39 @@ function renderStep3() {
   var voteLabels={yes:'Verfuegbar',no:'Nicht verfuegbar',maybe:'Vielleicht',null:'Keine Antwort'};
   var slotCount=computeSlotCount();
 
-  var html='';
-  termGroups.forEach(function(g,gi){
-    if(!g.dates.length) return;
-
-    // Compute per-date scores for this Termin
-    var dateResults=g.dates.map(function(dateStr){
-      var day=DAYS_DATA.find(function(d){return d.date===dateStr;});
-      var score=scoreDate(dateStr);
-      var orgVotes=ORGS.map(function(o){return {org:o,vote:(votes[o.id]||{})[dateStr]||null};});
+  // Pre-compute all term scores to find best
+  var termData = termGroups.map(function(g) {
+    if (!g.dates.length) return null;
+    var dateResults = g.dates.map(function(dateStr) {
+      var day = DAYS_DATA.find(function(d){ return d.date===dateStr; });
+      var score = scoreDate(dateStr);
+      var orgVotes = ORGS.map(function(o){ return {org:o,vote:(votes[o.id]||{})[dateStr]||null}; });
       return {date:dateStr,day:day,score:score,orgVotes:orgVotes};
-    }).sort(function(a,b){return b.score-a.score;});
+    }).sort(function(a,b){ return b.score-a.score; });
+    var termScore = Math.min.apply(null, dateResults.map(function(r){ return r.score; }));
+    return {g:g, dateResults:dateResults, termScore:termScore};
+  });
 
-    // Termin-level score = minimum across all days (bottleneck-Logik:
-    // 100% nur wenn alle Tage der Gruppe 100% haben)
-    var termScore=Math.min.apply(null, dateResults.map(function(r){return r.score;}));
-    var bestDate=dateResults[0].date;
-    if(gi===0&&!selectedDate) selectedDate=bestDate;
+  // Find index of highest-scoring term
+  var bestIdx = 0;
+  termData.forEach(function(td, i) {
+    if (td && termData[bestIdx] && td.termScore > termData[bestIdx].termScore) bestIdx = i;
+  });
+  // Set selectedDate to best day of best term
+  if (!selectedDate && termData[bestIdx]) selectedDate = termData[bestIdx].dateResults[0].date;
+
+  var html='';
+  termData.forEach(function(td, gi) {
+    if (!td) return;
+    var g = td.g;
+    var dateResults = td.dateResults;
+    var termScore = td.termScore;
+    var isBest = gi === bestIdx;
 
     var isSingleDay=g.dates.length===1;
     var termScoreColor=termScore>=66?'var(--primary)':termScore>=33?'var(--warning)':'var(--danger)';
 
-    html+='<div class="result-card'+(gi===0?' best':'')+'" style="margin-bottom:16px;">';
+    html+='<div class="result-card'+(isBest?' best':'')+'" style="margin-bottom:16px;">';
 
     // Termin header with aggregated score
     html+='<div class="result-card-header">'
@@ -1344,7 +1348,7 @@ function renderStep3() {
         ? '<span class="result-card-date">'+(dateResults[0].day?dateResults[0].day.full:dateResults[0].date)+'</span>'
         : '<span style="font-size:12px;color:var(--text-sec);">'+g.dates.length+' moegliche Tage</span>'
        )
-      +(gi===0?'<span class="result-badge-best">Empfohlen</span>':'')
+      +(isBest?'<span class="result-badge-best">Empfohlen</span>':'')
       +'</div>'
       +'<div class="result-score">'
       +'<div class="result-score-pct" style="color:'+termScoreColor+'">'+termScore+'%</div>'
@@ -1933,6 +1937,10 @@ function showToast(msg){
 // INITIALISIERUNG
 // ============================================
 document.addEventListener('DOMContentLoaded',function(){
+  // Initialize votes from preset data so they're available even when skipping step 2
+  votes = {};
+  ORGS.forEach(function(o){ votes[o.id]={}; });
+  Object.entries(PRESET_VOTES).forEach(function(e){ votes[parseInt(e[0])]=Object.assign({},e[1]); });
   renderDashboard();
 });
 </script>
