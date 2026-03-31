@@ -512,6 +512,16 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
               <div id="termineList" style="margin-top:12px;"></div>
               <div style="font-size:11px;color:var(--text-sec);margin-top:6px;">Klicke auf einen Tag um einen Termin hinzuzufuegen. Mehrere Tage koennen zu einem Termin zusammengefasst werden.</div>
             </div>
+            <div class="s1-card" style="margin-bottom:16px;">
+              <h3>Abstimmungsoptionen</h3>
+              <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:4px 0;">
+                <input type="checkbox" id="candidatesVoteToggle" onchange="toggleCandidatesVote(this.checked)" style="margin-top:2px;accent-color:var(--primary);width:16px;height:16px;flex-shrink:0;">
+                <div>
+                  <div style="font-size:13px;font-weight:500;color:var(--text);">Kandidaten stimmen ueber Termine ab</div>
+                  <div style="font-size:11px;color:var(--text-sec);margin-top:2px;line-height:1.5;">Kandidaten erhalten einen Abstimmungslink und koennen ihre Verfuegbarkeit angeben. Werden sie nachtraeglich der Liste hinzugefuegt und die Abstimmung ist bereits abgeschlossen, erfolgt die Zuweisung direkt.</div>
+                </div>
+              </label>
+            </div>
             <div class="s1-card">
               <h3>Slot-Konfiguration</h3>
               <div class="s1-form-row">
@@ -570,6 +580,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
       <!-- SCHRITT 2: Doodle-Abstimmung -->
       <div class="step-content" id="step-2">
         <div class="s2-container">
+          <div id="s2CandHint" style="display:none;margin-bottom:12px;"></div>
           <div class="vote-status" id="voteStatus"></div>
           <div class="doodle-card"><table class="doodle-table" id="doodleTable"></table></div>
           <div class="s2-ext-card">
@@ -618,7 +629,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             <h3>Kandidaten zuweisen</h3>
             <div class="s4-cand-subtitle">Drag &amp; Drop oder Klick auf freien Slot</div>
             <div id="candidateList"></div>
-            <button class="btn btn-outline btn-sm" style="width:100%;margin-top:8px;" onclick="showAddCandidateModal()">+ Kandidat hinzufuegen</button>
+            <div style="margin-top:8px;font-size:11px;color:var(--text-sec);padding:8px 10px;background:var(--bg-hover);border-radius:4px;border:1px solid var(--border);">Neue Kandidaten erscheinen automatisch wenn sie der verknuepften Liste hinzugefuegt werden.</div>
           </div>
         </div>
         <div class="s4-calendar-area">
@@ -812,23 +823,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
-<!-- Kandidat hinzufügen Modal -->
-<div class="modal-overlay" id="addCandModal">
-  <div class="modal" style="width:480px;">
-    <div class="modal-header">
-      <div class="modal-title">Kandidat nachtraeglich hinzufuegen</div>
-      <button class="modal-close" onclick="closeAddCandModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div style="font-size:12px;color:var(--text-sec);margin-bottom:10px;">Kandidat wird direkt zuweisbar — kein neues Voting erforderlich.</div>
-      <input class="s1-input" id="addCandSearch" placeholder="Name suchen..." oninput="renderAddCandSearch(this.value)" style="margin-bottom:10px;">
-      <div id="addCandResults" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;max-height:240px;overflow-y:auto;"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeAddCandModal()">Schliessen</button>
-    </div>
-  </div>
-</div>
 
 <!-- Termine zuruecksetzen Modal -->
 <div class="modal-overlay" id="resetTermineModal">
@@ -924,6 +918,9 @@ var feedbackData = {};
 // ============================================
 var currentView = 'dashboard';
 var currentStep = 1;
+var candidatesVote = false;
+
+function toggleCandidatesVote(val) { candidatesVote = val; }
 // termGroups: Array of { id, label, dates[] }
 var termGroups = [
   { id:1, label:'Termin 1', dates:['2026-03-16','2026-03-17','2026-03-18'] },
@@ -1309,6 +1306,19 @@ function renderStep2() {
   computeSelectedDates();
   renderVoteStatus();
   renderDoodleGrid();
+  // Kandidaten-Abstimmungshinweis
+  var hint = document.getElementById('s2CandHint');
+  if (hint) {
+    if (candidatesVote) {
+      hint.style.display = '';
+      hint.innerHTML = '<div style="display:flex;align-items:flex-start;gap:10px;background:var(--badge-bg);border:1px solid var(--primary);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--primary-dark);">'
+        + '<span style="font-size:16px;flex-shrink:0;">&#128100;</span>'
+        + '<div><strong>Kandidaten-Abstimmung aktiv</strong><br>Kandidaten aus der verknuepften Liste erhalten ebenfalls einen Abstimmungslink und koennen ihre Verfuegbarkeit angeben. Ihre Stimmen fliessen in das Ergebnis ein. Nachtraeglich hinzugefuegte Kandidaten werden direkt zugewiesen, wenn das Datum bereits feststeht.</div>'
+        + '</div>';
+    } else {
+      hint.style.display = 'none';
+    }
+  }
 }
 
 function renderVoteStatus() {
