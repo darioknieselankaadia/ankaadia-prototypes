@@ -395,6 +395,30 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .fb-status-neg { background:#fee2e2; color:#dc2626; }
 .fb-status-mix { background:#fef3c7; color:#92400e; }
 
+/* ==========================================
+   FILTER TABS – Step 6
+   ========================================== */
+.fb-filter-tabs { display:flex; gap:0; margin-bottom:16px; border:1px solid var(--border); border-radius:6px; overflow:hidden; background:var(--bg-card); width:fit-content; }
+.fb-filter-tab { padding:6px 16px; font-size:12px; font-weight:500; color:var(--text-sec); cursor:pointer; border-right:1px solid var(--border); transition:all .15s; white-space:nowrap; }
+.fb-filter-tab:last-child { border-right:none; }
+.fb-filter-tab:hover { background:var(--bg-hover); color:var(--text); }
+.fb-filter-tab.active { background:var(--primary); color:#fff; }
+
+/* Unassign button inside candidate card */
+.cand-unassign { width:20px; height:20px; border-radius:3px; border:1px solid var(--danger-light); background:transparent; color:var(--danger); cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .15s; padding:0; margin-left:3px; }
+.cand-unassign:hover { background:var(--danger); color:#fff; border-color:var(--danger); }
+
+/* Reset Terme option rows */
+.reset-term-option { display:flex; align-items:center; gap:12px; padding:10px 14px; border:1px solid var(--border); border-radius:6px; margin-bottom:8px; cursor:pointer; transition:all .15s; }
+.reset-term-option:hover { border-color:var(--primary); background:var(--success-light); }
+.reset-term-option.selected { border-color:var(--primary); background:var(--success-light); }
+.reset-term-option.unsuitable { opacity:.5; cursor:not-allowed; pointer-events:none; }
+
+/* Add candidate search result rows */
+.add-cand-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:6px; cursor:pointer; transition:background .1s; border-bottom:1px solid var(--border); }
+.add-cand-item:last-child { border-bottom:none; }
+.add-cand-item:hover { background:var(--bg-hover); }
+
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes scaleIn { from{transform:scale(.8);opacity:0} to{transform:scale(1);opacity:1} }
 @keyframes spin { to{transform:rotate(360deg)} }
@@ -444,7 +468,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     </div>
     <div class="dash-table">
       <table>
-        <thead><tr><th>Name</th><th>Workflow-Schritte</th><th>Kandidaten</th><th>Datum</th><th>Erstellt</th></tr></thead>
+        <thead><tr><th>Name</th><th>Workflow-Schritte</th><th>Kandidaten</th><th>Datum</th><th>Erstellt</th><th></th></tr></thead>
         <tbody id="dashTableBody"></tbody>
       </table>
     </div>
@@ -594,6 +618,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             <h3>Kandidaten zuweisen</h3>
             <div class="s4-cand-subtitle">Drag &amp; Drop oder Klick auf freien Slot</div>
             <div id="candidateList"></div>
+            <button class="btn btn-outline btn-sm" style="width:100%;margin-top:8px;" onclick="showAddCandidateModal()">+ Kandidat hinzufuegen</button>
           </div>
         </div>
         <div class="s4-calendar-area">
@@ -606,9 +631,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
           <div class="s4-day-tabs" id="dayTabs"></div>
           <div class="s4-cal-header">
             <div class="s4-cal-title" id="calendarTitle">Dienstag, 17. Maerz 2026</div>
-            <div class="legend">
-              <div class="legend-item"><div class="legend-dot free"></div>Frei</div>
-              <div class="legend-item"><div class="legend-dot pause"></div>Pause</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="legend">
+                <div class="legend-item"><div class="legend-dot free"></div>Frei</div>
+                <div class="legend-item"><div class="legend-dot pause"></div>Pause</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="showAdHocSlotForm()" title="Zusaetzlichen Slot fuer diesen Tag erstellen">+ Slot</button>
             </div>
           </div>
           <div class="s4-cal-wrap">
@@ -760,6 +788,68 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
+<!-- Ad-hoc Slot Modal -->
+<div class="modal-overlay" id="adHocModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-header">
+      <div class="modal-title">Zusatzslot erstellen</div>
+      <button class="modal-close" onclick="closeAdHocModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-sec);margin-bottom:14px;">Erstellen Sie einen zusaetzlichen Interviewslot fuer <strong id="adHocDayLabel">-</strong>.</div>
+      <div class="s4-form-row">
+        <div class="s4-fg"><label>Startzeit</label><input type="time" id="adHocStart" value="08:00"></div>
+        <div class="s4-fg"><label>Endzeit</label><input type="time" id="adHocEnd" value="08:30"></div>
+      </div>
+      <div style="margin-top:10px;padding:8px 12px;background:var(--badge-bg);border-radius:4px;font-size:11px;color:var(--primary-dark);">
+        Zusatzslots sind fuer kurzfristige Umbuchungen gedacht, z.B. wenn ein Kandidat doch an einem anderen Tag Zeit hat.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeAdHocModal()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="createAdHocSlot()">Slot erstellen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Kandidat hinzufügen Modal -->
+<div class="modal-overlay" id="addCandModal">
+  <div class="modal" style="width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">Kandidat nachtraeglich hinzufuegen</div>
+      <button class="modal-close" onclick="closeAddCandModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text-sec);margin-bottom:10px;">Kandidat wird direkt zuweisbar — kein neues Voting erforderlich.</div>
+      <input class="s1-input" id="addCandSearch" placeholder="Name suchen..." oninput="renderAddCandSearch(this.value)" style="margin-bottom:10px;">
+      <div id="addCandResults" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;max-height:240px;overflow-y:auto;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeAddCandModal()">Schliessen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Termine zuruecksetzen Modal -->
+<div class="modal-overlay" id="resetTermineModal">
+  <div class="modal" style="width:580px;">
+    <div class="modal-header">
+      <div class="modal-title">Interviewtermine zuruecksetzen</div>
+      <button class="modal-close" onclick="closeResetTermineModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--warning-light);border:1px solid var(--warning);border-radius:6px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:16px;">
+        Setzen Sie Termine zurueck wenn notwendige Beteiligte doch keine Zeit haben. Die restliche Konfiguration (Kandidaten, Organisationen, Slots) bleibt erhalten.
+      </div>
+      <div id="resetTermineContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeResetTermineModal()">Abbrechen</button>
+      <button class="btn btn-primary" id="btnConfirmReset" onclick="confirmResetTermine()" style="display:none;">Termin uebernehmen &rarr; Schritt 4</button>
+    </div>
+  </div>
+</div>
+
 <!-- Feedback Modal -->
 <div class="modal-overlay" id="feedbackModal">
   <div class="modal">
@@ -887,12 +977,18 @@ function renderDashboard() {
   var tbody = document.getElementById('dashTableBody');
   tbody.innerHTML = DASHBOARD_DATA.map(function(d,i) {
     var rowClick = d.interactive ? 'openCircleStep('+d.step+')' : '';
+    var actionsHtml = d.interactive
+      ? '<td onclick="event.stopPropagation();" style="white-space:nowrap;">'
+        +'<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showResetTermineModal()" style="font-size:11px;color:var(--text-sec);border-color:var(--border);" title="Interviewtermine zuruecksetzen wenn ein Beteiligter doch keine Zeit hat">&#8635; Termine</button>'
+        +'</td>'
+      : '<td></td>';
     return '<tr onclick="'+rowClick+'">'
       +'<td style="font-weight:600;max-width:240px;">'+d.name+'</td>'
       +'<td>'+buildDashSteps(d)+'</td>'
       +'<td>'+d.cands+'</td>'
       +'<td>'+d.date+'</td>'
-      +'<td style="color:var(--text-sec);">'+d.created+'</td></tr>';
+      +'<td style="color:var(--text-sec);">'+d.created+'</td>'
+      +actionsHtml+'</tr>';
   }).join('');
 }
 
@@ -1620,7 +1716,15 @@ function renderCandidates() {
   if(!el)return;
   el.innerHTML=candidates.map(function(c,i){
     var asgn=c.assignedSlot!==null;
-    return '<div class="candidate-card'+(asgn?' assigned':'')+'" draggable="'+(!asgn)+'" data-id="'+c.id+'"><div class="candidate-avatar" style="background:'+AVATAR_COLORS[i%AVATAR_COLORS.length]+'">'+c.name.split(' ').map(function(n){return n[0];}).join('')+'</div><div class="candidate-info"><div class="candidate-name">'+c.name+'</div><div class="candidate-role">'+c.role+'</div></div><span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span>'+(asgn?'<span class="time-badge">'+c.assignedSlot+'</span>':'')+'</div>';
+    var newBadge=c.isNew?'<span style="font-size:9px;background:var(--warning-light);color:#92400e;border-radius:3px;padding:1px 5px;margin-left:3px;font-weight:600;">Neu</span>':'';
+    var unassignBtn=asgn?'<button class="cand-unassign" onclick="event.stopPropagation();unassignCandidate('+c.id+')" title="Zuweisung aufheben">&times;</button>':'';
+    return '<div class="candidate-card'+(asgn?' assigned':'')+'" draggable="'+(!asgn)+'" data-id="'+c.id+'">'
+      +'<div class="candidate-avatar" style="background:'+AVATAR_COLORS[i%AVATAR_COLORS.length]+'">'+c.name.split(' ').map(function(n){return n[0];}).join('')+'</div>'
+      +'<div class="candidate-info"><div class="candidate-name">'+c.name+newBadge+'</div><div class="candidate-role">'+c.role+'</div></div>'
+      +'<span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span>'
+      +(asgn?'<span class="time-badge">'+c.assignedSlot+'</span>':'')
+      +unassignBtn
+      +'</div>';
   }).join('');
 }
 
@@ -1679,19 +1783,51 @@ function closeSuccess() { document.getElementById('successOverlay').classList.re
 // ============================================
 // feedbackState: { [candidateId]: { ag: 'pos'|'neg'|null, agComment:'', cand:'pos'|'neg'|null, candComment:'' } }
 var feedbackState = {};
+var fbFilterActive = 'all';
+
+function setFbFilter(filter) {
+  fbFilterActive = filter;
+  renderStep6();
+}
 
 function renderStep6() {
   candidates.forEach(function(c){
     if(!feedbackState[c.id]) feedbackState[c.id]={ag:null,agComment:'',cand:null,candComment:''};
   });
 
-  var assigned=candidates.filter(function(c){return c.assignedSlot;});
-  var totalFb=assigned.filter(function(c){var f=feedbackState[c.id];return f.ag||f.cand;}).length;
-  var posAg=assigned.filter(function(c){return feedbackState[c.id].ag==='pos';}).length;
-  var posCand=assigned.filter(function(c){return feedbackState[c.id].cand==='pos';}).length;
+  var assigned = candidates.filter(function(c){ return c.assignedSlot; });
+
+  // Counts for filter tabs
+  var cntAll     = assigned.length;
+  var cntPending = assigned.filter(function(c){ var f=feedbackState[c.id]; return !f.ag && !f.cand; }).length;
+  var cntPos     = assigned.filter(function(c){ var f=feedbackState[c.id]; return f.ag==='pos' && f.cand==='pos'; }).length;
+  var cntNeg     = assigned.filter(function(c){ var f=feedbackState[c.id]; return f.ag==='neg' && f.cand==='neg'; }).length;
+  var cntMix     = assigned.filter(function(c){ var f=feedbackState[c.id]; return (f.ag||f.cand) && !(f.ag===f.cand); }).length;
+
+  // Apply filter
+  var filtered = assigned.filter(function(c) {
+    var f = feedbackState[c.id];
+    if (fbFilterActive === 'pending') return !f.ag && !f.cand;
+    if (fbFilterActive === 'pos')     return f.ag === 'pos' && f.cand === 'pos';
+    if (fbFilterActive === 'neg')     return f.ag === 'neg' && f.cand === 'neg';
+    if (fbFilterActive === 'mix')     return (f.ag || f.cand) && !(f.ag === f.cand);
+    return true;
+  });
 
   var html='<div style="max-width:980px;margin:0 auto;">';
 
+  // Filter tabs
+  function tabHtml(id, label, count) {
+    var active = fbFilterActive === id;
+    return '<div class="fb-filter-tab'+(active?' active':'')+'" onclick="setFbFilter(\''+id+'\')">'+label+' <span style="opacity:.7;font-size:11px;">('+count+')</span></div>';
+  }
+  html += '<div class="fb-filter-tabs">'
+    + tabHtml('all',     'Alle',        cntAll)
+    + tabHtml('pending', 'Ausstehend',  cntPending)
+    + tabHtml('pos',     'Positiv',     cntPos)
+    + tabHtml('neg',     'Negativ',     cntNeg)
+    + tabHtml('mix',     'Gemischt',    cntMix)
+    + '</div>';
 
   // Legend hint
   html+='<div style="font-size:12px;color:var(--text-sec);margin-bottom:12px;display:flex;align-items:center;gap:16px;">'
@@ -1710,9 +1846,11 @@ function renderStep6() {
 
   if(assigned.length===0){
     html+='<tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:24px;">Noch keine Kandidaten zugewiesen</td></tr>';
+  } else if(filtered.length===0){
+    html+='<tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:24px;">Keine Eintraege in dieser Kategorie</td></tr>';
   }
 
-  assigned.forEach(function(c,i){
+  filtered.forEach(function(c,i){
     var f=feedbackState[c.id];
     var color=AVATAR_COLORS[i%AVATAR_COLORS.length];
     var initials=c.name.split(' ').map(function(n){return n[0];}).join('');
@@ -1786,6 +1924,199 @@ function setComment(candId, role, val) {
 function openCandidateProfile(candId) {
   var c=candidates.find(function(x){return x.id===candId;});
   showToast('Kandidatenprofil: '+c.name+' — oeffnet in Ankaadia');
+}
+
+// ============================================
+// FEATURE: KANDIDAT AUS SLOT ENTFERNEN
+// ============================================
+function unassignCandidate(candId) {
+  var c = candidates.find(function(x){ return x.id === candId; });
+  if (!c) return;
+  // Remove from whichever slot holds this candidate across all days
+  Object.keys(slotsPerDay).forEach(function(dayIdx) {
+    var slots = slotsPerDay[dayIdx] || [];
+    var slot = slots.find(function(s){ return s.candidateId === candId; });
+    if (slot) slot.candidateId = null;
+  });
+  c.assignedSlot = null;
+  c.assignedDay = null;
+  if (calendar) renderCalendarEvents();
+  renderCandidates();
+  renderDayTabs();
+  showToast(c.name + ' wurde aus Slot entfernt');
+}
+
+// ============================================
+// FEATURE: AD-HOC SLOT ERSTELLEN
+// ============================================
+function showAdHocSlotForm() {
+  var dayInfo = DAYS_DATA[currentDay];
+  document.getElementById('adHocDayLabel').textContent = dayInfo ? dayInfo.full : 'diesem Tag';
+  document.getElementById('adHocStart').value = '08:00';
+  document.getElementById('adHocEnd').value = '08:30';
+  document.getElementById('adHocModal').classList.add('active');
+}
+
+function closeAdHocModal() {
+  document.getElementById('adHocModal').classList.remove('active');
+}
+
+function createAdHocSlot() {
+  var start = document.getElementById('adHocStart').value;
+  var end   = document.getElementById('adHocEnd').value;
+  if (!start || !end) { showToast('Bitte Start- und Endzeit eingeben'); return; }
+  if (start >= end) { showToast('Endzeit muss nach Startzeit liegen'); return; }
+  if (!slotsPerDay[currentDay]) slotsPerDay[currentDay] = [];
+  var slots = slotsPerDay[currentDay];
+  var maxId = slots.length > 0 ? Math.max.apply(null, slots.map(function(s){ return s.id; })) : -1;
+  slots.push({ id: maxId + 1, start: start, end: end, candidateId: null, isAdHoc: true });
+  closeAdHocModal();
+  renderCalendarEvents();
+  renderCandidates();
+  renderDayTabs();
+  showToast('Zusatzslot ' + start + ' \u2013 ' + end + ' erstellt');
+}
+
+// ============================================
+// FEATURE: KANDIDAT NACHTRAEGLICH HINZUFUEGEN
+// ============================================
+var ANKAADIA_EXTRA_CANDS = [
+  { id:101, name:'Sunita Verma',    role:'Gesundheits- und Krankenpflegerin', country:'de' },
+  { id:102, name:'Ramesh Gupta',    role:'Altenpfleger',                      country:'at' },
+  { id:103, name:'Lakshmi Nair',    role:'OP-Pflegerin',                      country:'ch' },
+  { id:104, name:'Harish Patel',    role:'Intensivpfleger',                   country:'de' },
+  { id:105, name:'Anita Krishnan',  role:'Krankenschwester',                  country:'at' },
+  { id:106, name:'Suresh Iyer',     role:'Gesundheits- und Krankenpfleger',   country:'de' },
+];
+
+function showAddCandidateModal() {
+  document.getElementById('addCandSearch').value = '';
+  renderAddCandSearch('');
+  document.getElementById('addCandModal').classList.add('active');
+}
+
+function closeAddCandModal() {
+  document.getElementById('addCandModal').classList.remove('active');
+}
+
+function renderAddCandSearch(query) {
+  var existingIds = candidates.map(function(c){ return c.id; });
+  var results = ANKAADIA_EXTRA_CANDS.filter(function(c){
+    return existingIds.indexOf(c.id) < 0 &&
+      (!query || c.name.toLowerCase().indexOf(query.toLowerCase()) >= 0);
+  });
+  if (results.length === 0) {
+    document.getElementById('addCandResults').innerHTML =
+      '<div style="text-align:center;color:var(--text-sec);padding:20px;font-size:13px;">Keine weiteren Kandidaten gefunden</div>';
+    return;
+  }
+  var html = results.map(function(c, i){
+    var color = AVATAR_COLORS[i % AVATAR_COLORS.length];
+    var initials = c.name.split(' ').map(function(n){ return n[0]; }).join('');
+    return '<div class="add-cand-item" onclick="addCandidateToCircle('+c.id+')">'
+      + '<div class="dd-avatar" style="background:'+color+';width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;">'+initials+'</div>'
+      + '<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+c.name+'</div>'
+      + '<div style="font-size:11px;color:var(--text-sec);">'+c.role+'</div></div>'
+      + '<span class="country-badge '+c.country+'">'+c.country.toUpperCase()+'</span>'
+      + '</div>';
+  }).join('');
+  document.getElementById('addCandResults').innerHTML = html;
+}
+
+function addCandidateToCircle(candId) {
+  var cand = ANKAADIA_EXTRA_CANDS.find(function(c){ return c.id === candId; });
+  if (!cand) return;
+  candidates.push({ id:cand.id, name:cand.name, role:cand.role, country:cand.country, assignedSlot:null, assignedDay:null, isNew:true });
+  closeAddCandModal();
+  renderCandidates();
+  showToast(cand.name + ' wurde dem Interviewkreis hinzugefuegt');
+}
+
+// ============================================
+// FEATURE: TERMINE ZURUECKSETZEN
+// ============================================
+var resetSelectedDate = null;
+
+function showResetTermineModal() {
+  resetSelectedDate = null;
+  document.getElementById('btnConfirmReset').style.display = 'none';
+  renderResetTermineContent();
+  document.getElementById('resetTermineModal').classList.add('active');
+}
+
+function closeResetTermineModal() {
+  document.getElementById('resetTermineModal').classList.remove('active');
+}
+
+function renderResetTermineContent() {
+  computeSelectedDates();
+  var hasSuitable = selectedDates.some(function(d){ return scoreDate(d) >= 66; });
+  var html = '';
+
+  if (selectedDates.length === 0 || !hasSuitable) {
+    html = '<div style="text-align:center;padding:24px;">'
+      + '<div style="font-size:32px;margin-bottom:12px;">&#128197;</div>'
+      + '<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Keine geeigneten Alternativen vorhanden</div>'
+      + '<div style="font-size:13px;color:var(--text-sec);margin-bottom:16px;line-height:1.6;">Alle bisherigen Termine haben eine zu geringe Uebereinstimmung (&lt;66%). Eine neue Abstimmungsrunde ist notwendig.</div>'
+      + '<button class="btn btn-primary" onclick="startNewVotingRound()">Neue Abstimmung starten</button>'
+      + '</div>';
+  } else {
+    html += '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">Geeignete Alternativen aus bestehender Abstimmung:</div>';
+    html += '<div style="font-size:12px;color:var(--text-sec);margin-bottom:12px;">Waehlen Sie einen bereits abgestimmten Alternativtermin (&#8805;66%) um direkt zu Schritt 4 zu springen &mdash; ohne neue Abstimmungsrunde.</div>';
+
+    selectedDates.forEach(function(d) {
+      var score    = scoreDate(d);
+      var suitable = score >= 66;
+      var day      = DAYS_DATA.find(function(dd){ return dd.date === d; });
+      var label    = day ? day.full : d;
+      var isSelDay = resetSelectedDate === d;
+      var sc_color = score >= 66 ? 'var(--primary)' : score >= 33 ? 'var(--warning)' : 'var(--danger)';
+      var clickFn  = suitable ? 'selectResetDate(\'' + d + '\')' : '';
+
+      html += '<div class="reset-term-option' + (isSelDay ? ' selected' : '') + (suitable ? '' : ' unsuitable') + '" onclick="' + clickFn + '">'
+        + '<div style="flex:1;">'
+        + '<div style="font-size:13px;font-weight:600;color:var(--text);">' + label + '</div>'
+        + (!suitable ? '<div style="font-size:11px;color:var(--danger);margin-top:2px;">Zu geringe Uebereinstimmung &mdash; nicht empfohlen</div>' : '')
+        + '</div>'
+        + '<div style="font-size:17px;font-weight:700;color:' + sc_color + ';">' + score + '%</div>'
+        + (isSelDay ? '<div style="color:var(--primary);font-size:16px;">&#10003;</div>' : '')
+        + '</div>';
+    });
+
+    html += '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">'
+      + '<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);cursor:pointer;">'
+      + '<input type="checkbox" id="keepAssignments" checked style="accent-color:var(--primary);"> '
+      + 'Kandidatenzuweisungen uebernehmen (wenn neuer Tag gleiche Zeitstruktur hat)</label>'
+      + '</div>';
+  }
+
+  document.getElementById('resetTermineContent').innerHTML = html;
+}
+
+function selectResetDate(dateStr) {
+  resetSelectedDate = dateStr;
+  document.getElementById('btnConfirmReset').style.display = '';
+  renderResetTermineContent();
+}
+
+function confirmResetTermine() {
+  if (!resetSelectedDate) return;
+  var keepEl = document.getElementById('keepAssignments');
+  var keepAsgn = keepEl && keepEl.checked;
+  if (!keepAsgn) {
+    candidates.forEach(function(c){ c.assignedSlot = null; c.assignedDay = null; });
+    slotsPerDay = {};
+  }
+  selectedDate = resetSelectedDate;
+  closeResetTermineModal();
+  openCircleStep(4);
+  showToast('Termin zurueckgesetzt auf ' + dayLabel(resetSelectedDate));
+}
+
+function startNewVotingRound() {
+  closeResetTermineModal();
+  openCircleStep(2);
+  showToast('Neue Abstimmung kann jetzt konfiguriert werden');
 }
 
 // ============================================
