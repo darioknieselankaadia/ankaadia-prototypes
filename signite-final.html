@@ -1,0 +1,2916 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signite – Talentpool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F3EF;--surface:#FFF;--surface2:#EFEDE8;--surface3:#E8E6E0;
+  --border:#E0DDD6;--border2:#C8C4BB;
+  --text:#18170F;--text2:#6A6760;--text3:#9C9890;
+  --blue:#1B5FDE;--blue-bg:#EBF0FD;--blue-mid:#C5D4FA;
+  --green:#1A7A4A;--green-bg:#E8F5EE;--green-mid:#A8D9BE;
+  --amber:#92500A;--amber-bg:#FDF0E0;--amber-mid:#F9C97A;
+  --red:#C0271A;--red-bg:#FDECEA;--red-mid:#F5B8B3;
+  --purple:#5B3DB8;--purple-bg:#F0ECFD;--purple-mid:#C9BBF5;
+  --r:10px;--rl:14px;
+  --sh:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh-lg:0 8px 32px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;height:100vh;overflow:hidden}
+
+/* ── SHELL ── */
+.shell{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:56px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
+.logo{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;margin-bottom:10px;letter-spacing:-.3px}
+.ni{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);transition:all .15s;position:relative}
+.ni:hover{background:var(--surface2);color:var(--text2)}
+.ni.active{background:var(--blue-bg);color:var(--blue)}
+.nbadge{position:absolute;top:3px;right:3px;background:#E84040;color:#fff;font-size:9px;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;font-family:'DM Mono',monospace;font-weight:600}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 28px 0;flex-shrink:0}
+.topbar-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.page-title{font-size:22px;font-weight:600;letter-spacing:-.5px}
+.page-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.tabs{display:flex}
+.tab{padding:10px 24px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2);transition:all .15s;user-select:none;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{border-bottom-color:var(--blue);color:var(--blue);font-weight:500}
+.tab-desc-bar{padding:10px 28px 10px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tab-desc-icon{font-size:14px;flex-shrink:0}
+.tab-desc-text{font-size:12px;color:var(--text2);line-height:1.5}
+.tab-desc-text strong{color:var(--text);font-weight:600}
+
+/* ── CONTENT AREAS ── */
+.view{display:none;flex:1;overflow:hidden}
+.view.active{display:flex}
+.scroll-content{flex:1;overflow-y:auto;padding:24px 28px}
+
+/* ── TALENT GRID ── */
+.filter-layout{display:flex;height:100%;overflow:hidden;width:100%}
+.filter-panel{width:220px;flex-shrink:0;overflow-y:auto;padding:18px 16px 18px 22px;border-right:1px solid var(--border);background:var(--surface)}
+.fp-section{margin-bottom:22px}
+.fp-section-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.fp-reset{font-size:11px;color:var(--blue);cursor:pointer;font-weight:400;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0}
+.fp-reset:hover{text-decoration:underline}
+.fp-label{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:5px;margin-top:10px;display:block}
+.fp-label:first-of-type{margin-top:0}
+.fp-select{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--surface);color:var(--text);margin-bottom:0;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.fp-select:focus{border-color:var(--blue)}
+.fp-pool-chip{display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);color:var(--text2);margin-bottom:6px;cursor:pointer;transition:all .15s}
+.fp-pool-chip.on{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.fp-pool-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fp-divider{height:1px;background:var(--border);margin:16px 0}
+
+.talent-scroll{flex:1;min-width:0;overflow-y:auto;padding:20px 24px}
+.talent-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.talent-toolbar-left{display:flex;align-items:center;gap:10px}
+.talent-search{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;width:220px}
+.talent-search input{background:none;border:none;outline:none;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%}
+.talent-search input::placeholder{color:var(--text3)}
+.talent-count{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace}
+.talent-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:2px}
+.tt-btn{width:30px;height:26px;border-radius:6px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text3);transition:all .15s}
+.tt-btn.on{background:var(--surface2);color:var(--text)}
+.talent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;align-content:start}
+.talent-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:box-shadow .18s,transform .18s;box-shadow:var(--sh);position:relative}
+.talent-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.10);transform:translateY(-2px)}
+.tc-thumb{height:100px;display:flex;align-items:center;justify-content:center;position:relative}
+.tc-blue{background:linear-gradient(135deg,#1B5FDE 0%,#2D72EF 100%)}
+.tc-teal{background:linear-gradient(135deg,#0E7C5E 0%,#1A9B75 100%)}
+.tc-amber{background:linear-gradient(135deg,#92500A 0%,#C27012 100%)}
+.tc-info{padding:11px 13px 13px}
+.tc-name{font-size:12px;font-weight:600;margin-bottom:3px;line-height:1.4}
+.tc-role{font-size:11px;color:var(--text2);margin-bottom:7px}
+.tc-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.tc-tag{display:inline-flex;padding:2px 7px;background:var(--red-bg);color:var(--red);border-radius:4px;font-size:10px;font-weight:600}
+.tc-tag-ok{display:inline-flex;padding:2px 7px;background:var(--green-bg);color:var(--green);border-radius:4px;font-size:10px;font-weight:600}
+.tc-lang{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.tc-id{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.65);position:absolute;top:6px;left:8px;background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px}
+.tc-req-btn{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.92);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--blue);transition:all .15s;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.tc-req-btn:hover{background:#fff;transform:scale(1.1)}
+
+/* ── INCOMING / TABLE ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh)}
+.tbl-toolbar{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.search-box{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:7px 11px;width:220px}
+.search-box input{background:none;border:none;outline:none;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%}
+.search-box input::placeholder{color:var(--text3)}
+.tbl-count{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:10px 16px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--bg);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+td{padding:11px 16px;vertical-align:middle}
+.avatar{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.av-blue{background:var(--blue-bg);color:var(--blue)}
+.av-green{background:var(--green-bg);color:var(--green)}
+.av-amber{background:var(--amber-bg);color:var(--amber)}
+.av-purple{background:var(--purple-bg);color:var(--purple)}
+.cand-cell{display:flex;align-items:center;gap:8px}
+.cand-name{font-size:13px;font-weight:500}
+.badge{display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.b-blue{background:var(--blue-bg);color:var(--blue)}
+.b-green{background:var(--green-bg);color:var(--green)}
+.b-amber{background:var(--amber-bg);color:var(--amber)}
+.b-red{background:var(--red-bg);color:var(--red)}
+.b-gray{background:var(--surface2);color:var(--text2)}
+.mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+.act-btns{display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.btn-ic{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text2);transition:all .15s}
+.btn-ic:hover{background:var(--surface2);border-color:var(--border2)}
+.btn-ic.chat{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.btn-ic.chat:hover{background:#D9E6FB}
+.btn-pkg{height:30px;padding:0 11px;border-radius:7px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all .15s;font-family:'DM Sans',sans-serif}
+.btn-pkg:hover{background:var(--green-bg);border-color:var(--green-mid);color:var(--green)}
+.hint-bar{margin-top:14px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text2);display:flex;gap:16px;align-items:center}
+
+/* ── CHAT LAYOUT ── */
+.chat-layout{display:flex;height:100%;overflow:hidden}
+.inbox-panel{width:290px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.ip-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ip-title{font-size:14px;font-weight:600;margin-bottom:9px;letter-spacing:-.2px}
+.ip-search{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:7px 11px}
+.ip-search input{background:none;border:none;outline:none;font-size:12px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%}
+.ip-search input::placeholder{color:var(--text3)}
+.inbox-list{flex:1;overflow-y:auto;padding:5px}
+.inbox-item{padding:10px 11px;border-radius:var(--r);cursor:pointer;transition:background .12s;margin-bottom:2px;border:1.5px solid transparent}
+.inbox-item:hover{background:var(--bg)}
+.inbox-item.sel{background:var(--blue-bg);border-color:var(--blue-mid)}
+.ii-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.ii-name{font-size:12px;font-weight:500}
+.ii-time{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.ii-prev{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.ii-tags{display:flex;gap:4px}
+.itag{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500}
+.itag-blue{background:var(--blue-bg);color:var(--blue)}
+.itag-amber{background:var(--amber-bg);color:var(--amber)}
+.itag-green{background:var(--green-bg);color:var(--green)}
+.udot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0}
+
+.chat-col{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.chat-topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ct-cand{display:flex;align-items:center;gap:10px}
+.ct-name{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.ct-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.mode-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:2px}
+.mode-btn{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);font-family:'DM Sans',sans-serif;transition:all .15s;display:flex;align-items:center;gap:5px}
+.mode-btn.active{background:var(--surface);color:var(--text);box-shadow:var(--sh)}
+.mode-btn.agent-on{background:var(--purple);color:#fff}
+
+.chat-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.msg-row{display:flex;flex-direction:column;gap:3px}
+.msg-row.me{align-items:flex-end}
+.msg-row.them{align-items:flex-start}
+.msg-row.ag{align-items:flex-start}
+.msg-meta{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;padding:0 3px}
+.bubble{max-width:68%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.6}
+.bubble.them{background:var(--surface);border:1px solid var(--border);border-radius:3px 12px 12px 12px}
+.bubble.me{background:var(--blue);color:#fff;border-radius:12px 3px 12px 12px}
+.bubble.agent{background:#fff;border:1px solid var(--purple-mid);border-radius:3px 12px 12px 12px;max-width:82%}
+.ag-label{font-size:10px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.typing{display:flex;align-items:center;gap:4px;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:3px 12px 12px 12px;width:fit-content}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce .9s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.sys-msg{text-align:center;font-size:11px;color:var(--text3);padding:2px 0}
+
+/* proposal cards */
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:13px 15px;max-width:82%;box-shadow:var(--sh)}
+.pc.in{border-left:3px solid var(--amber)}
+.pc.out{border-left:3px solid var(--blue);align-self:flex-end}
+.pc.agp{border-left:3px solid var(--purple)}
+.pc-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.pc-lbl.am{color:var(--amber)}.pc-lbl.bl{color:var(--blue)}.pc-lbl.pu{color:var(--purple)}
+.pc-amt{font-size:21px;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:2px}
+.pc-svcs{display:flex;flex-wrap:wrap;gap:4px;margin:7px 0}
+.pc-svc{padding:2px 8px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text2)}
+.pc-acts{display:flex;gap:5px;margin-top:9px}
+.pab{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid;font-family:'DM Sans',sans-serif;transition:all .15s}
+.pab-acc{background:var(--green-bg);color:var(--green);border-color:var(--green-mid)}.pab-acc:hover{background:#D4EEDD}
+.pab-ctr{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-mid)}.pab-ctr:hover{background:#D9E6FB}
+.pab-dec{background:var(--red-bg);color:var(--red);border-color:var(--red-mid)}.pab-dec:hover{background:#FAD9D6}
+
+/* input area */
+.input-area{background:var(--surface);border-top:1px solid var(--border);padding:12px 18px;flex-shrink:0}
+.tpl-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--border)}
+.tpl-chip{padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .15s;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.tpl-chip:hover{border-color:var(--blue-mid);color:var(--blue);background:var(--blue-bg)}
+.tpl-chip.pkg-chip{border-color:var(--green-mid);color:var(--green);background:var(--green-bg)}
+.tpl-chip.pkg-chip:hover{background:#D4EEDD}
+.agent-bar{background:var(--purple-bg);border:1px solid var(--purple-mid);border-radius:var(--r);padding:9px 13px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ag-status{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--purple)}
+.ag-dot{width:7px;height:7px;border-radius:50%;background:var(--purple);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ag-cfg{display:flex;align-items:center;gap:6px}
+.ag-cfg label{font-size:11px;color:var(--text2)}
+.ag-cfg select{padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none}
+.ag-go{padding:5px 13px;background:var(--purple);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ag-go:hover{background:#4D2FA8}
+.input-row{display:flex;gap:7px}
+.msg-input{flex:1;padding:9px 13px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+.msg-input:focus{border-color:var(--blue);background:var(--surface)}
+.msg-input::placeholder{color:var(--text3)}
+.send-btn{padding:9px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.send-btn:hover{background:#1650C2}
+
+/* info panel */
+.info-panel{width:240px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:16px}
+.info-sec{margin-bottom:16px}
+.info-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:7px}
+.info-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)}
+.info-row:last-child{border:none}
+.info-lbl{color:var(--text2)}
+.info-val{font-weight:500;font-size:12px;text-align:right}
+.floor-box{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--r);padding:9px 11px;margin-top:5px}
+.floor-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);margin-bottom:2px}
+.floor-amt{font-size:17px;font-weight:600;color:var(--amber);font-family:'DM Mono',monospace}
+.floor-note{font-size:10px;color:var(--amber);margin-top:2px;opacity:.8}
+.tl{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:9px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:6px;top:16px;bottom:-6px;width:1px;background:var(--border)}
+.tl-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;margin-top:2px;border:2px solid var(--surface)}
+.tl-green{background:var(--green)}.tl-amber{background:var(--amber)}.tl-blue{background:var(--blue)}.tl-gray{background:var(--border2)}
+.tl-text{font-size:11px;line-height:1.5;padding-bottom:10px;color:var(--text2)}
+.tl-date{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* ── LEISTUNGEN TAB ── */
+.leistungen-layout{display:flex;gap:22px;height:100%;overflow:hidden}
+.lk-left{flex:1;overflow-y:auto;padding:0}
+.lk-right{width:320px;flex-shrink:0;overflow-y:auto;padding:0}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);margin-bottom:16px}
+.cat-hd{padding:11px 18px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:background .12s}
+.cat-hd:hover{background:var(--surface3)}
+.cat-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);display:flex;align-items:center;gap:7px}
+.cat-count-pill{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--text3);font-family:'DM Mono',monospace}
+.cat-chev{color:var(--text3);font-size:10px;transition:transform .2s}
+.cat-chev.open{transform:rotate(180deg)}
+.svc-row{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border);transition:background .1s;gap:10px}
+.svc-row:last-child{border-bottom:none}
+.svc-row:hover{background:var(--bg)}
+.svc-row.off{opacity:.5}
+.tog{position:relative;width:36px;height:21px;cursor:pointer;display:block;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-track{position:absolute;inset:0;background:var(--border2);border-radius:11px;transition:background .2s}
+.tog-thumb{position:absolute;width:15px;height:15px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog input:checked~.tog-track{background:var(--blue)}
+.tog input:checked~.tog-thumb{transform:translateX(15px)}
+.svc-info-col{flex:1;min-width:0}
+.svc-name{font-size:13px;font-weight:500}
+.svc-desc{font-size:11px;color:var(--text3);margin-top:1px}
+.svc-pkgs{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+.pkg-chk-lbl{display:inline-flex;align-items:center;gap:3px;font-size:11px;cursor:pointer;transition:color .15s}
+.price-grp{display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--surface);flex-shrink:0;transition:border-color .15s}
+.price-grp:focus-within{border-color:var(--blue)}
+.price-grp.dis{opacity:.4;pointer-events:none}
+.price-pfx{padding:0 9px;font-size:11px;color:var(--text3);background:var(--bg);border-right:1px solid var(--border);height:32px;display:flex;align-items:center;font-family:'DM Mono',monospace}
+.price-inp{width:74px;padding:0 9px;height:32px;border:none;outline:none;font-size:13px;font-family:'DM Mono',monospace;color:var(--text);background:var(--surface);font-weight:500}
+.price-sfx{padding:0 8px;font-size:11px;color:var(--text3);height:32px;display:flex;align-items:center}
+
+/* preview panel */
+.preview-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden;position:sticky;top:0}
+.pv-head{padding:14px 18px;border-bottom:1px solid var(--border)}
+.pv-title{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.pv-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.pv-pkgs{padding:14px 18px;border-bottom:1px solid var(--border)}
+.pv-pkg-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px}
+.pv-pkg-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:var(--r);margin-bottom:5px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s}
+.pv-pkg-row:hover{border-color:var(--blue-mid)}
+.pv-pkg-name{font-size:12px;font-weight:500}
+.pv-pkg-cnt{font-size:11px;color:var(--text3)}
+.pv-pkg-price{font-size:13px;font-weight:600;font-family:'DM Mono',monospace;color:var(--blue)}
+.stats-grid{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:9px;border-bottom:1px solid var(--border)}
+.stat-c{background:var(--bg);border-radius:var(--r);padding:10px 12px}
+.stat-v{font-size:19px;font-weight:600;font-family:'DM Mono',monospace}
+.stat-l{font-size:11px;color:var(--text3);margin-top:1px}
+.act-list{padding:13px 18px}
+.act-item{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)}
+.act-item:last-child{border:none}
+.act-name{color:var(--text2)}
+.act-price{font-family:'DM Mono',monospace;font-weight:500}
+.floor-cfg{padding:14px 18px;background:var(--amber-bg);border-top:1px solid var(--amber-mid)}
+.fc-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);margin-bottom:5px}
+.fc-row{display:flex;align-items:center;gap:7px}
+.fc-inp{flex:1;padding:6px 10px;border:1px solid var(--amber-mid);border-radius:var(--r);font-size:14px;font-family:'DM Mono',monospace;font-weight:600;color:var(--amber);background:var(--surface);outline:none}
+.fc-note{font-size:11px;color:var(--amber);margin-top:4px;opacity:.8}
+
+/* save bar */
+.save-bar{position:fixed;bottom:0;left:56px;right:0;background:var(--surface);border-top:1px solid var(--border);padding:11px 28px;display:flex;align-items:center;justify-content:space-between;z-index:50;transform:translateY(100%);transition:transform .25s;box-shadow:0 -4px 20px rgba(0,0,0,.07)}
+.save-bar.vis{transform:translateY(0)}
+.save-msg{font-size:13px;color:var(--text2)}
+.save-msg strong{color:var(--text)}
+.save-btns{display:flex;gap:7px}
+.btn-save{padding:8px 20px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-save:hover{background:#1650C2}
+.btn-dis{padding:8px 14px;background:none;border:1px solid var(--border);border-radius:var(--r);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2)}
+.btn-dis:hover{background:var(--surface2)}
+
+/* ── CONTEXT BARS ── */
+.ctx-bar-green{border-bottom:1px solid var(--border);padding:9px 16px;background:var(--green-bg);display:flex;align-items:stretch;gap:0;flex-shrink:0}
+.ctx-bar-amber{border-bottom:1px solid var(--border);padding:9px 16px;background:var(--amber-bg);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ctx-item{display:flex;flex-direction:column;gap:1px;padding:0 14px;border-right:1px solid var(--green-mid)}
+.ctx-item:first-child{padding-left:0}
+.ctx-item:last-child{border-right:none}
+.ctx-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--green);opacity:.7}
+.ctx-val{font-size:12px;font-weight:600;color:var(--green)}
+.ctx-svcs{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.ctx-svc{padding:1px 6px;background:rgba(26,122,74,.12);border-radius:20px;font-size:10px;font-weight:500;color:var(--green)}
+.neg-left{display:flex;gap:14px;align-items:center}
+.neg-item{display:flex;flex-direction:column;gap:1px}
+.neg-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);opacity:.7}
+.neg-val{font-size:12px;font-weight:600;color:var(--amber)}
+.neg-open{font-size:11px;color:var(--amber);opacity:.8;font-style:italic}
+.ct-badge{display:inline-flex;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.ct-badge.vhd{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-mid)}
+.ct-badge.ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-mid)}
+/* question bubble */
+.q-bubble{background:var(--surface);border:1px solid var(--amber-mid);border-radius:3px 12px 12px 12px;padding:10px 13px;max-width:72%;font-size:13px;line-height:1.6}
+.q-lbl{font-size:10px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.q-opts{display:flex;flex-direction:column;gap:5px;margin-top:9px}
+.q-opt{padding:6px 12px;border-radius:7px;background:var(--bg);border:1px solid var(--border);font-size:12px;cursor:pointer;transition:all .15s;color:var(--text2)}
+.q-opt:hover{border-color:var(--blue-mid);color:var(--blue);background:var(--blue-bg)}
+/* coordination info card */
+.coord-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 13px;max-width:76%;font-size:12px}
+.coord-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.coord-row{display:flex;gap:8px;align-items:flex-start;padding:4px 0;border-bottom:1px solid var(--border)}
+.coord-row:last-child{border:none}
+.coord-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+.coord-text{line-height:1.5;color:var(--text)}
+.coord-date{font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);margin-top:1px}
+/* order box in info panel */
+.order-box{background:var(--green-bg);border:1px solid var(--green-mid);border-radius:var(--r);padding:10px 12px;margin-top:4px}
+.ob-head{font-size:11px;font-weight:600;color:var(--green);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.ob-row{display:flex;justify-content:space-between;font-size:12px;color:var(--green);padding:2px 0;opacity:.85}
+.ob-total{display:flex;justify-content:space-between;margin-top:7px;padding-top:7px;border-top:1px solid var(--green-mid)}
+.ob-total-l{font-size:12px;font-weight:600;color:var(--green)}
+.ob-total-v{font-size:16px;font-weight:600;color:var(--green);font-family:'DM Mono',monospace}
+/* open questions box */
+.open-box{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--r);padding:10px 12px;margin-top:4px}
+.oq-head{font-size:11px;font-weight:600;color:var(--amber);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.oq-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--amber);padding:3px 0;border-bottom:1px solid rgba(146,80,10,.15);line-height:1.45}
+.oq-item:last-child{border:none}
+.oq-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px}
+/* inbox section label */
+.inbox-section-label{padding:10px 14px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text3)}
+/* pkg modal */
+.overlay{position:fixed;inset:0;background:rgba(20,18,15,.42);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);box-shadow:var(--sh-lg);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px) scale(.98);transition:transform .2s;max-height:90vh}
+.overlay.open .modal{transform:translateY(0) scale(1)}
+.mh{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.mh-title{font-size:15px;font-weight:600;letter-spacing:-.3px}
+.mh-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.close-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:14px}
+.close-btn:hover{background:var(--surface2)}
+.mb{flex:1;overflow-y:auto;padding:18px 20px}
+.mf{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:7px;flex-shrink:0}
+.btn-primary{padding:9px 20px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-primary:hover{background:#1650C2}
+.btn-secondary{padding:9px 16px;background:none;border:1px solid var(--border);border-radius:var(--r);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2)}
+.btn-secondary:hover{background:var(--surface2)}
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.pkg-card{border:1.5px solid var(--border);border-radius:var(--rl);padding:14px;cursor:pointer;transition:all .15s;position:relative}
+.pkg-card:hover{border-color:var(--border2)}
+.pkg-card.sel{border-color:var(--blue);background:var(--blue-bg)}
+.pkg-card.pop::before{content:'Empfohlen';position:absolute;top:-1px;right:12px;background:var(--blue);color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:0 0 6px 6px;letter-spacing:.3px}
+.pk-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.pk-price{font-size:19px;font-weight:600;color:var(--blue);margin-bottom:5px}
+.pk-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.sec-hd{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px}
+.msvc-row{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.msvc-row:last-child{border:none}
+.msvc-info{flex:1}
+.msvc-name{font-size:13px;font-weight:500}
+.msvc-desc{font-size:11px;color:var(--text3);margin-top:1px}
+.msvc-price{font-size:12px;font-weight:500;color:var(--text2);margin:0 14px;font-family:'DM Mono',monospace;white-space:nowrap}
+.m-toggle{position:relative;width:36px;height:21px;cursor:pointer;display:block;flex-shrink:0}
+.m-toggle input{opacity:0;width:0;height:0;position:absolute}
+.mt-track{position:absolute;inset:0;background:var(--border2);border-radius:11px;transition:background .2s}
+.mt-thumb{position:absolute;width:15px;height:15px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.m-toggle input:checked~.mt-track{background:var(--blue)}
+.m-toggle input:checked~.mt-thumb{transform:translateX(15px)}
+.sum-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-top:14px}
+.sum-line{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px}
+.sum-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.sum-lbl{font-size:13px;font-weight:600}
+.sum-amt{font-size:21px;font-weight:600;color:var(--blue);font-family:'DM Mono',monospace}
+.sum-note{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:11px 18px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);z-index:300;transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── PREISMATRIX ── */
+.matrix-toggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--blue);cursor:pointer;margin-top:6px;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;font-weight:500}
+.matrix-toggle:hover{text-decoration:underline}
+.matrix-wrap{margin-top:10px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:none}
+.matrix-wrap.open{display:block}
+.matrix-table{width:100%;border-collapse:collapse;font-size:11px}
+.matrix-table th{padding:6px 8px;background:var(--bg);color:var(--text3);font-weight:600;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.matrix-table th.region-header{text-align:center;border-left:1px solid var(--border)}
+.matrix-table td{padding:5px 8px;border-bottom:1px solid var(--border);border-left:1px solid var(--border);vertical-align:middle}
+.matrix-table tr:last-child td{border-bottom:none}
+.matrix-table td:first-child{border-left:none;font-size:11px;font-weight:500;color:var(--text2);white-space:nowrap;background:var(--bg)}
+.matrix-inp{width:72px;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text);background:var(--surface);outline:none;text-align:right}
+.matrix-inp:focus{border-color:var(--blue)}
+.matrix-inp:disabled{opacity:.4;background:var(--bg)}
+.matrix-base-note{font-size:10px;color:var(--text3);padding:5px 8px;background:var(--bg);border-top:1px solid var(--border)}
+
+/* ── ROLE SWITCHER ── */
+.role-bar{background:#18170F;padding:0 28px;display:flex;align-items:center;gap:12px;height:36px;flex-shrink:0}
+.role-bar-label{font-size:11px;color:rgba(255,255,255,.4);font-weight:500;letter-spacing:.3px}
+.role-btn{padding:4px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:none;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;transition:all .15s}
+.role-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
+.role-btn.active{background:#fff;color:#18170F;border-color:#fff}
+.ag-layout{display:flex;height:100%;overflow:hidden;width:100%}
+.ag-left{width:320px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+.ag-left-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ag-left-title{font-size:14px;font-weight:600;letter-spacing:-.2px;margin-bottom:10px}
+.ag-left-scroll{flex:1;overflow-y:auto}
+.bedarf-item{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;position:relative}
+.bedarf-item:hover{background:var(--bg)}
+.bedarf-item.sel{background:var(--blue-bg)}
+.bedarf-item.sel::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+.bi-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:3px}
+.bi-title{font-size:13px;font-weight:600}
+.bi-count{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3)}
+.bi-meta{font-size:11px;color:var(--text2);margin-bottom:6px}
+.bi-tags{display:flex;gap:4px;flex-wrap:wrap}
+.bi-tag{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500}
+.bi-tag-blue{background:var(--blue-bg);color:var(--blue)}
+.bi-tag-green{background:var(--green-bg);color:var(--green)}
+.bi-tag-amber{background:var(--amber-bg);color:var(--amber)}
+.bi-tag-gray{background:var(--surface2);color:var(--text2)}
+.bi-matches{display:flex;align-items:center;gap:5px;margin-top:7px;padding-top:7px;border-top:1px solid var(--border)}
+.ag-right{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.ag-right-head{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0}
+.ag-rh-title{font-size:15px;font-weight:600;letter-spacing:-.3px;margin-bottom:2px}
+.ag-rh-sub{font-size:12px;color:var(--text2)}
+.ag-rh-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:12px}
+.ag-filter-chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .15s}
+.ag-filter-chip:hover,.ag-filter-chip.on{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.ag-mode-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:2px}
+.ag-mode-btn{padding:5px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);font-family:'DM Sans',sans-serif;transition:all .15s}
+.ag-mode-btn.on{background:var(--surface);color:var(--text);box-shadow:var(--sh)}
+.ag-mode-btn.agent-on{background:var(--purple);color:#fff}
+.match-scroll{flex:1;overflow-y:auto;padding:16px 20px;background:var(--bg)}
+.match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;align-content:start}
+.match-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .15s,transform .15s;position:relative}
+.match-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.10);transform:translateY(-1px)}
+.mc-header{padding:14px 16px 10px;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--border)}
+.mc-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.mc-info{flex:1;min-width:0}
+.mc-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.mc-sub{font-size:11px;color:var(--text2)}
+.mc-match-badge{position:absolute;top:12px;right:12px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;font-family:'DM Mono',monospace}
+.mc-match-high{background:var(--green-bg);color:var(--green)}
+.mc-match-mid{background:var(--blue-bg);color:var(--blue)}
+.mc-match-low{background:var(--purple-bg);color:var(--purple)}
+.mc-score-section{padding:10px 16px;border-bottom:1px solid var(--border)}
+.mc-score-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.mc-score-row:last-child{margin-bottom:0}
+.mc-score-label{font-size:11px;color:var(--text2);width:86px;flex-shrink:0}
+.mc-score-bar{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.mc-score-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.mc-score-val{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);min-width:28px;text-align:right}
+.mc-body{padding:10px 16px 12px}
+.mc-facts{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.mc-fact{font-size:11px;color:var(--text2)}
+.mc-actions{display:flex;gap:6px}
+.mc-btn-primary{flex:1;padding:7px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.mc-btn-primary:hover{background:#1650C2}
+.mc-btn-sec{padding:7px 12px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;cursor:pointer;background:var(--surface);font-family:'DM Sans',sans-serif;color:var(--text2)}
+.mc-btn-sec:hover{background:var(--surface2)}
+.agent-panel{background:var(--surface);border-left:1px solid var(--border);width:280px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden}
+.ap-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.ap-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);animation:pulse 1.8s infinite}
+.ap-title{font-size:13px;font-weight:600;color:var(--purple)}
+.ap-body{flex:1;overflow-y:auto;padding:14px 16px}
+.ap-sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px}
+.ap-insight{padding:9px 12px;background:var(--purple-bg);border:1px solid var(--purple-mid);border-radius:var(--r);font-size:12px;color:var(--purple);line-height:1.6;margin-bottom:6px}
+.ap-warning{padding:9px 12px;background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--r);font-size:12px;color:var(--amber);line-height:1.6;margin-bottom:6px}
+.ap-action-btn{width:100%;padding:9px 12px;background:var(--purple);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.ap-action-btn:hover{background:#4D2FA8}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">S</div>
+    <div class="ni active">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </div>
+    <div class="ni" style="position:relative">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nbadge">3</span>
+    </div>
+    <div class="ni">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div class="ni" style="margin-top:auto">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Role Switcher -->
+    <div class="role-bar">
+      <span class="role-bar-label">Ansicht:</span>
+      <button class="role-btn active" id="role-anbieter" onclick="switchRole('anbieter')">Anbieter-Ansicht</button>
+      <div style="width:1px;height:16px;background:rgba(255,255,255,.15)"></div>
+      <button class="role-btn" id="role-arbeitgeber" onclick="switchRole('arbeitgeber')">Arbeitgeber-Ansicht</button>
+    </div>
+    <div id="role-content" style="flex:1;overflow:hidden;min-height:0;display:flex;min-width:0">
+
+    <!-- ANBIETER SHELL -->
+    <div id="anbieter-shell" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;min-width:0">
+    <div class="topbar">
+      <div class="topbar-row">
+        <div>
+          <div class="page-title">Talentpool</div>
+          <div class="page-sub">Ankaadia Master GmbH</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab" id="tab-talente" onclick="switchTab('talente')">Meine Talente</div>
+        <div class="tab active" id="tab-anfragen" onclick="switchTab('anfragen')">Eingehende Anfragen</div>
+        <div class="tab" id="tab-auftraege" onclick="switchTab('auftraege')">Laufende Aufträge</div>
+        <div class="tab" id="tab-leistungen" onclick="switchTab('leistungen')">Leistungen &amp; Preise</div>
+        <div class="tab" id="tab-profil" onclick="switchTab('profil')">Agentur-Profil</div>
+      </div>
+    </div>
+    <div class="tab-desc-bar" id="tabDescBar">
+      <span class="tab-desc-icon">💬</span>
+      <span class="tab-desc-text" id="tabDescText"></span>
+    </div>
+
+    <!-- TAB: Talente -->
+    <div class="view" id="view-talente">
+      <div class="filter-layout">
+        <div class="filter-panel">
+          <div class="fp-section">
+            <div class="fp-section-title">Talentpools</div>
+            <div class="fp-pool-chip on"><div class="fp-pool-dot" style="background:var(--blue)"></div>Agentur-Pool</div>
+            <div class="fp-pool-chip"><div class="fp-pool-dot" style="background:var(--green)"></div>Nurses (DE)</div>
+            <div class="fp-pool-chip"><div class="fp-pool-dot" style="background:var(--purple)"></div>Expert Talentpool</div>
+            <div class="fp-pool-chip"><div class="fp-pool-dot" style="background:var(--amber)"></div>Zeki</div>
+          </div>
+          <div class="fp-divider"></div>
+          <div class="fp-section">
+            <div class="fp-section-title">
+              Filter
+              <button class="fp-reset">Zurücksetzen</button>
+            </div>
+            <span class="fp-label">Berufsbereich</span>
+            <select class="fp-select"><option>Alle Bereiche (6)</option><option>Gesundheit & Pflege</option><option>Medizin</option><option>Handwerk</option></select>
+            <span class="fp-label" style="margin-top:10px">Berufsgruppe</span>
+            <select class="fp-select"><option>Alle Gruppen (11)</option><option>Krankenpflege</option><option>Altenpflege</option><option>Ärzte</option></select>
+            <span class="fp-label" style="margin-top:10px">Beruf</span>
+            <select class="fp-select"><option>Alle Berufe (37)</option><option>GKP</option><option>Arzt/Ärztin</option><option>Apotheker/in</option></select>
+          </div>
+          <div class="fp-divider"></div>
+          <div class="fp-section">
+            <div class="fp-section-title">Herkunft &amp; Sprache</div>
+            <span class="fp-label">Land</span>
+            <select class="fp-select"><option>Alle Länder</option><option>Deutschland</option><option>Ägypten</option><option>Philippinen</option><option>Marokko</option></select>
+            <span class="fp-label" style="margin-top:10px">Sprachniveau</span>
+            <select class="fp-select"><option>Alle Niveaus</option><option>A1</option><option>A2</option><option>B1</option><option>B2+</option></select>
+          </div>
+          <div class="fp-divider"></div>
+          <div class="fp-section">
+            <div class="fp-section-title">Status</div>
+            <span class="fp-label">Bescheid</span>
+            <select class="fp-select"><option>Alle</option><option>Bescheid vorhanden</option><option>Bescheid fehlt</option></select>
+            <span class="fp-label" style="margin-top:10px">Funktion</span>
+            <select class="fp-select"><option>Alle</option><option>Fachkraft</option><option>Auszubildend/-r</option></select>
+          </div>
+        </div>
+        <div class="talent-scroll">
+          <div class="talent-toolbar">
+            <div class="talent-toolbar-left">
+              <div class="talent-search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input placeholder="Kandidaten suchen..."/>
+              </div>
+              <span class="talent-count" id="talentCount">12 Kandidaten</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="talent-toggle">
+                <button class="tt-btn on" id="ttBtnGrid" title="Kachelansicht" onclick="setTalentMode('grid')">⊞</button>
+                <button class="tt-btn" id="ttBtnList" title="Listenansicht" onclick="setTalentMode('list')">☰</button>
+              </div>
+              <div style="width:1px;height:20px;background:var(--border)"></div>
+              <button id="ttBtnMatch" class="tt-btn" title="Matching-Modus" onclick="setTalentMode('match')" style="width:auto;padding:0 10px;font-size:11px;font-weight:600;gap:5px;display:flex;align-items:center">
+                <span style="font-size:12px">◎</span> Matching
+              </button>
+            </div>
+          </div>
+          <div id="matchModeBar" style="display:none" class="match-mode-bar">
+            <div class="mmb-left">
+              <div class="mmb-dot"></div>
+              <span>Kandidaten werden gegen Ihre Bedarfe gematcht</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;color:var(--purple)">Bedarf:</span>
+              <select class="mmb-select" id="matchBedarfSelect" onchange="renderTalentGrid()">
+                <option value="all">Alle Bedarfe</option>
+                <option value="b-001">GKP – Station 4B (×3)</option>
+                <option value="b-002">Arzt Innere Medizin (×1)</option>
+                <option value="b-003">Pflegefachfrau Azubi (×4)</option>
+              </select>
+            </div>
+          </div>
+          <div class="talent-grid" id="talentGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Anfragen -->
+    <div class="view active" id="view-anfragen">
+      <div class="chat-layout">
+        <div class="inbox-panel">
+          <div class="ip-head">
+            <div class="ip-title">Eingehende Anfragen</div>
+            <div class="ip-search">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input placeholder="Suchen..."/>
+            </div>
+          </div>
+          <div class="inbox-list" id="inboxList"></div>
+        </div>
+        <div class="chat-col" id="anfragenChatCol"></div>
+        <div class="info-panel" id="infoPanel"></div>
+      </div>
+    </div>
+
+    <!-- TAB: Laufende Aufträge -->
+    <div class="view" id="view-auftraege">
+      <div class="chat-layout">
+        <div class="inbox-panel">
+          <div class="ip-head">
+            <div class="ip-title">Laufende Aufträge</div>
+            <div class="ip-search">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input placeholder="Suchen..."/>
+            </div>
+          </div>
+          <div class="inbox-list" id="auftragList"></div>
+        </div>
+        <div class="chat-col" id="auftragChatCol"></div>
+        <div class="info-panel" id="auftragInfoPanel"></div>
+      </div>
+    </div>
+
+    <!-- TAB: Leistungen -->
+    <div class="view" id="view-leistungen">
+      <div class="scroll-content">
+        <div class="leistungen-layout">
+          <div class="lk-left" id="lkLeft"></div>
+          <div class="lk-right" id="lkRight"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Agentur-Profil -->
+    <div class="view" id="view-profil">
+      <div class="scroll-content" style="background:var(--bg)">
+        <div id="profilContent"></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /anbieter-shell -->
+
+    <!-- ARBEITGEBER VIEW -->
+    <div id="arbeitgeber-shell" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;min-width:0">
+  <!-- Arbeitgeber topbar -->
+  <div class="topbar" style="padding-bottom:0">
+    <div class="topbar-row">
+      <div>
+        <div class="page-title">Talent-Matching</div>
+        <div class="page-sub">Charité – Universitätsmedizin Berlin</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" id="agtab-matching" onclick="switchAgTab('matching')">KI-Matching</div>
+      <div class="tab" id="agtab-suche" onclick="switchAgTab('suche')">Talentsuche</div>
+      <div class="tab" id="agtab-anfragen" onclick="switchAgTab('anfragen')">Meine Anfragen</div>
+    </div>
+  </div>
+  <div class="tab-desc-bar" style="flex-shrink:0">
+    <span>🤖</span>
+    <span class="tab-desc-text"><strong>KI-Matching</strong> — Der Agent analysiert Ihre Bedarfe und schlägt automatisch passende Kandidaten aus dem Talentpool vor, mit Matching-Score nach Qualifikation, Sprache, Verfügbarkeit und Region.</span>
+  </div>
+  <div class="ag-layout" id="agMatchingView" style="flex:1;min-height:0;overflow:hidden;display:flex;min-width:0">
+    <!-- Left: Bedarfe list -->
+    <div class="ag-left">
+      <div class="ag-left-head">
+        <div class="ag-left-title">Meine Bedarfe</div>
+        <div style="font-size:11px;color:var(--text2)">aus Order Management importiert</div>
+      </div>
+      <div class="ag-left-scroll" id="bedarfeList"></div>
+    </div>
+    <!-- Right: Matches -->
+    <div class="ag-right">
+      <div class="ag-right-head">
+        <div class="ag-rh-title" id="agRhTitle">Bedarf auswählen</div>
+        <div class="ag-rh-sub" id="agRhSub">Wähle einen Bedarf um Kandidaten-Vorschläge zu sehen</div>
+        <div class="ag-rh-row" id="agRhRow" style="display:none">
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="agFilterChips"></div>
+          <div class="ag-mode-toggle">
+            <button class="ag-mode-btn on" id="agBtnSuche" onclick="setAgMode('suche')">🔍 Suchergebnisse</button>
+            <button class="ag-mode-btn" id="agBtnAgent" onclick="setAgMode('agent')">◉ KI-Agent</button>
+          </div>
+        </div>
+      </div>
+      <div class="match-scroll" id="matchScroll">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:8px;color:var(--text3)">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div style="font-size:14px">Wähle einen Bedarf links</div>
+          <div style="font-size:12px">Der Agent schlägt passende Kandidaten vor</div>
+        </div>
+      </div>
+    </div>
+    <!-- Agent panel (hidden by default) -->
+    <div class="agent-panel" id="agentPanel" style="display:none">
+      <div class="ap-head">
+        <div class="ap-dot"></div>
+        <div class="ap-title">KI-Agent Analyse</div>
+      </div>
+      <div class="ap-body" id="agentPanelBody"></div>
+    </div>
+  </div>
+    </div><!-- /arbeitgeber-shell -->
+    </div><!-- /role-content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- Package booking overlay -->
+<div class="overlay" id="pkgOverlay">
+  <div class="modal" style="width:680px">
+    <div class="mh">
+      <div><div class="mh-title">Leistungspaket buchen</div><div class="mh-sub" id="pkgSubTitle">Kandidat: –</div></div>
+      <button class="close-btn" onclick="closeOverlay('pkgOverlay')">✕</button>
+    </div>
+    <div class="mb">
+      <div class="sec-hd">Paket wählen</div>
+      <div class="pkg-grid" id="pkgGrid"></div>
+      <div class="sec-hd">Einzelleistungen anpassen</div>
+      <div id="pkgSvcList"></div>
+      <div class="sum-box">
+        <div id="sumLines"></div>
+        <div class="sum-total"><div class="sum-lbl">Gesamt</div><div class="sum-amt" id="sumAmt">–</div></div>
+        <div class="sum-note">Preise zzgl. MwSt. · Abrechnung nach Leistungserbringung</div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn-secondary" onclick="closeOverlay('pkgOverlay')">Abbrechen</button>
+      <button class="btn-primary" onclick="bookPkg()">Anfrage mit Paket senden →</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar" id="saveBar">
+  <div class="save-msg"><strong id="changeCount">0 Änderungen</strong> noch nicht gespeichert</div>
+  <div class="save-btns">
+    <button class="btn-dis" onclick="discardChanges()">Verwerfen</button>
+    <button class="btn-save" onclick="saveChanges()">Speichern</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+const TALENTS=[
+  {id:'001010y4ak',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'tc-blue',tag:true},
+  {id:'001010y4av',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'tc-teal',tag:true},
+  {id:'001010y4ax',name:'Bauten- u. Objektbeschichter/in',role:'Fachkraft',col:'tc-amber',tag:true},
+  {id:'001010y4bw',name:'Arzt/Ärztin',role:'Auszubildend/-r',col:'tc-blue',tag:false},
+  {id:'001010y4ce',name:'Arzt/Ärztin',role:'Fachkraft',col:'tc-teal',tag:true},
+  {id:'001010y4ch',name:'Arzt/Ärztin',role:'Fachkraft',col:'tc-blue',tag:true},
+  {id:'001010y4cj',name:'Arzt/Ärztin',role:'Fachkraft',col:'tc-teal',tag:true},
+  {id:'001010y4cv',name:'Arzt/Ärztin',role:'Auszubildend/-r',col:'tc-amber',tag:false},
+  {id:'001010y4cx',name:'Pflegefachfrau/-mann',role:'Fachkraft',col:'tc-blue',tag:true},
+  {id:'0010t0m01w',name:'Apotheker/in',role:'Fachkraft',col:'tc-teal',tag:false},
+  {id:'0010t0m02h',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'tc-blue',tag:true},
+  {id:'0010t0m02i',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'tc-amber',tag:true},
+];
+
+// ── ANFRAGEN (offene Verhandlungen — kein Paket gebucht) ──
+const INBOX=[
+  {id:'anf-001',name:'Gesundheits- u. Krankenpfleger/in',kandidat_id:'001010y4ak',anonym:true,
+   provider:'St. Elisabeth Klinikum GmbH',country:'🇪🇬 Ägypten',role:'Fachkraft',lang:'A2',
+   floor:4200,type:'Krankenhaus',prev:7,av:'GK',avc:'av-blue',status:'neu',time:'09:14',
+   paket:null, preis:null, leistungen_gebucht:null,
+   preview:'Rückfrage zu Starttermin & Bedarf',
+   offene_fragen:['Starttermin unklar — Q3 oder Q4?','Relocation benötigt?','Paket noch nicht gewählt'],
+   tl:[{d:'tl-blue',t:'Anfrage eingegangen',dt:'09.04.26 09:14'}],
+   msgs:[
+     {from:'them',text:'Guten Tag, wir haben großes Interesse an diesem Kandidaten für unsere Intensivstation. Können Sie uns mehr zu den Konditionen und der Verfügbarkeit sagen?',time:'09:14'},
+     {from:'me',text:'Guten Tag! Gerne. Damit wir Ihnen ein passendes Angebot machen können: Wann planen Sie die Besetzung — Q3 oder Q4 dieses Jahres?',time:'09:31'},
+     {from:'them',text:'Eigentlich so bald wie möglich, aber realistisch wohl Q3. Wir haben noch eine laufende Stelle die im Juni ausläuft.',time:'09:48'},
+     {from:'question',question:'Benötigen Sie Unterstützung bei Unterkunft und Anmeldung für den Kandidaten?',options:['Ja, Relocation vollständig','Nur Anmeldung / Behörden','Nein, intern geregelt']},
+   ]},
+  {id:'anf-002',name:'Arzt/Ärztin — Allgemeinmedizin',kandidat_id:'001010y4av',anonym:false,
+   provider:'MVZ Praxis Nord GmbH',country:'🇸🇾 Syrien',role:'Fachkraft',lang:'B1',
+   floor:5000,type:'Praxis',prev:2,av:'AÄ',avc:'av-green',status:'antwort',time:'08.04.',
+   paket:'Vollvermittlung', preis:'6.500 €', leistungen_gebucht:['Vermittlung','Sprachkurs B1–B2','Berufsanerkennung','Behördenbegleitung','Relocation'],
+   preview:'Gegenvorschlag 5.200 € eingegangen',
+   offene_fragen:['Gegenvorschlag wartet auf Reaktion','Berufsanerkennung unklar'],
+   tl:[{d:'tl-blue',t:'Anfrage eingegangen',dt:'08.04.26 14:22'},{d:'tl-amber',t:'Angebot 6.500 € gesendet',dt:'08.04.26 15:10'},{d:'tl-amber',t:'Gegenvorschlag erhalten',dt:'08.04.26 17:40'}],
+   msgs:[
+     {from:'them',text:'Wir suchen einen Allgemeinmediziner für unser MVZ. Welche Konditionen bieten Sie für Vollvermittlung inkl. Anerkennung?',time:'14:22'},
+     {from:'me',text:'Für Vollvermittlung mit Sprachkurs B1→B2, Berufsanerkennung, Behördenbegleitung und Relocation kalkulieren wir 6.500 € netto. Zahlbar nach Einstellung.',time:'15:10'},
+     {from:'proposal-out',amount:'6.500 €',services:['Vermittlung','Sprachkurs B1–B2','Berufsanerkennung','Behördenbegleitung','Relocation'],time:'15:10'},
+     {from:'proposal-in',amount:'5.200 €',services:['Vermittlung','Sprachkurs B1–B2','Berufsanerkennung'],note:'Relocation können wir selbst organisieren. Können wir uns auf 5.200 € ohne Relocation einigen?',time:'17:40'},
+   ]},
+  {id:'anf-003',name:'Pflegefachfrau/-mann',kandidat_id:'001010y4cx',anonym:true,
+   provider:'Seniorenresidenz Sonnenhof',country:'🇵🇭 Philippinen',role:'Fachkraft',lang:'A1',
+   floor:3200,type:'Pflegeheim',prev:12,av:'PF',avc:'av-amber',status:'warten',time:'07.04.',
+   paket:null, preis:'1.500 €', leistungen_gebucht:['Vermittlung','Dokumentenprüfung'],
+   preview:'Keine Antwort auf Rückfrage seit 3 Tagen',
+   offene_fragen:['Keine Antwort seit 3 Tagen','Budget unklar'],
+   tl:[{d:'tl-blue',t:'Anfrage eingegangen',dt:'07.04.26 09:22'},{d:'tl-amber',t:'Rückfrage gesendet',dt:'07.04.26 10:05'},{d:'tl-gray',t:'Wartet auf Antwort',dt:'seit 3 Tagen'}],
+   msgs:[
+     {from:'them',text:'Hallo, wir brauchen dringend Pflegepersonal aus den Philippinen. Bitte Angebot zusenden.',time:'09:22'},
+     {from:'me',text:'Guten Tag! Kurze Rückfrage: Für den Kandidaten mit A1-Sprachniveau ist der Kursweg bis zur Berufsanerkennung ca. 12–14 Monate. Passt das zu Ihrem Planungshorizont?',time:'10:05'},
+     {from:'sys',text:'Keine Antwort seit 3 Tagen'},
+   ]},
+];
+
+// ── AUFTRÄGE (bestätigt — Kandidat + Paket bekannt) ──
+const AUFTRAEGE=[
+  {id:'auf-001',name:'Nina Müller',kandidat_id:'001010m01x',anonym:false,
+   provider:'Charité – Universitätsmedizin',country:'🇩🇪 Deutschland',role:'Fachkraft',beruf:'Pflegefachfrau/-mann',
+   lang:'A2→B2',paket:'Standard',leistungen:['Vermittlung','Sprachkurs A1–B2','Berufsanerkennung','Behördenbegleitung'],
+   preis:'3.800 €',startdatum:'01.06.2026',av:'NM',avc:'av-green',time:'19.02.',
+   preview:'Sprachkurs läuft — B1-Prüfung am 15.05.',
+   tl:[{d:'tl-green',t:'Auftrag bestätigt — 3.800 €',dt:'19.02.26 15:55'},{d:'tl-green',t:'Sprachkurs A1 gestartet',dt:'01.03.26'},{d:'tl-blue',t:'B1-Prüfung am 15.05.',dt:'laufend'}],
+   msgs:[
+     {from:'sys',text:'Auftrag bestätigt am 19.02.26 — Paket Standard · 3.800 €'},
+     {from:'them',text:'Können Sie den genauen Starttermin für den Sprachkurs bestätigen? Wir möchten intern planen.',time:'19.02. 16:10'},
+     {from:'me',text:'Der Kurs startet am 01.03. mit Niveau A1 bei DeutschAkademie — montags und mittwochs, 18–20 Uhr, online.',time:'19.02. 17:02'},
+     {from:'coord',title:'Kursübersicht',items:[{icon:'📚',text:'Sprachkurs A1 aktiv',date:'seit 01.03.26'},{icon:'📝',text:'B1-Prüfung geplant',date:'15.05.2026'},{icon:'🎯',text:'B2-Abschluss geplant',date:'Sept. 2026'}]},
+     {from:'them',text:'Wer begleitet den Anerkennungsantrag — läuft das über Sie?',time:'20.02. 09:14'},
+     {from:'me',text:'Das übernehmen vollständig wir. Nach der B1-Prüfung sammle ich alle Dokumente und stelle den Antrag bei der Bezirksregierung ein. Sie müssen nichts selbst einreichen.',time:'20.02. 10:45'},
+   ]},
+  {id:'auf-002',name:'Anonym (001010m01w)',kandidat_id:'001010m01w',anonym:true,
+   provider:'Asklepios Kliniken GmbH',country:'🇦🇿 Aserbaidschan',role:'Fachkraft',beruf:'Arzt/Ärztin — Innere Medizin',
+   lang:'A1→B2',paket:'Premium',leistungen:['Vermittlung','Sprachkurs A1–B2','Berufsanerkennung','Behörden','Relocation','Wohnungssuche'],
+   preis:'6.200 €',startdatum:'15.07.2026',av:'AN',avc:'av-purple',time:'19.12.25',
+   preview:'Visumsantrag gestellt — Botschaftstermin 22.04.',
+   tl:[{d:'tl-green',t:'Auftrag bestätigt — 6.200 €',dt:'19.12.25 16:37'},{d:'tl-green',t:'Sprachkurs A1 gestartet',dt:'10.01.26'},{d:'tl-blue',t:'Visumsantrag gestellt',dt:'02.04.26'},{d:'tl-amber',t:'Botschaftstermin',dt:'22.04.26'}],
+   msgs:[
+     {from:'sys',text:'Auftrag bestätigt am 19.12.25 — Paket Premium · 6.200 €'},
+     {from:'me',text:'Guten Tag! Der Auftrag ist eingegangen. Ich koordiniere jetzt alle Leistungen und melde mich bei jedem Meilenstein.',time:'19.12. 17:00'},
+     {from:'coord',title:'Laufende Leistungen',items:[{icon:'🗣',text:'Sprachkurs A1 aktiv (DeutschAkademie)',date:'seit 10.01.26'},{icon:'📜',text:'Dokumentenprüfung abgeschlossen',date:'15.01.26'},{icon:'✈️',text:'Visumsantrag gestellt',date:'02.04.26'},{icon:'📅',text:'Botschaftstermin',date:'22.04.2026'}]},
+     {from:'them',text:'Wann können wir ungefähr mit der Einreise rechnen?',time:'03.04. 10:22'},
+     {from:'me',text:'Nach aktuellem Stand: Visum frühestens Anfang Mai, Einreise ca. 10.–15. Mai, Sprachkurs B1 ab 20. Mai. Zieltermin Arbeitsstart 15. Juli bleibt realistisch.',time:'03.04. 11:30'},
+     {from:'them',text:'Gibt es beim Visumsverfahren gerade Verzögerungen?',time:'04.04. 08:45'},
+     {from:'me',text:'Die Botschaft Baku hat aktuell 3–4 Wochen Wartezeit — unser Termin am 22.04. liegt innerhalb der normalen Schwankung. Ich gebe sofort Bescheid sobald das Visum erteilt ist.',time:'04.04. 09:15'},
+   ]},
+];
+
+const TEMPLATES=[
+  {id:'voll',label:'Vollvermittlung',amount:'6.500 €',services:['Vermittlung','Sprachkurs A1–B2','Berufsanerkennung','Relocation','Behörden'],text:'Für eine Vollvermittlung inkl. Sprachbegleitung, Berufsanerkennung und Relocation berechnen wir 6.500 € netto. Zahlbar nach erfolgreicher Einstellung.'},
+  {id:'standard',label:'Standard',amount:'3.800 €',services:['Vermittlung','Sprachkurs A1–B1','Berufsanerkennung','Behörden'],text:'Unser Standardpaket mit Sprachkurs A1–B1, Berufsanerkennung und Behördenbegleitung für 3.800 € netto.'},
+  {id:'basis',label:'Basis',amount:'1.500 €',services:['Vermittlung','Dokumente','Beratung'],text:'Basisvermittlung ohne weitere Serviceleistungen für 1.500 €.'},
+  {id:'gegen',label:'Gegenvorschlag',amount:'5.200 €',services:['Vermittlung','Sprachkurs A1–B1','Berufsanerkennung'],text:'Kompromissangebot: 5.200 € inkl. Vermittlung, Sprachkurs A1–B1 und Berufsanerkennung — ohne Relocation.'},
+];
+
+const AGENT_SCRIPTS={
+  '001010y4ak':[
+    {delay:1100,type:'think',text:'Analysiere: GKP Fachkraft, A2-Niveau → Sprachkurs erforderlich. Arbeitgeber mit 7 Voranfragen → verhandlungsbereit. Floor 4.200 €.'},
+    {delay:2900,type:'agent',text:'Kandidat A2-Niveau benötigt zwingend Sprachkurs A1–B2 für Berufsanerkennung. Empfehle Standard-Angebot bei 5.500 € — liegt 1.300 € über Floor, lässt Verhandlungsspielraum.',proposal:{amount:'5.500 €',color:'purple',services:['Vermittlung','Sprachkurs A1–B2','Berufsanerkennung','Behördenbegleitung'],label:'KI-Empfehlung'}},
+  ],
+  '001010y4av':[
+    {delay:900,type:'think',text:'Gegenvorschlag 5.200 € liegt 200 € über Floor 5.000 €. Leistungskürzung: Relocation entfernen, Kosten sinken um ~1.200 €. Marge vertretbar.'},
+    {delay:2600,type:'agent',text:'Gegenvorschlag knapp über Floor. Empfehle Annehmen mit Leistungsanpassung: Relocation raus, Paket bei 5.200 € bleibt profitabel.',proposal:{amount:'5.200 €',color:'purple',services:['Vermittlung','Sprachkurs A1–B1','Berufsanerkennung','Behördenbegleitung'],label:'KI-Kompromiss'}},
+  ],
+  '001010y4cx':[
+    {delay:800,type:'think',text:'Philippinen → Visum + Relocation komplex. A1-Niveau → langer Kursweg. Auszubildend → niedrigeres Honorar-Potential. Floor 3.200 €.'},
+    {delay:2400,type:'agent',text:'Hoher Aufwand durch Visa und lange Sprachvorbereitung. Empfehle Einsteigspreis 4.200 € inkl. Visa-Service — Wiederholungsgeschäft mit CarePlus (12 Voranfragen) als Argument.',proposal:{amount:'4.200 €',color:'purple',services:['Vermittlung','Sprachkurs A1–B2','Visa-Service','Behördenbegleitung'],label:'KI-Empfehlung'}},
+  ],
+};
+
+const CATALOG=[
+  {id:'vermittlung',cat:'Vermittlung & Matching',name:'Vermittlung & Matching',desc:'Kandidatenauswahl, Profilprüfung, Erstgespräch',price:800,active:true,pkgs:['basis','standard','premium']},
+  {id:'dokumente',cat:'Vermittlung & Matching',name:'Dokumentenprüfung',desc:'Zeugnisse, Qualifikationen, Identitätsprüfung',price:300,active:true,pkgs:['basis','standard','premium']},
+  {id:'beratung',cat:'Vermittlung & Matching',name:'Erstberatung Arbeitgeber',desc:'Telefonische Beratung & Anforderungsabgleich',price:400,active:true,pkgs:['basis','standard','premium']},
+  {id:'sprache_a1b1',cat:'Sprachvorbereitung',name:'Sprachkurs A1–B1',desc:'6-monatiger Deutschkurs, zertifiziert',price:950,active:true,pkgs:['standard','premium']},
+  {id:'sprache_b2c1',cat:'Sprachvorbereitung',name:'Sprachkurs B2–C1',desc:'Aufbaukurs inkl. Prüfungsvorbereitung',price:700,active:true,pkgs:['premium']},
+  {id:'sprache_fach',cat:'Sprachvorbereitung',name:'Fachsprachkurs Pflege/Medizin',desc:'Berufsspezifische Sprachvorbereitung (KPB/FSP)',price:580,active:false,pkgs:[]},
+  {id:'anerkennung',cat:'Berufsanerkennung',name:'Anerkennungsverfahren',desc:'Vollbegleitung bei zuständiger Behörde',price:600,active:true,pkgs:['standard','premium']},
+  {id:'gleichwertig',cat:'Berufsanerkennung',name:'Gleichwertigkeitsprüfung',desc:'Vorbereitung und Einreichung der Unterlagen',price:350,active:true,pkgs:['standard','premium']},
+  {id:'anpassung',cat:'Berufsanerkennung',name:'Anpassungsmaßnahme',desc:'Vorbereitung Kenntnisprüfung / Anpassungslehrgang',price:480,active:false,pkgs:[]},
+  {id:'visum',cat:'Einreise & Behörden',name:'Visumsantrag & Begleitung',desc:'Unterlagen, Terminvereinbarung Botschaft',price:450,active:true,pkgs:['standard','premium']},
+  {id:'behoerde',cat:'Einreise & Behörden',name:'Ausländerbehörde & Arbeitsgenehmigung',desc:'Begleitung bei Behördengängen',price:400,active:true,pkgs:['standard','premium']},
+  {id:'relocation',cat:'Relocation & Integration',name:'Relocation Service',desc:'An-/Abmeldung, Umzugskoordination',price:1200,active:true,pkgs:['premium']},
+  {id:'wohnen',cat:'Relocation & Integration',name:'Wohnungssuche',desc:'Aktive Suche + Besichtigungen in Zielregion',price:500,active:true,pkgs:['premium']},
+  {id:'integration',cat:'Relocation & Integration',name:'Integrationsbegleitung',desc:'3 Monate Onboarding-Support, Kulturtraining',price:350,active:false,pkgs:[]},
+  {id:'gesundheit',cat:'Zusatzleistungen',name:'Gesundheitscheck',desc:'Ärztliche Einstellungsuntersuchung',price:150,active:false,pkgs:[]},
+  {id:'versicherung',cat:'Zusatzleistungen',name:'Übergangsversicherung',desc:'Kranken-/Haftpflicht 3 Monate',price:280,active:false,pkgs:[]},
+  {id:'coaching',cat:'Zusatzleistungen',name:'Bewerbungscoaching',desc:'CV, Anschreiben, Interviewtraining auf Deutsch',price:220,active:false,pkgs:[]},
+];
+const PKG_DEFS=[{id:'basis',name:'Basis'},{id:'standard',name:'Standard'},{id:'premium',name:'Premium'}];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let currentTab='anfragen';
+let currentInboxId=INBOX[0].id;
+let currentAuftragId=AUFTRAEGE[0].id;
+let currentMode='template';
+let agentRunning=false;
+let msgStore={};
+let catOpen={};
+let svcState={};
+let floorPrice=4200;
+let lkChanges=0;
+let pkgSel='standard';
+let pkgSvcSel={};
+
+function init(){
+  initCatalog();
+  initMatrix();
+  renderTalentGrid();
+  renderInboxList();
+  renderAuftragList();
+  selectInbox(INBOX[0].id);
+  selectAuftrag(AUFTRAEGE[0].id);
+  renderLeistungen();
+  // set initial tab description
+  const desc = TAB_DESCS['anfragen'];
+  document.getElementById('tabDescBar').querySelector('.tab-desc-icon').textContent = desc.icon;
+  document.getElementById('tabDescText').innerHTML = desc.text;
+}
+
+// ═══════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════
+const TAB_DESCS = {
+  talente: {icon:'👤', text:'<strong>Meine Talente</strong> — alle Kandidaten in Ihren Pools. Klick auf eine Karte um ein Leistungspaket zu buchen und eine Anfrage zu starten.'},
+  anfragen: {icon:'📥', text:'<strong>Eingehende Anfragen</strong> — Arbeitgeber oder andere Agenturen haben einen Ihrer Kandidaten angefragt. Hier verhandeln Sie Konditionen, Leistungsumfang und Preis <em>bevor</em> ein Auftrag entsteht.'},
+  auftraege: {icon:'✅', text:'<strong>Laufende Aufträge</strong> — Anfragen bei denen Paket und Preis bereits vereinbart sind. Hier koordinieren Sie den laufenden Prozess: Sprachkurs, Anerkennung, Visa, Relocation.'},
+  leistungen: {icon:'⚙️', text:'<strong>Leistungen & Preise</strong> — definieren Sie Ihr Angebot: welche Einzelleistungen Sie erbringen, zu welchem Preis, und wie diese zu Paketen gebündelt werden. Preise gelten automatisch für alle neuen Angebote.'},
+  profil: {icon:'🏢', text:'<strong>Agentur-Profil</strong> — Ihr öffentliches Profil im Signite-Netzwerk. Arbeitgeber und andere Agenturen sehen hier Ihre Leistungen, Bewertungen und Referenzen.'},
+};
+
+function switchTab(tab){
+  currentTab=tab;
+  ['talente','anfragen','auftraege','leistungen','profil'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('view-'+t).classList.toggle('active',t===tab);
+  });
+  const desc = TAB_DESCS[tab];
+  if(desc){
+    document.getElementById('tabDescBar').querySelector('.tab-desc-icon').textContent = desc.icon;
+    document.getElementById('tabDescText').innerHTML = desc.text;
+  }
+  if(tab==='profil') renderProfil();
+}
+
+let talentMode = 'grid'; // 'grid' | 'list' | 'match'
+
+function setTalentMode(mode){
+  // If clicking match while already in match mode → toggle back to grid
+  if(mode === 'match' && talentMode === 'match') mode = 'grid';
+  talentMode = mode;
+  document.getElementById('ttBtnGrid').classList.toggle('on', mode==='grid');
+  document.getElementById('ttBtnList').classList.toggle('on', mode==='list');
+  const matchBtn = document.getElementById('ttBtnMatch');
+  if(mode==='match'){
+    matchBtn.style.background='var(--purple)';
+    matchBtn.style.color='#fff';
+    matchBtn.style.borderColor='var(--purple)';
+  } else {
+    matchBtn.style.background='';
+    matchBtn.style.color='';
+    matchBtn.style.borderColor='';
+  }
+  document.getElementById('matchModeBar').style.display = mode==='match' ? 'flex' : 'none';
+  renderTalentGrid();
+}
+
+// Matching scores for talents against bedarfe (simulated)
+const TALENT_MATCH_SCORES = {
+  'b-001': { // GKP Fachkraft
+    '001010y4ak': {gesamt:94, qualifikation:98, sprache:82, verfuegbarkeit:95},
+    '001010y4av': {gesamt:89, qualifikation:95, sprache:92, verfuegbarkeit:88},
+    '001010y4ce': {gesamt:81, qualifikation:85, sprache:80, verfuegbarkeit:90},
+    '001010y4ch': {gesamt:74, qualifikation:80, sprache:55, verfuegbarkeit:95},
+    '001010y4cx': {gesamt:45, qualifikation:50, sprache:40, verfuegbarkeit:60},
+  },
+  'b-002': { // Arzt Innere
+    '001010y4bw': {gesamt:91, qualifikation:97, sprache:85, verfuegbarkeit:90},
+    '001010y4cj': {gesamt:86, qualifikation:88, sprache:98, verfuegbarkeit:78},
+    '001010y4ak': {gesamt:35, qualifikation:30, sprache:60, verfuegbarkeit:40},
+  },
+  'b-003': { // Pflegefachfrau Azubi
+    '001010y4cx': {gesamt:95, qualifikation:90, sprache:88, verfuegbarkeit:100},
+    '001010y4cv': {gesamt:92, qualifikation:87, sprache:95, verfuegbarkeit:98},
+    '001010y4ch': {gesamt:85, qualifikation:82, sprache:90, verfuegbarkeit:92},
+  },
+};
+
+function getBestMatchScore(talentId){
+  // Returns best match score across all bedarfe
+  let best = null;
+  let bestBedarf = null;
+  Object.entries(TALENT_MATCH_SCORES).forEach(([bedarfId, scores])=>{
+    if(scores[talentId] && (!best || scores[talentId].gesamt > best.gesamt)){
+      best = scores[talentId];
+      bestBedarf = bedarfId;
+    }
+  });
+  return best ? {...best, bedarfId:bestBedarf} : null;
+}
+
+function getBedarfName(id){
+  const names = {'b-001':'GKP Station 4B','b-002':'Arzt Innere','b-003':'Pflegefachfrau Azubi'};
+  return names[id]||id;
+}
+function renderTalentGrid(){
+  const langs = ['A1','A2','B1','B1','B2','A2','B1','A1','B1','A2','B1','A2'];
+  const countries = ['🇵🇭','🇪🇬','🇸🇾','🇩🇪','🇲🇦','🇵🇭','🇪🇬','🇵🇭','🇸🇾','🇲🇦','🇩🇪','🇵🇭'];
+
+  if(talentMode === 'match'){
+    const selBedarf = document.getElementById('matchBedarfSelect')?.value || 'all';
+    const scoreColor = v => v>=85?'var(--green)':v>=70?'var(--blue)':'var(--amber)';
+
+    const scored = TALENTS.map((t,i)=>{
+      let score = selBedarf==='all' ? getBestMatchScore(t.id)
+        : (TALENT_MATCH_SCORES[selBedarf]?.[t.id] ? {...TALENT_MATCH_SCORES[selBedarf][t.id], bedarfId:selBedarf} : null);
+      return {t,i,score};
+    }).sort((a,b)=>{
+      if(!a.score && !b.score) return 0;
+      if(!a.score) return 1; if(!b.score) return -1;
+      return b.score.gesamt - a.score.gesamt;
+    });
+
+    document.getElementById('talentGrid').innerHTML = scored.map(({t,i,score})=>{
+      if(!score) return `<div class="tm-card" style="opacity:.4">
+        <div class="tm-thumb ${t.col}" style="height:70px">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="rgba(255,255,255,.7)" stroke="none"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+        <div class="tm-body"><div class="tm-name">${t.name}</div><div class="tm-sub" style="font-size:10px;color:var(--text3)">Kein Match für diesen Bedarf</div></div>
+      </div>`;
+      const pct=score.gesamt;
+      const bc=pct>=85?'tm-badge-high':pct>=70?'tm-badge-mid':'tm-badge-low';
+      return `<div class="tm-card" onclick="openPkgModal('${t.name}')">
+        <div class="tm-thumb ${t.col}" style="height:70px">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="rgba(255,255,255,.88)" stroke="none"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          <div class="tm-badge ${bc}">${pct}%</div>
+        </div>
+        <div class="tm-body">
+          <div class="tm-name">${t.name}</div>
+          <div class="tm-sub">${countries[i]} · DE ${langs[i]} · ${t.role}</div>
+          ${selBedarf==='all'?`<div style="font-size:10px;color:var(--purple);font-weight:600;margin:4px 0">→ ${getBedarfName(score.bedarfId)}</div>`:''}
+          <div class="tm-scores" style="margin-top:6px">
+            ${[['Qualifikation',score.qualifikation],['Sprache',score.sprache],['Verfügbarkeit',score.verfuegbarkeit]].map(([l,v])=>`
+              <div class="tm-score-row">
+                <div class="tm-score-lbl">${l}</div>
+                <div class="tm-score-bar"><div class="tm-score-fill" style="width:${v}%;background:${scoreColor(v)}"></div></div>
+                <div class="tm-score-val">${v}%</div>
+              </div>`).join('')}
+          </div>
+          <div class="tm-footer">
+            <span class="bi-tag ${pct>=85?'bi-tag-green':'bi-tag-blue'}">${pct>=85?'Top Match':'Guter Match'}</span>
+            <button class="mc-btn-primary" style="padding:4px 10px;font-size:11px" onclick="event.stopPropagation();openPkgModal('${t.name}')">Anfragen</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    return;
+  }
+
+  // Normal grid mode
+  document.getElementById('talentGrid').innerHTML=TALENTS.map((t,i)=>`
+    <div class="talent-card" onclick="openPkgModal('${t.name}')">
+      <div class="tc-id">${t.id}</div>
+      <button class="tc-req-btn" onclick="event.stopPropagation();openPkgModal('${t.name}')" title="Anfragen">+</button>
+      <div class="tc-thumb ${t.col}">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="rgba(255,255,255,.88)" stroke="none"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      </div>
+      <div class="tc-info">
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-role">${countries[i]} ${t.role}</div>
+        <div class="tc-footer">
+          ${t.tag ? '<span class="tc-tag">Bescheid fehlt</span>' : '<span class="tc-tag-ok">✓ Vollständig</span>'}
+          <span class="tc-lang">DE ${langs[i]}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── INBOX LIST (Verhandlungen) ──
+function renderInboxList(){
+  const sm={neu:{l:'Neu',c:'itag-blue'},antwort:{l:'Antwort',c:'itag-amber'},warten:{l:'Wartet',c:'itag-gray'}};
+  document.getElementById('inboxList').innerHTML=
+    `<div class="inbox-section-label">Offene Verhandlungen (${INBOX.length})</div>`+
+    INBOX.map(a=>{
+      const s=sm[a.status]||{l:a.status,c:'itag-gray'};
+      let paketLine;
+      if(a.paket && a.preis){
+        // Standard paket gebucht
+        paketLine = `<div style="margin:5px 0 4px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:var(--blue-bg);border-radius:6px 6px 0 0;border-bottom:1px solid var(--blue-mid)">
+            <span style="font-size:11px;font-weight:600;color:var(--blue)">${a.paket}</span>
+            <span style="font-size:11px;font-family:'DM Mono',monospace;font-weight:600;color:var(--blue)">${a.preis}</span>
+          </div>
+          ${a.leistungen_gebucht ? `<div style="padding:4px 8px;background:var(--blue-bg);border-radius:0 0 6px 6px;display:flex;flex-wrap:wrap;gap:3px">${a.leistungen_gebucht.map(l=>`<span style="font-size:10px;color:var(--blue);opacity:.75">${l}</span>`).join('<span style="font-size:10px;color:var(--blue-mid)"> · </span>')}</div>` : ''}
+        </div>`;
+      } else if(a.leistungen_gebucht && a.preis){
+        // Einzelleistungen ohne Paketname
+        paketLine = `<div style="margin:5px 0 4px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:var(--blue-bg);border-radius:6px 6px 0 0;border-bottom:1px solid var(--blue-mid)">
+            <span style="font-size:11px;font-weight:600;color:var(--blue)">Einzelleistungen</span>
+            <span style="font-size:11px;font-family:'DM Mono',monospace;font-weight:600;color:var(--blue)">${a.preis}</span>
+          </div>
+          <div style="padding:4px 8px;background:var(--blue-bg);border-radius:0 0 6px 6px;display:flex;flex-wrap:wrap;gap:3px">${a.leistungen_gebucht.map(l=>`<span style="font-size:10px;color:var(--blue);opacity:.75">${l}</span>`).join('<span style="font-size:10px;color:var(--blue-mid)"> · </span>')}</div>
+        </div>`;
+      } else {
+        // Noch nichts gebucht
+        paketLine = `<div style="margin:5px 0 4px;padding:4px 8px;background:var(--amber-bg);border-radius:6px">
+          <span style="font-size:11px;font-weight:600;color:var(--amber)">Kein Paket — noch offen</span>
+        </div>`;
+      }
+      return `<div class="inbox-item ${a.id===currentInboxId?'sel':''}" onclick="selectInbox('${a.id}')">
+        <div class="ii-top">
+          <div style="display:flex;align-items:flex-start;gap:5px">
+            ${a.status==='neu'?'<div class="udot"></div>':''}
+            <span class="ii-name">${a.name}</span>
+          </div>
+          <span class="ii-time">${a.time}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:0">${a.provider}</div>
+        ${paketLine}
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span class="itag ${s.c}">${s.l}</span>
+          ${a.offene_fragen?.length?`<span style="font-size:10px;color:var(--amber);font-weight:600">${a.offene_fragen.length} offen</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function renderAuftragList(){
+  document.getElementById('auftragList').innerHTML=
+    `<div class="inbox-section-label">Aktive Aufträge (${AUFTRAEGE.length})</div>`+
+    AUFTRAEGE.map(a=>`
+      <div class="inbox-item ${a.id===currentAuftragId?'sel':''}" onclick="selectAuftrag('${a.id}')">
+        <div class="ii-top">
+          <span class="ii-name">${a.name}</span>
+          <span class="ii-time">${a.time}</span>
+        </div>
+        <div class="ii-prev">${a.preview}</div>
+        <div class="ii-footer" style="display:flex;align-items:center;justify-content:space-between">
+          <div class="ii-tags">
+            <span class="itag itag-green">${a.paket}</span>
+            <span class="itag itag-gray">${a.provider.split(' ')[0]}…</span>
+          </div>
+          <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--green);font-weight:600">${a.preis}</span>
+        </div>
+      </div>`).join('');
+}
+
+function selectInbox(id){
+  currentInboxId=id;
+  agentRunning=false;
+  renderInboxList();
+  const item=INBOX.find(a=>a.id===id);
+  renderChatCol(item,'anfragenChatCol');
+  renderSidePanel(item,'infoPanel');
+}
+
+function selectAuftrag(id){
+  currentAuftragId=id;
+  renderAuftragList();
+  const item=AUFTRAEGE.find(a=>a.id===id);
+  renderChatCol(item,'auftragChatCol');
+  renderSidePanel(item,'auftragInfoPanel');
+}
+
+// ── GENERIC CHAT COLUMN RENDERER ──
+function renderChatCol(item,colId){
+  const isConf=!!item.paket;
+  const col=document.getElementById(colId);
+
+  const ctxBar=isConf
+    ?`<div class="ctx-bar-green">
+        <div class="ctx-item"><div class="ctx-lbl">Kandidat</div><div class="ctx-val">${item.anonym?'Anonym ('+item.kandidat_id+')':item.name}</div></div>
+        <div class="ctx-item"><div class="ctx-lbl">Beruf</div><div class="ctx-val">${item.beruf}</div></div>
+        <div class="ctx-item"><div class="ctx-lbl">Paket</div><div class="ctx-val">${item.paket}</div><div class="ctx-svcs">${(item.leistungen||item.leistungen_gebucht||[]).map(l=>`<span class="ctx-svc">${l}</span>`).join('')}</div></div>
+        <div class="ctx-item"><div class="ctx-lbl">Vereinbart</div><div class="ctx-val">${item.preis}</div></div>
+        <div class="ctx-item"><div class="ctx-lbl">Start</div><div class="ctx-val">${item.startdatum}</div></div>
+      </div>`
+    :`<div class="ctx-bar-amber">
+        <div class="neg-left">
+          <div class="neg-item"><div class="neg-lbl">Kandidat</div><div class="neg-val">${item.anonym?'Anonym ('+item.kandidat_id+')':item.name}</div></div>
+          <div class="neg-item"><div class="neg-lbl">Herkunft</div><div class="neg-val">${item.country} · Sprache ${item.lang}</div></div>
+          <div class="neg-item"><div class="neg-lbl">Anfragender</div><div class="neg-val">${item.provider}</div></div>
+        </div>
+        <div class="neg-open">Paket &amp; Preis noch offen — in Verhandlung</div>
+      </div>`;
+
+  const chips=isConf
+    ?`<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);white-space:nowrap">Schnell:</span>
+      <div class="tpl-chip" onclick="quickMsg('${item.id}','Ich melde mich kurzfristig mit einem Update.')">Update folgt</div>
+      <div class="tpl-chip" onclick="quickMsg('${item.id}','Dokument wurde hochgeladen und liegt Ihnen jetzt vor.')">Dokument hochgeladen</div>
+      <div class="tpl-chip" onclick="quickMsg('${item.id}','Termin wurde bestätigt — Details folgen.')">Termin bestätigt</div>
+      <div class="tpl-chip green" onclick="quickMsg('${item.id}','Nächster Meilenstein erreicht ✓')">Meilenstein ✓</div>`
+    :`<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);white-space:nowrap">Templates:</span>
+      <div class="tpl-chip" onclick="sendProposalTpl('${item.id}','6.500 €',['Vermittlung','Sprachkurs A1–B2','Berufsanerkennung','Relocation','Behörden'])">Vollvermittlung 6.500 €</div>
+      <div class="tpl-chip" onclick="sendProposalTpl('${item.id}','3.800 €',['Vermittlung','Sprachkurs A1–B1','Berufsanerkennung','Behörden'])">Standard 3.800 €</div>
+      <div class="tpl-chip" onclick="sendProposalTpl('${item.id}','1.500 €',['Vermittlung','Dokumente','Beratung'])">Basis 1.500 €</div>
+      <div class="tpl-chip pkg-chip" onclick="openPkgModal('${item.name}')">+ Paket buchen</div>
+      <div class="mode-toggle" style="margin-left:auto">
+        <button class="mode-btn ${currentMode==='template'?'active':''}" onclick="setMode('template','${colId}','${item.id}')">Templates</button>
+        <button class="mode-btn ${currentMode==='agent'?'agent-on':''}" onclick="setMode('agent','${colId}','${item.id}')">KI-Agent</button>
+      </div>`;
+
+  col.innerHTML=`
+    <div class="chat-topbar" style="display:flex;flex-direction:column">
+      <div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar ${item.avc||'av-blue'}">${item.av||item.name.substring(0,2).toUpperCase()}</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;letter-spacing:-.2px">${item.provider}</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:1px">${item.type||item.anfragender_typ||''} · ${item.country}</div>
+          </div>
+        </div>
+        <span class="ct-badge ${isConf?'ok':'vhd'}">${isConf?'✓ Auftrag aktiv':'⇄ In Verhandlung'}</span>
+      </div>
+      ${ctxBar}
+    </div>
+    <div class="chat-msgs" id="msgs-${item.id}"></div>
+    <div class="input-area">
+      <div class="tpl-bar" id="chips-${item.id}">${chips}</div>
+      <div id="agbar-${item.id}"></div>
+      <div class="input-row">
+        <input class="msg-input" id="input-${item.id}" placeholder="Nachricht eingeben..." onkeydown="if(event.key==='Enter')sendMsg('${item.id}')"/>
+        <button class="send-btn" onclick="sendMsg('${item.id}')">Senden</button>
+      </div>
+    </div>`;
+
+  renderMsgs(item.id, item.msgs);
+}
+
+function renderMsgs(itemId, baseMsgs){
+  const c=document.getElementById('msgs-'+itemId);
+  if(!c) return;
+  c.innerHTML='';
+  const all=[...(baseMsgs||[]),...(msgStore[itemId]||[])];
+  all.forEach(m=>c.appendChild(buildMsg(m,itemId)));
+  c.scrollTop=c.scrollHeight;
+}
+
+function buildMsg(m,itemId){
+  const w=document.createElement('div');
+  if(m.from==='me'){
+    w.className='msg-row me';
+    w.innerHTML=`<div class="msg-meta">${m.time||'jetzt'}</div><div class="bubble me">${m.text}</div>`;
+  } else if(m.from==='them'){
+    w.className='msg-row them';
+    w.innerHTML=`<div class="msg-meta">${m.time||'jetzt'}</div><div class="bubble them">${m.text}</div>`;
+  } else if(m.from==='sys'){
+    w.className='msg-row sys';
+    w.innerHTML=`<div style="font-size:11px;color:var(--text3);background:var(--surface2);padding:3px 12px;border-radius:20px">${m.text}</div>`;
+  } else if(m.from==='proposal-out'){
+    w.className='msg-row me';
+    const pc=document.createElement('div');
+    pc.className='pc out';
+    pc.innerHTML=`<div class="pc-lbl bl">Angebot gesendet · ${m.time||'jetzt'}</div>
+      <div class="pc-amt">${m.amount}</div>
+      <div class="pc-svcs">${(m.services||[]).map(s=>`<span class="pc-svc">${s}</span>`).join('')}</div>`;
+    w.appendChild(pc);
+  } else if(m.from==='proposal-in'){
+    w.className='msg-row them';
+    const pc=document.createElement('div');
+    pc.className='pc in';
+    pc.innerHTML=`<div class="pc-lbl am">⇄ Gegenvorschlag · ${m.time||''}</div>
+      <div class="pc-amt">${m.amount}</div>
+      <div class="pc-svcs">${(m.services||[]).map(s=>`<span class="pc-svc">${s}</span>`).join('')}</div>
+      ${m.note?`<div style="font-size:12px;color:var(--text2);margin-top:4px;font-style:italic">${m.note}</div>`:''}
+      <div class="pc-acts">
+        <button class="pab pab-acc" onclick="acceptIn(this,'${m.amount}','${itemId}')">✓ Annehmen</button>
+        <button class="pab pab-ctr" onclick="counterIn(this,'${itemId}')">⇄ Gegenvorschlag</button>
+        <button class="pab pab-dec" onclick="declineIn(this,'${itemId}')">✕ Ablehnen</button>
+      </div>`;
+    w.appendChild(pc);
+  } else if(m.from==='question'){
+    w.className='msg-row them';
+    const qb=document.createElement('div');
+    qb.className='q-bubble';
+    qb.innerHTML=`<div class="q-lbl">Rückfrage</div>${m.question}
+      <div class="q-opts">${m.options.map(o=>`<div class="q-opt" onclick="answerQ(this,'${o}','${itemId}')">${o}</div>`).join('')}</div>`;
+    w.appendChild(qb);
+  } else if(m.from==='coord'){
+    w.className='msg-row me';
+    const ic=document.createElement('div');
+    ic.className='coord-card';
+    ic.innerHTML=`<div class="coord-title">${m.title}</div>`+
+      m.items.map(i=>`<div class="coord-row"><div class="coord-icon">${i.icon}</div><div><div class="coord-text">${i.text}</div><div class="coord-date">${i.date}</div></div></div>`).join('');
+    w.appendChild(ic);
+  } else if(m.from==='agent-think'){
+    w.className='msg-row ag';
+    w.innerHTML=`<div class="bubble agent"><div class="ag-label">◉ KI-Agent analysiert</div><span style="font-size:12px;color:var(--text2)">${m.text}</span></div>`;
+  } else if(m.from==='agent-msg'){
+    w.className='msg-row ag';
+    w.innerHTML=`<div class="bubble agent"><div class="ag-label">◉ KI-Agent</div>${m.text}</div>`;
+    if(m.proposal){
+      const pc=document.createElement('div');
+      pc.className='pc agp';
+      pc.innerHTML=`<div class="pc-lbl pu">${m.proposal.label}</div>
+        <div class="pc-amt" style="color:var(--purple)">${m.proposal.amount}</div>
+        <div class="pc-svcs">${(m.proposal.services||[]).map(s=>`<span class="pc-svc">${s}</span>`).join('')}</div>
+        <div class="pc-acts">
+          <button class="pab pab-acc" onclick="sendAgentProposal(this,'${m.proposal.amount}','${m.proposal.services.join('|')}','${itemId}')">✓ Angebot senden</button>
+          <button class="pab pab-ctr" onclick="this.closest('.pc').style.opacity='.4';showToast('Zur Bearbeitung geöffnet')">✎ Anpassen</button>
+          <button class="pab pab-dec" onclick="this.closest('.pc').remove();showToast('Verworfen')">✕ Verwerfen</button>
+        </div>`;
+      w.appendChild(pc);
+    }
+  } else if(m.from==='typing'){
+    w.className='msg-row them';
+    w.id='typing-'+itemId;
+    w.innerHTML=`<div class="typing"><span></span><span></span><span></span></div>`;
+  }
+  return w;
+}
+
+function addMsg(itemId,m){
+  if(!msgStore[itemId]) msgStore[itemId]=[];
+  msgStore[itemId].push(m);
+  const c=document.getElementById('msgs-'+itemId);
+  if(c){c.appendChild(buildMsg(m,itemId));c.scrollTop=c.scrollHeight;}
+}
+
+function sendMsg(itemId){
+  const inp=document.getElementById('input-'+itemId);
+  const text=inp.value.trim();if(!text) return;
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  addMsg(itemId,{from:'me',text,time:now});
+  inp.value='';
+  setTimeout(()=>{
+    addMsg(itemId,{from:'typing'});
+    setTimeout(()=>{
+      document.getElementById('typing-'+itemId)?.remove();
+      addMsg(itemId,{from:'them',text:'Danke für die Nachricht, wir melden uns.',time:now});
+    },2000);
+  },700);
+}
+
+function quickMsg(itemId,text){
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  addMsg(itemId,{from:'me',text,time:now});
+  showToast('Gesendet ✓');
+}
+
+function sendProposalTpl(itemId,amount,services){
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  addMsg(itemId,{from:'proposal-out',amount,services,time:now});
+  showToast(`Angebot ${amount} gesendet`);
+  setTimeout(()=>{
+    addMsg(itemId,{from:'typing'});
+    setTimeout(()=>{
+      document.getElementById('typing-'+itemId)?.remove();
+      addMsg(itemId,{from:'proposal-in',amount:(parseInt(amount)-700).toLocaleString('de-DE')+' €',services:services.slice(0,-1),note:'Das letzte Paket können wir nicht finanzieren — das ist unser Maximum.',time:now});
+    },2600);
+  },1000);
+}
+
+function acceptIn(btn,amount,itemId){
+  btn.closest('.pc').querySelectorAll('button').forEach(b=>b.disabled=true);
+  btn.closest('.pc').style.borderLeftColor='var(--green)';
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  addMsg(itemId,{from:'me',text:`✓ Einigung bei ${amount} — Auftragsbestätigung folgt in Kürze.`,time:now});
+  showToast(`Einigung bei ${amount} ✓`);
+}
+function counterIn(btn,itemId){
+  btn.closest('.pc').querySelectorAll('button').forEach(b=>b.disabled=true);
+  btn.closest('.pc').style.opacity='.5';
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  addMsg(itemId,{from:'proposal-out',amount:'5.500 €',services:['Vermittlung','Sprachkurs','Berufsanerkennung','Behörden'],time:now});
+  showToast('Gegenvorschlag gesendet');
+}
+function declineIn(btn,itemId){
+  btn.closest('.pc').querySelectorAll('button').forEach(b=>b.disabled=true);
+  btn.closest('.pc').style.opacity='.4';
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  addMsg(itemId,{from:'me',text:'Wir müssen diesen Vorschlag ablehnen — liegt unter unserer Kalkulation. Gerne erarbeiten wir eine angepasste Lösung.',time:now});
+  showToast('Abgelehnt');
+}
+function answerQ(el,answer,itemId){
+  el.closest('.q-opts').querySelectorAll('.q-opt').forEach(o=>o.style.pointerEvents='none');
+  el.style.cssText='background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue);pointer-events:none';
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  setTimeout(()=>{
+    addMsg(itemId,{from:'them',text:answer,time:now});
+    setTimeout(()=>{
+      addMsg(itemId,{from:'typing'});
+      setTimeout(()=>{
+        document.getElementById('typing-'+itemId)?.remove();
+        addMsg(itemId,{from:'me',text:'Danke! Auf Basis dieser Information erstelle ich jetzt ein passendes Angebot für Sie.',time:now});
+      },1800);
+    },600);
+  },300);
+}
+function sendAgentProposal(btn,amount,svcsStr,itemId){
+  btn.closest('.pc').querySelectorAll('button').forEach(b=>b.disabled=true);
+  btn.closest('.pc').style.opacity='.5';
+  const now=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  addMsg(itemId,{from:'proposal-out',amount,services:svcsStr.split('|'),time:now});
+  setTimeout(()=>{
+    addMsg(itemId,{from:'typing'});
+    setTimeout(()=>{
+      document.getElementById('typing-'+itemId)?.remove();
+      addMsg(itemId,{from:'them',text:`Wir haben Ihr Angebot über ${amount} erhalten und melden uns bis morgen.`,time:now});
+    },2400);
+  },1000);
+  showToast('KI-Agent: Angebot versendet ✓');
+}
+
+function setMode(mode,colId,itemId){
+  currentMode=mode;
+  const bar=document.getElementById('agbar-'+itemId);
+  if(!bar) return;
+  if(mode==='agent'){
+    bar.innerHTML=`<div class="agent-bar" style="margin-bottom:9px">
+      <div class="ag-status"><div class="ag-dot"></div><span>KI-Agent aktiv</span></div>
+      <div class="ag-cfg">
+        <select><option>Ausgewogen</option><option>Höchstpreis</option><option>Schneller Abschluss</option></select>
+        <button class="ag-go" onclick="runAgent('${itemId}')">▶ Starten</button>
+      </div>
+    </div>`;
+  } else {
+    bar.innerHTML='';
+  }
+}
+
+function runAgent(itemId){
+  if(agentRunning) return;
+  agentRunning=true;
+  const script=AGENT_SCRIPTS[itemId]||AGENT_SCRIPTS[currentInboxId];
+  if(!script) return;
+  addMsg(itemId,{from:'sys',text:'— KI-Agent gestartet —'});
+  let off=0;
+  script.forEach(step=>{
+    off+=step.delay;
+    setTimeout(()=>{
+      if(step.type==='think') addMsg(itemId,{from:'agent-think',text:step.text});
+      else addMsg(itemId,{from:'agent-msg',text:step.text,proposal:step.proposal||null});
+      document.getElementById('msgs-'+itemId).scrollTop=9999;
+    },off);
+  });
+}
+
+// ── SIDE PANEL ──
+function renderSidePanel(item,panelId){
+  const isConf=!!item.paket;
+  const infoBox=isConf
+    ?`<div class="order-box">
+        <div class="ob-head">Gebuchtes Paket</div>
+        ${(item.leistungen||item.leistungen_gebucht||[]).map(l=>`<div class="ob-row"><span>${l}</span></div>`).join('')}
+        <div class="ob-total"><div class="ob-total-l">Vereinbart</div><div class="ob-total-v">${item.preis}</div></div>
+      </div>`
+    :`<div class="open-box">
+        <div class="oq-head">Offene Punkte</div>
+        ${(item.offene_fragen||[]).map(f=>`<div class="oq-item"><div class="oq-dot"></div><span>${f}</span></div>`).join('')}
+      </div>`;
+
+  document.getElementById(panelId).innerHTML=`
+    <div class="info-sec">
+      <div class="info-title">Kandidat</div>
+      <div class="info-row"><span class="info-lbl">Name / ID</span><span class="info-val" style="font-family:'DM Mono',monospace;font-size:11px">${item.anonym?item.kandidat_id:item.name}</span></div>
+      <div class="info-row"><span class="info-lbl">Beruf</span><span class="info-val">${item.beruf||item.name}</span></div>
+      <div class="info-row"><span class="info-lbl">Herkunft</span><span class="info-val">${item.country}</span></div>
+      <div class="info-row"><span class="info-lbl">Sprache</span><span class="info-val">${item.lang||'–'}</span></div>
+    </div>
+    <div class="info-sec">
+      <div class="info-title">${isConf?'Auftrag':'Verhandlung'}</div>
+      ${infoBox}
+    </div>
+    <div class="info-sec">
+      <div class="info-title">Verlauf</div>
+      <div class="tl">${item.tl.map(t=>`
+        <div class="tl-item">
+          <div class="tl-dot ${t.d}"></div>
+          <div class="tl-text">${t.t}<br><span class="tl-date">${t.dt}</span></div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// legacy stubs to avoid errors from old references
+function renderInfoPanel(){}
+function renderChatMsgs(){}
+function scrollBottom(){}
+function sendManual(){}
+// ═══════════════════════════════════════════════════
+// PACKAGE BOOKING MODAL
+// ═══════════════════════════════════════════════════
+function openPkgModal(candidateName){
+  document.getElementById('pkgSubTitle').textContent='Kandidat: '+candidateName;
+  pkgSel='standard';
+  pkgSvcSel={};
+  CATALOG.filter(s=>s.active&&s.pkgs.includes('standard')).forEach(s=>pkgSvcSel[s.id]=true);
+  renderPkgModal();
+  openOverlay('pkgOverlay');
+}
+
+function renderPkgModal(){
+  const activeSvcs=CATALOG.filter(s=>s.active);
+  const pkgTotals={basis:0,standard:0,premium:0};
+  CATALOG.filter(s=>s.active).forEach(s=>{
+    s.pkgs.forEach(p=>{ if(pkgTotals[p]!==undefined) pkgTotals[p]+=svcState[s.id]||s.price; });
+  });
+  const pkgDescs={
+    basis:'Vermittlung, Dokumentenprüfung, Beratung',
+    standard:'+ Sprachkurs, Berufsanerkennung, Behörden',
+    premium:'+ Relocation, Wohnungssuche, alle Services'
+  };
+  document.getElementById('pkgGrid').innerHTML=[
+    {id:'basis',name:'Basis',pop:false},
+    {id:'standard',name:'Standard',pop:true},
+    {id:'premium',name:'Premium',pop:false},
+    {id:'individuell',name:'Individuell',pop:false,price:'nach Bedarf'},
+  ].map(p=>`
+    <div class="pkg-card ${pkgSel===p.id?'sel':''} ${p.pop?'pop':''}" onclick="selectPkg('${p.id}')">
+      <div class="pk-name">${p.name}</div>
+      <div class="pk-price">${p.price||'ab '+(pkgTotals[p.id]||0).toLocaleString('de-DE')+' €'}</div>
+      <div class="pk-desc">${pkgDescs[p.id]||'Frei kombinierbare Einzelleistungen'}</div>
+    </div>`).join('');
+
+  document.getElementById('pkgSvcList').innerHTML=activeSvcs.map(s=>`
+    <div class="msvc-row">
+      <div class="msvc-info">
+        <div class="msvc-name">${s.name}</div>
+        <div class="msvc-desc">${s.desc}</div>
+      </div>
+      <div class="msvc-price">${(svcState[s.id]||s.price).toLocaleString('de-DE')} €</div>
+      <label class="m-toggle">
+        <input type="checkbox" ${pkgSvcSel[s.id]?'checked':''} onchange="togglePkgSvc('${s.id}',this.checked)">
+        <div class="mt-track"></div><div class="mt-thumb"></div>
+      </label>
+    </div>`).join('');
+  updatePkgSum();
+}
+
+function selectPkg(id){
+  pkgSel=id;pkgSvcSel={};
+  if(id!=='individuell'){
+    CATALOG.filter(s=>s.active&&s.pkgs.includes(id)).forEach(s=>pkgSvcSel[s.id]=true);
+  }
+  renderPkgModal();
+}
+function togglePkgSvc(id,checked){pkgSvcSel[id]=checked;updatePkgSum();}
+function updatePkgSum(){
+  let total=0;const active=[];
+  CATALOG.forEach(s=>{if(pkgSvcSel[s.id]){total+=(svcState[s.id]||s.price);active.push(s);}});
+  document.getElementById('sumAmt').textContent=total.toLocaleString('de-DE')+' €';
+  document.getElementById('sumLines').innerHTML=active.slice(0,5).map(s=>`
+    <div class="sum-line"><span>${s.name}</span><span>${(svcState[s.id]||s.price).toLocaleString('de-DE')} €</span></div>`).join('')+
+    (active.length>5?`<div class="sum-line"><span>+ ${active.length-5} weitere</span><span></span></div>`:'');
+}
+function bookPkg(){
+  closeOverlay('pkgOverlay');
+  showToast('✓ Anfrage mit Leistungspaket gesendet');
+}
+
+// ═══════════════════════════════════════════════════
+// LEISTUNGEN TAB
+// ═══════════════════════════════════════════════════
+function initCatalog(){
+  const cats=[...new Set(CATALOG.map(s=>s.cat))];
+  cats.forEach(c=>catOpen[c]=true);
+  CATALOG.forEach(s=>{svcState[s.id]=s.price;});
+}
+
+function renderLeistungen(){
+  document.getElementById('lkLeft').innerHTML=renderLkLeft();
+  document.getElementById('lkRight').innerHTML=renderLkRight();
+}
+
+function renderLkLeft(){
+  const cats=[...new Set(CATALOG.map(s=>s.cat))];
+  const icons={'Vermittlung & Matching':'🤝','Sprachvorbereitung':'🗣','Berufsanerkennung':'📜','Einreise & Behörden':'✈️','Relocation & Integration':'🏠','Zusatzleistungen':'⭐'};
+  return cats.map(cat=>{
+    const items=CATALOG.filter(s=>s.cat===cat);
+    const activeN=items.filter(s=>s.active).length;
+    const open=catOpen[cat];
+    return `<div class="section-card">
+      <div class="cat-hd" onclick="toggleCat('${cat.replace(/&/g,'and')}')">
+        <div class="cat-title">${icons[cat]||'•'} ${cat}<span class="cat-count-pill">${activeN}/${items.length}</span></div>
+        <span class="cat-chev ${open?'open':''}">▼</span>
+      </div>
+      ${open?`<div>${items.map(s=>renderSvcRow(s)).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+
+const MARKET_BENCH = {
+  vermittlung:  {avg:780,  min:500,  max:1200, n:84},
+  dokumente:    {avg:280,  min:150,  max:450,  n:84},
+  beratung:     {avg:350,  min:200,  max:600,  n:78},
+  sprache_a1b1: {avg:880,  min:600,  max:1400, n:91},
+  sprache_b2c1: {avg:720,  min:500,  max:1100, n:67},
+  sprache_fach: {avg:540,  min:350,  max:800,  n:43},
+  anerkennung:  {avg:580,  min:350,  max:950,  n:79},
+  gleichwertig: {avg:320,  min:200,  max:550,  n:61},
+  anpassung:    {avg:450,  min:280,  max:720,  n:38},
+  visum:        {avg:420,  min:250,  max:700,  n:72},
+  behoerde:     {avg:380,  min:200,  max:600,  n:80},
+  relocation:   {avg:1100, min:700,  max:1800, n:55},
+  wohnen:       {avg:480,  min:300,  max:800,  n:49},
+  integration:  {avg:320,  min:180,  max:550,  n:41},
+  gesundheit:   {avg:140,  min:80,   max:250,  n:35},
+  versicherung: {avg:260,  min:150,  max:420,  n:38},
+  coaching:     {avg:200,  min:120,  max:380,  n:29},
+};
+function getBenchLabel(svcId, price){
+  const b = MARKET_BENCH[svcId];
+  if(!b || !price) return null;
+  const diff = (price - b.avg) / b.avg * 100;
+  if(diff > 15)  return {txt:'▲ '+Math.round(diff)+'% über Markt', col:'#C0271A', bg:'#FDECEA'};
+  if(diff < -15) return {txt:'▼ '+Math.round(-diff)+'% unter Markt', col:'#1A7A4A', bg:'#E8F5EE'};
+  return {txt:'≈ Marktbereich', col:'#6A6760', bg:'#F0EEE9'};
+}
+
+const REGIONS = [
+  {id:'eu',  label:'EU/DACH',      flag:'🇩🇪', note:'DE, AT, CH'},
+  {id:'mena',label:'MENA',         flag:'🇪🇬', note:'EG, MA, SY, TN'},
+  {id:'sea', label:'Südostasien',  flag:'🇵🇭', note:'PH, VN, ID'},
+  {id:'sas', label:'Südasien',     flag:'🇮🇳', note:'IN, PK, LK'},
+];
+const FUNKTIONEN = ['Fachkraft','Azubi'];
+let svcMatrixState = {};
+let matrixOpen = {};
+
+function initMatrix(){
+  CATALOG.forEach(s=>{
+    svcMatrixState[s.id]={};
+    REGIONS.forEach(r=>{
+      svcMatrixState[s.id][r.id]={};
+      const deltas={eu:{Fachkraft:0,Azubi:-50},mena:{Fachkraft:100,Azubi:80},sea:{Fachkraft:200,Azubi:150},sas:{Fachkraft:150,Azubi:100}};
+      const heavy=['relocation','wohnen','visum','behoerde','sprache_a1b1','sprache_b2c1'];
+      FUNKTIONEN.forEach(f=>{
+        svcMatrixState[s.id][r.id][f] = heavy.includes(s.id) ? (svcState[s.id]||s.price)+(deltas[r.id]?.[f]||0) : null;
+      });
+    });
+  });
+}
+
+function toggleMatrix(svcId){
+  matrixOpen[svcId]=!matrixOpen[svcId];
+  const wrap=document.getElementById('matrix-'+svcId);
+  if(wrap) wrap.classList.toggle('open',matrixOpen[svcId]);
+  const btn=document.getElementById('matrixbtn-'+svcId);
+  if(btn) btn.textContent=matrixOpen[svcId]?'▲ Matrix ausblenden':'▼ Preise nach Region & Funktion';
+}
+
+function updateMatrixPrice(svcId,regionId,funktion,val){
+  svcMatrixState[svcId][regionId][funktion]=val===''?null:Math.max(0,parseInt(val)||0);
+  document.getElementById('lkRight').innerHTML=renderLkRight();
+}
+
+function renderSvcRow(s){
+  const off=!s.active;
+  const base=svcState[s.id]||s.price;
+  const matrixHtml=`
+    <div class="matrix-wrap ${matrixOpen[s.id]?'open':''}" id="matrix-${s.id}">
+      <table class="matrix-table">
+        <thead><tr>
+          <th style="min-width:72px">Funktion</th>
+          ${REGIONS.map(r=>`<th class="region-header" title="${r.note}">${r.flag} ${r.label}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${FUNKTIONEN.map(f=>`<tr>
+            <td>${f}</td>
+            ${REGIONS.map(r=>{
+              const v=svcMatrixState[s.id]?.[r.id]?.[f];
+              return `<td><input class="matrix-inp" type="number" min="0" step="10"
+                value="${v!==null&&v!==undefined?v:''}" placeholder="${base}"
+                title="${v===null||v===undefined?'Basispreis: '+base+' €':'Individuell: '+v+' €'}"
+                onchange="updateMatrixPrice('${s.id}','${r.id}','${f}',this.value)"
+                ${!s.active?'disabled':''}/></td>`;
+            }).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="matrix-base-note">Leere Felder verwenden den Basispreis (${base.toLocaleString('de-DE')} €)</div>
+    </div>`;
+
+  return `<div class="svc-row ${off?'off':''}" id="svcrow-${s.id}">
+    <label class="tog">
+      <input type="checkbox" ${s.active?'checked':''} onchange="toggleSvc('${s.id}',this.checked)">
+      <div class="tog-track"></div><div class="tog-thumb"></div>
+    </label>
+    <div class="svc-info-col">
+      <div class="svc-name">${s.name}</div>
+      <div class="svc-desc">${s.desc}</div>
+      <div class="svc-pkgs">
+        ${PKG_DEFS.map(p=>`
+          <label class="pkg-chk-lbl" style="color:${s.pkgs.includes(p.id)?'var(--blue)':'var(--text3)'};font-weight:${s.pkgs.includes(p.id)?'600':'400'}">
+            <input type="checkbox" ${s.pkgs.includes(p.id)?'checked':''} onchange="togglePkgAssign('${s.id}','${p.id}',this.checked)"
+              style="accent-color:var(--blue);width:11px;height:11px" ${!s.active?'disabled':''}/>
+            ${p.name}
+          </label>`).join('')}
+      </div>
+      <button class="matrix-toggle" id="matrixbtn-${s.id}" onclick="toggleMatrix('${s.id}')" ${!s.active?'disabled':''}>
+        ${matrixOpen[s.id]?'▲ Matrix ausblenden':'▼ Preise nach Region & Funktion'}
+      </button>
+      ${matrixHtml}
+    </div>
+    <div class="bench-wrap">
+      <div class="price-grp ${off?'dis':''}">
+        <span class="price-pfx">€</span>
+        <input class="price-inp" type="number" min="0" step="10" value="${base}"
+          onchange="updateSvcPrice('${s.id}',this.value)" ${!s.active?'disabled':''}/>
+        <span class="price-sfx">Basis</span>
+      </div>
+      ${(()=>{
+        const b=MARKET_BENCH[s.id]; if(!b||off) return '';
+        const diff=Math.round((base-b.avg)/b.avg*100);
+        const absDiff=Math.abs(diff);
+        let icon,col,bg,label;
+        if(diff>15){icon='▲';col='#C0271A';bg='#FDECEA';label='+'+absDiff+'% vs. Ø';}
+        else if(diff<-15){icon='▼';col='#1A7A4A';bg='#E8F5EE';label='-'+absDiff+'% vs. Ø';}
+        else{icon='✓';col='#5F5E5A';bg='#F0EEE9';label='Im Marktbereich';}
+        return '<div class="bench-tag" style="background:'+bg+';color:'+col+'" title="Marktdurchschnitt: '+b.avg+' €  ·  Spanne: '+b.min+'–'+b.max+' €  ·  '+b.n+' Anbieter im Netzwerk">'
+          +'<span class="bench-arrow">'+icon+'</span>'+label+'</div>';
+      })()}
+    </div>
+  </div>`;
+}
+
+function renderLkRight(){
+  const active=CATALOG.filter(s=>s.active);
+  const totalMax=active.reduce((a,s)=>a+(svcState[s.id]||s.price),0);
+  const pkgTotals=PKG_DEFS.map(p=>{
+    const items=CATALOG.filter(s=>s.active&&s.pkgs.includes(p.id));
+    return {...p,total:items.reduce((a,s)=>a+(svcState[s.id]||s.price),0),count:items.length};
+  });
+  return `<div class="preview-card">
+    <div class="pv-head"><div class="pv-title">Live-Vorschau</div><div class="pv-sub">Ihr aktives Leistungsangebot</div></div>
+    <div class="pv-pkgs">
+      <div class="pv-pkg-lbl">Automatisch kalkulierte Pakete</div>
+      ${pkgTotals.map(p=>`
+        <div class="pv-pkg-row">
+          <div><div class="pv-pkg-name">${p.name}</div><div class="pv-pkg-cnt">${p.count} Leistungen</div></div>
+          <div class="pv-pkg-price">${p.total.toLocaleString('de-DE')} €</div>
+        </div>`).join('')}
+    </div>
+    <div class="stats-grid">
+      <div class="stat-c"><div class="stat-v">${active.length}</div><div class="stat-l">Aktive Leistungen</div></div>
+      <div class="stat-c"><div class="stat-v">${totalMax.toLocaleString('de-DE')} €</div><div class="stat-l">Max. Paketpreis</div></div>
+    </div>
+    <div class="act-list">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:7px">Aktive Leistungen</div>
+      ${active.slice(0,9).map(s=>`
+        <div class="act-item">
+          <span class="act-name">${s.name}</span>
+          <span class="act-price">${(svcState[s.id]||s.price).toLocaleString('de-DE')} €</span>
+        </div>`).join('')}
+      ${active.length>9?`<div style="font-size:11px;color:var(--text3);padding:5px 0">+ ${active.length-9} weitere</div>`:''}
+    </div>
+    <div class="floor-cfg">
+      <div class="fc-lbl">Verhandlungs-Floor</div>
+      <div class="fc-row">
+        <input class="fc-inp" type="number" value="${floorPrice}" min="0" step="100" onchange="updateFloor(this.value)"/>
+        <span style="font-size:13px;font-weight:500;color:var(--amber)">€</span>
+      </div>
+      <div class="fc-note">KI-Agent unterschreitet diesen Wert nicht automatisch</div>
+    </div>
+  </div>`;
+}
+
+function toggleCat(catKey){
+  const realKey=Object.keys(catOpen).find(k=>k.replace(/&/g,'and')===catKey)||catKey;
+  catOpen[realKey]=!catOpen[realKey];
+  renderLeistungen();
+}
+
+function toggleSvc(id,checked){
+  const s=CATALOG.find(c=>c.id===id);
+  s.active=checked;
+  if(!checked) s.pkgs=[];
+  markLkChange();renderLeistungen();
+}
+function togglePkgAssign(svcId,pkgId,checked){
+  const s=CATALOG.find(c=>c.id===svcId);
+  if(checked){if(!s.pkgs.includes(pkgId)) s.pkgs.push(pkgId);}
+  else s.pkgs=s.pkgs.filter(p=>p!==pkgId);
+  markLkChange();
+  document.getElementById('lkRight').innerHTML=renderLkRight();
+}
+function updateSvcPrice(id,val){
+  svcState[id]=Math.max(0,parseInt(val)||0);
+  markLkChange();
+  document.getElementById('lkRight').innerHTML=renderLkRight();
+}
+function updateFloor(val){floorPrice=Math.max(0,parseInt(val)||0);markLkChange();}
+function markLkChange(){
+  lkChanges++;
+  document.getElementById('changeCount').textContent=`${lkChanges} Änderung${lkChanges!==1?'en':''}`;
+  document.getElementById('saveBar').classList.add('vis');
+}
+function saveChanges(){
+  lkChanges=0;
+  document.getElementById('saveBar').classList.remove('vis');
+  showToast('✓ Leistungskatalog gespeichert — für anfragende Parteien sichtbar');
+}
+function discardChanges(){
+  initCatalog();CATALOG.forEach(s=>{s.active=s.active;});
+  lkChanges=0;document.getElementById('saveBar').classList.remove('vis');
+  renderLeistungen();showToast('Änderungen verworfen');
+}
+
+// ═══════════════════════════════════════════════════
+// OVERLAY HELPERS
+// ═══════════════════════════════════════════════════
+function openOverlay(id){document.getElementById(id).classList.add('open');}
+function closeOverlay(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('click',e=>{
+  document.querySelectorAll('.overlay').forEach(o=>{if(e.target===o) o.classList.remove('open');});
+});
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ═══════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════
+init();
+
+// ═══════════════════════════════════════════════════
+// ROLE SWITCHER
+// ═══════════════════════════════════════════════════
+let currentRole = 'anbieter';
+
+function switchRole(role){
+  currentRole = role;
+  document.getElementById('role-anbieter').classList.toggle('active', role==='anbieter');
+  document.getElementById('role-arbeitgeber').classList.toggle('active', role==='arbeitgeber');
+  const anbieter = document.getElementById('anbieter-shell');
+  const ag = document.getElementById('arbeitgeber-shell');
+  if(role==='anbieter'){
+    anbieter.style.display='flex'; ag.style.display='none';
+  } else {
+    anbieter.style.display='none'; ag.style.display='flex';
+    renderBedarfeList();
+    if(BEDARFE.length) selectBedarf(BEDARFE[0].id);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// ARBEITGEBER DATA
+// ═══════════════════════════════════════════════════
+const BEDARFE = [
+  { id:'b-001',
+    titel:'Gesundheits- u. Krankenpfleger/in',
+    anzahl:3, funktion:'Fachkraft',
+    einrichtung:'Station 4B – Intensiv', starttermin:'Q3 2026',
+    anforderungen:{sprache:'B1', region:'any', erfahrung:'mind. 2 Jahre', schicht:'Vollzeit'},
+    status:'offen', matches:12,
+    tags:['Intensivpflege','3-Schicht','Vollzeit'],
+  },
+  { id:'b-002',
+    titel:'Arzt/Ärztin – Innere Medizin',
+    anzahl:1, funktion:'Fachkraft',
+    einrichtung:'Abt. Kardiologie', starttermin:'Q4 2026',
+    anforderungen:{sprache:'C1', region:'mena', erfahrung:'mind. 5 Jahre', schicht:'Vollzeit'},
+    status:'offen', matches:5,
+    tags:['Kardiologie','Facharzt','C1 Deutsch'],
+  },
+  { id:'b-003',
+    titel:'Pflegefachfrau/-mann (Ausbildung)',
+    anzahl:4, funktion:'Azubi',
+    einrichtung:'Pflegeschule intern', starttermin:'Sept. 2026',
+    anforderungen:{sprache:'A2', region:'sea', erfahrung:'keine', schicht:'Vollzeit'},
+    status:'offen', matches:18,
+    tags:['Ausbildung','A2 ausreichend','Philippinen bevorzugt'],
+  },
+];
+
+const KANDIDATEN_POOL = [
+  { id:'001010y4ak', name:'Kandidat 4ak', beruf:'GKP', land:'🇵🇭', funktion:'Fachkraft', sprache:'B1', erfahrung:4, anonym:true,
+    scores:{ b:'b-001', gesamt:94, qualifikation:98, sprache:82, verfuegbarkeit:95, region:100 },
+    col:'av-blue', highlight:'Intensiverfahrung PH, B1 zertifiziert' },
+  { id:'001010y4av', name:'Kandidat 4av', beruf:'GKP', land:'🇪🇬', funktion:'Fachkraft', sprache:'B2', erfahrung:6, anonym:true,
+    scores:{ b:'b-001', gesamt:89, qualifikation:95, sprache:92, verfuegbarkeit:88, region:82 },
+    col:'av-green', highlight:'B2 Zertifikat, 6 Jahre Klinik' },
+  { id:'001010y4ce', name:'Nina Hassan', beruf:'GKP', land:'🇲🇦', funktion:'Fachkraft', sprache:'B1', erfahrung:3, anonym:false,
+    scores:{ b:'b-001', gesamt:81, qualifikation:85, sprache:80, verfuegbarkeit:90, region:70 },
+    col:'av-amber', highlight:'3 Jahre Allgemeinpflege, Marokko' },
+  { id:'001010y4ch', name:'Kandidat 4ch', beruf:'GKP', land:'🇵🇭', funktion:'Fachkraft', sprache:'A2', erfahrung:2, anonym:true,
+    scores:{ b:'b-001', gesamt:74, qualifikation:80, sprache:55, verfuegbarkeit:95, region:100 },
+    col:'av-purple', highlight:'Sprachkurs A2→B1 läuft bereits' },
+  { id:'001010y4bw', name:'Dr. Amir Khalil', beruf:'Arzt – Innere', land:'🇸🇾', funktion:'Fachkraft', sprache:'B2', erfahrung:8, anonym:false,
+    scores:{ b:'b-002', gesamt:91, qualifikation:97, sprache:85, verfuegbarkeit:90, region:88 },
+    col:'av-blue', highlight:'Facharzt Innere, 8 Jahre, B2' },
+  { id:'001010y4cj', name:'Kandidat 4cj', beruf:'Arzt – Innere', land:'🇪🇬', funktion:'Fachkraft', sprache:'C1', erfahrung:5, anonym:true,
+    scores:{ b:'b-002', gesamt:86, qualifikation:88, sprache:98, verfuegbarkeit:78, region:82 },
+    col:'av-green', highlight:'C1 Zertifikat, Kardiologie-Erfahrung' },
+  { id:'001010y4cx', name:'Kandidat 4cx', beruf:'Pflegefachfrau', land:'🇵🇭', funktion:'Azubi', sprache:'A1', erfahrung:0, anonym:true,
+    scores:{ b:'b-003', gesamt:95, qualifikation:90, sprache:88, verfuegbarkeit:100, region:100 },
+    col:'av-blue', highlight:'Junger Bewerber, A1, Philippinen' },
+  { id:'001010y4cv', name:'Kandidat 4cv', beruf:'Pflegefachfrau', land:'🇵🇭', funktion:'Azubi', sprache:'A2', erfahrung:0, anonym:true,
+    scores:{ b:'b-003', gesamt:92, qualifikation:87, sprache:95, verfuegbarkeit:98, region:100 },
+    col:'av-teal', highlight:'A2 bereits vorhanden, sehr motiviert' },
+  { id:'001010y4bx', name:'Linh Nguyen', beruf:'Pflegefachfrau', land:'🇻🇳', funktion:'Azubi', sprache:'A2', erfahrung:0, anonym:false,
+    scores:{ b:'b-003', gesamt:85, qualifikation:82, sprache:90, verfuegbarkeit:92, region:88 },
+    col:'av-green', highlight:'Vietnam, A2, Pflegevorausbildung' },
+];
+
+const AGENT_INSIGHTS = {
+  'b-001': {
+    summary:'12 Kandidaten gefunden. Top-Match 001010y4ak mit 94% — Intensiverfahrung und B1-Zertifikat vorhanden. Empfehle sofortige Anfrage.',
+    insights:[
+      'Kandidat 4ak hat direkte Intensiverfahrung — passt exakt auf Station 4B.',
+      '4 von 12 Kandidaten haben bereits B1-Zertifikat, kein Sprachkurs nötig.',
+      'Kandidat 4ch: Sprachkurs läuft — in 3 Monaten B1-fertig, günstiger Preis.',
+    ],
+    warnings:[
+      'Kandidat 4cv hat nur A2 — Sprachkurs 6-8 Monate bis Einsatz, Q3 2026 knapp.',
+    ],
+    actions:[
+      {label:'Anfrage an Top-3 senden', icon:'📨', primary:true},
+      {label:'Kandidaten zur Shortlist hinzufügen', icon:'⭐', primary:false},
+    ],
+  },
+  'b-002': {
+    summary:'5 Kandidaten gefunden. Dr. Amir Khalil (91%) ist klarer Favorit — Facharzt Innere mit 8 Jahren Erfahrung.',
+    insights:[
+      'Dr. Khalil hat Kardiologie-Schwerpunkt — passt direkt auf die Abteilung.',
+      'Kandidat 4cj hat C1 Zertifikat — Anforderung erfüllt, sofort einsatzbereit.',
+    ],
+    warnings:[
+      'Nur 2 von 5 haben C1-Niveau wie gefordert.',
+      'Ärzte aus Syrien: Anerkennungsverfahren ca. 8-12 Monate — Q4 2026 realistisch.',
+    ],
+    actions:[
+      {label:'Anfrage an Dr. Khalil senden', icon:'📨', primary:true},
+      {label:'Dr. Khalil zur Shortlist', icon:'⭐', primary:false},
+    ],
+  },
+  'b-003': {
+    summary:'18 Kandidaten gefunden. Sehr gute Auswahl für Azubi-Stellen aus Südostasien — alle mit A1/A2, Sprachkurs planbar bis Sept.',
+    insights:[
+      '10 von 18 sind aus Philippinen — Ihre bevorzugte Region.',
+      'Kandidat 4cx: 95% Match, A1 vorhanden, Sprachkurs A1→B1 passt bis Sept. 2026.',
+      'Linh Nguyen: einzige Person mit Pflegevorausbildung — leichtere Einarbeitung.',
+    ],
+    warnings:[
+      'Azubi-Bedarfe brauchen 12-14 Monate Vorlauf — jetzt anfragen für Sept. 2026.',
+    ],
+    actions:[
+      {label:'Anfrage an Top-4 senden', icon:'📨', primary:true},
+      {label:'Alle 4 zur Shortlist hinzufügen', icon:'⭐', primary:false},
+    ],
+  },
+};
+
+// ═══════════════════════════════════════════════════
+// ARBEITGEBER RENDER
+// ═══════════════════════════════════════════════════
+let currentBedarfId = null;
+let agMode = 'suche';
+
+function renderBedarfeList(){
+  document.getElementById('bedarfeList').innerHTML = BEDARFE.map(b=>`
+    <div class="bedarf-item ${b.id===currentBedarfId?'sel':''}" onclick="selectBedarf('${b.id}')">
+      <div class="bi-top">
+        <div class="bi-title">${b.titel}</div>
+        <div class="bi-count">×${b.anzahl}</div>
+      </div>
+      <div class="bi-meta">${b.einrichtung} · Start ${b.starttermin}</div>
+      <div class="bi-tags">
+        <span class="bi-tag bi-tag-blue">${b.funktion}</span>
+        <span class="bi-tag bi-tag-gray">DE ${b.anforderungen.sprache}</span>
+        ${b.tags.slice(0,1).map(t=>`<span class="bi-tag bi-tag-gray">${t}</span>`).join('')}
+      </div>
+      <div class="bi-matches">
+        <div style="display:flex;gap:2px">${Array(Math.min(b.matches,8)).fill(0).map((_,i)=>`
+          <div style="width:7px;height:7px;border-radius:50%;background:${i<3?'var(--green)':i<6?'var(--blue)':'var(--border2)'}"></div>`).join('')}
+          ${b.matches>8?'<span style="font-size:10px;color:var(--text3)">+'+(b.matches-8)+'</span>':''}
+        </div>
+        <span style="font-size:10px;color:var(--text2)">${b.matches} Kandidaten</span>
+      </div>
+    </div>`).join('');
+}
+
+function selectBedarf(id){
+  currentBedarfId = id;
+  renderBedarfeList();
+  const b = BEDARFE.find(x=>x.id===id);
+  document.getElementById('agRhTitle').textContent = b.titel + ' (×'+b.anzahl+')';
+  document.getElementById('agRhSub').textContent = b.einrichtung+' · '+b.starttermin+' · Sprache mind. '+b.anforderungen.sprache;
+  document.getElementById('agRhRow').style.display = 'flex';
+
+  // Filter chips
+  document.getElementById('agFilterChips').innerHTML = [
+    {label:'Alle', on:true},
+    {label:'≥80% Match', on:false},
+    {label:'Sprache erfüllt', on:false},
+    {label:b.funktion, on:false},
+  ].map(f=>`<button class="ag-filter-chip ${f.on?'on':''}" onclick="this.classList.toggle('on')">${f.label}</button>`).join('');
+
+  renderMatches(id);
+}
+
+function setAgMode(mode){
+  agMode = mode;
+  document.getElementById('agBtnSuche').className='ag-mode-btn'+(mode==='suche'?' on':'');
+  document.getElementById('agBtnAgent').className='ag-mode-btn'+(mode==='agent'?' agent-on':'');
+  const panel = document.getElementById('agentPanel');
+  if(mode==='agent'){
+    panel.style.display='flex';
+    renderAgentPanel(currentBedarfId);
+  } else {
+    panel.style.display='none';
+  }
+  renderMatches(currentBedarfId);
+}
+
+function renderMatches(bedarfId){
+  const candidates = KANDIDATEN_POOL.filter(k=>k.scores.b===bedarfId)
+    .sort((a,b)=>b.scores.gesamt-a.scores.gesamt);
+  const scroll = document.getElementById('matchScroll');
+
+  if(agMode==='agent'){
+    // Agent mode: show thinking first, then results
+    scroll.innerHTML=`<div class="msg-row ag" style="margin-bottom:12px">
+      <div class="bubble agent" style="max-width:100%">
+        <div class="ag-label">◉ KI-Agent analysiert Bedarf</div>
+        <span style="font-size:12px;color:var(--text2)">${AGENT_INSIGHTS[bedarfId]?.summary||'Analysiere...'}</span>
+      </div>
+    </div>
+    <div class="match-grid">${candidates.map(k=>buildMatchCard(k, true)).join('')}</div>`;
+  } else {
+    scroll.innerHTML=`<div class="match-grid">${candidates.map(k=>buildMatchCard(k, false)).join('')}</div>`;
+  }
+}
+
+function buildMatchCard(k, agentMode){
+  const s = k.scores;
+  const pct = s.gesamt;
+  const badgeCls = pct>=90?'mc-match-high':pct>=80?'mc-match-mid':'mc-match-low';
+  const colors = {
+    qualifikation: pct>=90?'var(--green)':'var(--blue)',
+    sprache: s.sprache>=80?'var(--green)':s.sprache>=60?'var(--amber)':'var(--red)',
+    verfuegbarkeit: 'var(--blue)',
+    region: 'var(--green)',
+  };
+  const scoreRows = [
+    {label:'Qualifikation', val:s.qualifikation, col:colors.qualifikation},
+    {label:'Sprache', val:s.sprache, col:colors.sprache},
+    {label:'Verfügbarkeit', val:s.verfuegbarkeit, col:colors.verfuegbarkeit},
+    {label:'Region/Herkunft', val:s.region, col:colors.region},
+  ];
+
+  return `<div class="match-card">
+    <div class="mc-header">
+      <div class="mc-avatar ${k.col}" style="background:var(--blue-bg);color:var(--blue)">${k.anonym?'?':k.name.substring(0,2).toUpperCase()}</div>
+      <div class="mc-info">
+        <div class="mc-name">${k.anonym?'Anonym ('+k.id+')':k.name}</div>
+        <div class="mc-sub">${k.beruf} · ${k.land} · DE ${k.sprache}</div>
+      </div>
+      <div class="mc-match-badge ${badgeCls}">${pct}%</div>
+    </div>
+    <div class="mc-score-section">
+      ${scoreRows.map(r=>`
+        <div class="mc-score-row">
+          <div class="mc-score-label">${r.label}</div>
+          <div class="mc-score-bar"><div class="mc-score-fill" style="width:${r.val}%;background:${r.col}"></div></div>
+          <div class="mc-score-val">${r.val}%</div>
+        </div>`).join('')}
+    </div>
+    <div class="mc-body">
+      <div class="mc-facts" style="margin-bottom:6px">
+        <span style="font-size:11px;color:var(--text2);font-style:italic">${k.highlight}</span>
+      </div>
+      <div class="mc-facts">
+        <span class="bi-tag bi-tag-gray">${k.funktion}</span>
+        ${k.erfahrung>0?`<span class="bi-tag bi-tag-blue">${k.erfahrung} J. Erfahrung</span>`:'<span class="bi-tag bi-tag-amber">Berufseinsteiger</span>'}
+      </div>
+      <div class="mc-actions" style="margin-top:8px">
+        <button class="mc-btn-primary" onclick="showToast('Anfrage an Agentur gesendet ✓ — wechselt zu Eingehende Anfragen')">Anfragen</button>
+        <button class="mc-btn-sec" onclick="showToast('Kandidaten-Profil öffnet...')">Profil</button>
+        ${agentMode?`<button class="mc-btn-sec" style="color:var(--purple);border-color:var(--purple-mid)" onclick="showToast('Agent erklärt Match-Begründung...')">◉ Warum?</button>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAgentPanel(bedarfId){
+  const insights = AGENT_INSIGHTS[bedarfId];
+  if(!insights) return;
+  document.getElementById('agentPanelBody').innerHTML=`
+    <div style="margin-bottom:14px">
+      <div class="ap-sec-title">Analyse</div>
+      ${insights.insights.map(i=>`<div class="ap-insight">💡 ${i}</div>`).join('')}
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="ap-sec-title">Risiken</div>
+      ${insights.warnings.map(w=>`<div class="ap-warning">⚠ ${w}</div>`).join('')}
+    </div>
+    <div>
+      <div class="ap-sec-title">Empfohlene Aktionen</div>
+      ${insights.actions.map(a=>`
+        <button class="ap-action-btn" style="${a.primary?'':'background:var(--surface);color:var(--purple);border:1px solid var(--purple-mid)'}" onclick="showToast('${a.label} ✓')">
+          <span>${a.icon}</span><span>${a.label}</span>
+        </button>`).join('')}
+    </div>`;
+}
+
+function switchAgTab(tab){
+  ['matching','suche','anfragen'].forEach(t=>{
+    document.getElementById('agtab-'+t).classList.toggle('active',t===tab);
+  });
+  if(tab!=='matching') showToast('Tab "'+tab+'" — in diesem Prototyp nur KI-Matching ausgebaut');
+}
+</script>
+<!-- PROFIL STYLES -->
+<style>
+.profil-wrap{max-width:900px;margin:0 auto;padding:0 0 60px}
+
+/* Hero */
+.profil-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:20px;box-shadow:var(--sh)}
+.hero-cover{height:140px;background:linear-gradient(135deg,#1B5FDE 0%,#5B3DB8 60%,#1A7A4A 100%);position:relative;cursor:pointer}
+.hero-cover-edit{position:absolute;bottom:10px;right:12px;background:rgba(0,0,0,.35);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;backdrop-filter:blur(4px)}
+.hero-cover-edit:hover{background:rgba(0,0,0,.55)}
+.hero-body{padding:0 24px 20px;display:flex;align-items:flex-end;gap:18px;margin-top:-36px}
+.hero-avatar{width:72px;height:72px;border-radius:50%;border:3px solid var(--surface);background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:var(--sh);cursor:pointer;position:relative}
+.avatar-edit-hint{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:18px;opacity:0;transition:opacity .2s}
+.hero-avatar:hover .avatar-edit-hint{opacity:1}
+.hero-info{flex:1;padding-top:44px}
+.hero-name{font-size:20px;font-weight:600;letter-spacing:-.4px;margin-bottom:2px}
+.hero-type{font-size:13px;color:var(--text2);margin-bottom:6px}
+.hero-meta{display:flex;gap:12px;flex-wrap:wrap}
+.hero-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text2)}
+.hero-actions{display:flex;gap:8px;padding-top:44px;flex-shrink:0}
+.btn-edit{padding:7px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:all .15s;display:flex;align-items:center;gap:5px}
+.btn-edit:hover{background:var(--surface2);border-color:var(--border2)}
+.btn-publish{padding:7px 16px;border:none;border-radius:var(--r);background:var(--blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-publish:hover{background:#1650C2}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;box-shadow:var(--sh);text-align:center}
+.stat-big{font-size:28px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-.5px}
+.stat-lbl{font-size:12px;color:var(--text2);margin-top:3px}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Two col */
+.profil-cols{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+
+/* Section card */
+.p-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:16px;box-shadow:var(--sh)}
+.p-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.p-card-title{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.p-edit-btn{font-size:11px;color:var(--blue);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0}
+.p-edit-btn:hover{text-decoration:underline}
+
+/* Beschreibung */
+.p-desc{font-size:13px;color:var(--text2);line-height:1.75;border:none;width:100%;resize:vertical;background:transparent;font-family:'DM Sans',sans-serif;outline:none}
+.p-desc-view{font-size:13px;color:var(--text2);line-height:1.75}
+
+/* Leistungs-tags */
+.leistungs-tags{display:flex;flex-wrap:wrap;gap:7px}
+.ltag{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--surface);color:var(--text2);display:flex;align-items:center;gap:5px;cursor:default}
+.ltag.active{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.ltag.green{background:var(--green-bg);border-color:var(--green-mid);color:var(--green)}
+.ltag-remove{font-size:14px;cursor:pointer;opacity:.5;line-height:1}
+.ltag-remove:hover{opacity:1}
+.ltag-add{padding:6px 13px;border-radius:20px;font-size:12px;border:1px dashed var(--border2);background:none;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.ltag-add:hover{border-color:var(--blue-mid);color:var(--blue)}
+
+/* Länder */
+.land-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.land-row:last-child{border:none}
+.land-bar{flex:1;height:6px;background:var(--bg);border-radius:3px;margin:0 12px;overflow:hidden}
+.land-fill{height:100%;border-radius:3px;background:var(--blue)}
+.land-count{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;min-width:28px;text-align:right}
+
+/* Team */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.team-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg)}
+.tm-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.tm-name{font-size:13px;font-weight:500}
+.tm-role{font-size:11px;color:var(--text3)}
+.tm-add{border:1px dashed var(--border2);background:none;cursor:pointer;justify-content:center;color:var(--text3);font-size:12px;font-family:'DM Sans',sans-serif;transition:all .15s}
+.tm-add:hover{border-color:var(--blue-mid);color:var(--blue);background:var(--blue-bg)}
+
+/* Zertifikate */
+.cert-list{display:flex;flex-direction:column;gap:8px}
+.cert-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg)}
+.cert-icon{font-size:18px;flex-shrink:0}
+.cert-name{font-size:13px;font-weight:500}
+.cert-issuer{font-size:11px;color:var(--text3)}
+.cert-year{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);margin-left:auto}
+
+/* Bewertungen */
+.rating-hero{display:flex;align-items:center;gap:18px;padding:16px 0;border-bottom:1px solid var(--border);margin-bottom:14px}
+.rating-big{font-size:48px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-2px;line-height:1}
+.rating-right{flex:1}
+.stars-row{display:flex;gap:3px;margin-bottom:5px}
+.star{font-size:18px;line-height:1}
+.star.full{color:#F59E0B}
+.star.half{color:#F59E0B;opacity:.5}
+.star.empty{color:var(--border2)}
+.rating-count{font-size:12px;color:var(--text2)}
+.rating-bars{display:flex;flex-direction:column;gap:4px}
+.rb-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3)}
+.rb-bar{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.rb-fill{height:100%;border-radius:3px;background:#F59E0B}
+
+.review-item{padding:14px 0;border-bottom:1px solid var(--border)}
+.review-item:last-child{border:none}
+.rv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.rv-who{display:flex;align-items:center;gap:8px}
+.rv-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;background:var(--blue-bg);color:var(--blue)}
+.rv-name{font-size:13px;font-weight:500}
+.rv-org{font-size:11px;color:var(--text3)}
+.rv-stars{display:flex;gap:2px}
+.rv-star{font-size:13px;color:#F59E0B}
+.rv-date{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.rv-text{font-size:13px;color:var(--text2);line-height:1.65}
+.rv-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.rv-tag{padding:2px 8px;border-radius:20px;font-size:10px;background:var(--green-bg);color:var(--green);font-weight:500}
+
+/* Kontakt / Info sidebar */
+.info-field{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--border)}
+.info-field:last-child{border:none}
+.if-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)}
+.if-value{font-size:13px;color:var(--text);font-weight:500}
+.if-input{font-size:13px;color:var(--text);font-weight:500;border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;width:100%;border-bottom:1px solid var(--blue-mid);padding-bottom:2px}
+
+/* Profile completeness */
+.completeness-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;margin-bottom:16px;box-shadow:var(--sh)}
+.cb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cb-title{font-size:13px;font-weight:600}
+.cb-pct{font-size:18px;font-weight:600;font-family:'DM Mono',monospace;color:var(--blue)}
+.cb-track{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.cb-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--purple))}
+.cb-items{display:flex;flex-direction:column;gap:5px}
+.cb-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
+.cb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cb-dot.done{background:var(--green)}
+.cb-dot.todo{background:var(--border2)}
+
+/* Inline edit */
+.editable{cursor:text;border-radius:4px;padding:1px 3px;margin:-1px -3px;transition:background .15s}
+.editable:hover{background:var(--surface2)}
+.editable:focus{background:var(--surface2);outline:1px solid var(--blue-mid);outline-offset:1px}
+</style>
+
+<script>
+// ═══════════════════════════════════════════════════
+// PROFIL DATA
+// ═══════════════════════════════════════════════════
+const PROFIL = {
+  name: 'Ankaadia Master GmbH',
+  slogan: 'Ihr Partner für internationale Fachkräftevermittlung',
+  type: 'Vermittlungsagentur',
+  gegründet: '2018',
+  mitarbeiter: '24',
+  standort: 'Frankfurt am Main',
+  website: 'www.ankaadia.com',
+  telefon: '+49 69 1234 5678',
+  email: 'info@ankaadia.com',
+  linkedin: 'linkedin.com/company/ankaadia',
+  beschreibung: 'Wir sind auf die Vermittlung internationaler Fachkräfte in den Bereichen Pflege, Medizin und Handwerk spezialisiert. Mit über 6 Jahren Erfahrung und einem Netzwerk in mehr als 20 Herkunftsländern begleiten wir den gesamten Prozess — von der Kandidatensuche über Sprachvorbereitung und Berufsanerkennung bis hin zur Relocation.',
+  herkunftslaender: [
+    {flag:'🇵🇭', name:'Philippinen', count:142, pct:38},
+    {flag:'🇪🇬', name:'Ägypten', count:98, pct:26},
+    {flag:'🇲🇦', name:'Marokko', count:67, pct:18},
+    {flag:'🇸🇾', name:'Syrien', count:41, pct:11},
+    {flag:'🇮🇳', name:'Indien', count:26, pct:7},
+  ],
+  berufsfelder: ['Gesundheits- u. Krankenpflege','Altenpflege','Arzt / Ärztin','Apotheke','Handwerk','IT-Fachkräfte'],
+  leistungen_angeboten: ['Vermittlung','Sprachkurs A1–B2','Berufsanerkennung','Behördenbegleitung','Relocation','Wohnungssuche','Integrationsbegleitung'],
+  zertifikate: [
+    {icon:'🏅', name:'Zertifizierter Bildungsträger', issuer:'Bundesagentur für Arbeit', year:'2022'},
+    {icon:'⭐', name:'AZAV-Zulassung', issuer:'TÜV Rheinland', year:'2021'},
+    {icon:'🌍', name:'Mitglied im Bundesverband', issuer:'BVFA e.V.', year:'2019'},
+  ],
+  team: [
+    {initials:'SK', name:'Sabine Koch', rolle:'Geschäftsführerin', col:'av-blue'},
+    {initials:'MH', name:'Mohamed Hassan', rolle:'Senior Recruiter', col:'av-green'},
+    {initials:'LB', name:'Laura Becker', rolle:'Sprachkoordination', col:'av-amber'},
+    {initials:'KR', name:'Klaus Richter', rolle:'Behördenbegleitung', col:'av-purple'},
+  ],
+  stats: {
+    vermittelt: 374,
+    erfolgsquote: 94,
+    durchschnitt_monate: 8.4,
+    aktive_pools: 4,
+  },
+  rating: 4.7,
+  rating_count: 83,
+  rating_dist: [63, 14, 5, 1, 0],
+  reviews: [
+    {name:'Dr. Klaus Breuer', org:'Charité Berlin', av:'KB', date:'März 2026', stars:5,
+     text:'Ankaadia hat uns drei exzellente Pflegefachkräfte aus den Philippinen vermittelt. Die gesamte Abwicklung — von der Auswahl bis zur Einarbeitung — war professionell und transparent. Besonders die Behördenbegleitung hat uns viel Aufwand erspart.',
+     tags:['Sehr empfehlenswert','Professionell','Schnell']},
+    {name:'Angela Voigt', org:'Seniorenresidenz Sonnenhof', av:'AV', date:'Jan. 2026', stars:5,
+     text:'Wir arbeiten seit zwei Jahren mit Ankaadia zusammen und sind durchweg zufrieden. Die Kandidaten sind gut vorbereitet und die Sprachkenntnisse stimmen mit den Angaben überein.',
+     tags:['Zuverlässig','Gute Kommunikation']},
+    {name:'Thomas Müller', org:'MVZ Nord GmbH', av:'TM', date:'Dez. 2025', stars:4,
+     text:'Gute Zusammenarbeit, die Vermittlung hat gut funktioniert. Einzig der Zeitplan war etwas schwer zu planen, da sich das Visumsverfahren verzögert hat. Ankaadia hat aber transparent kommuniziert.',
+     tags:['Transparent','Solide']},
+    {name:'Dr. Sarah Klein', org:'Asklepios Kliniken', av:'SK', date:'Nov. 2025', stars:5,
+     text:'Top-Agentur. Der Kandidat war perfekt auf die Stelle vorbereitet — Sprachkenntnisse, Fachkompetenz und Motivation haben gestimmt. Vertragsabschluss innerhalb von 2 Wochen.',
+     tags:['Top-Kandidaten','Sehr empfehlenswert','Schnell']},
+  ],
+};
+
+let profilEditMode = false;
+
+function renderProfil(){
+  const p = PROFIL;
+  const starsHtml = (rating) => {
+    let h = '';
+    for(let i=1;i<=5;i++){
+      if(rating >= i) h += '<span class="star full">★</span>';
+      else if(rating >= i-0.5) h += '<span class="star half">★</span>';
+      else h += '<span class="star empty">★</span>';
+    }
+    return h;
+  };
+  const smallStars = (n) => '★'.repeat(n) + '☆'.repeat(5-n);
+
+  const completeness = [
+    {done:true, label:'Unternehmensname & Beschreibung'},
+    {done:true, label:'Logo & Titelbild'},
+    {done:true, label:'Kontaktdaten vollständig'},
+    {done:true, label:'Leistungen definiert'},
+    {done:true, label:'Herkunftsländer angegeben'},
+    {done:false, label:'Referenzprojekte hochladen'},
+    {done:false, label:'Handelsregisternummer hinterlegt'},
+  ];
+  const donePct = Math.round(completeness.filter(c=>c.done).length / completeness.length * 100);
+
+  document.getElementById('profilContent').innerHTML = `
+  <div class="profil-wrap">
+
+    <!-- Hero card -->
+    <div class="profil-hero">
+      <div class="hero-cover">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1B5FDE 0%,#5B3DB8 60%,#1A7A4A 100%);opacity:.9"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.06">
+          <svg width="400" height="140" viewBox="0 0 400 140"><circle cx="200" cy="70" r="200" fill="white"/></svg>
+        </div>
+        <button class="hero-cover-edit" onclick="showToast('Cover-Bild bearbeiten — hier würde ein Upload-Dialog erscheinen')">✎ Cover ändern</button>
+      </div>
+      <div class="hero-body">
+        <div class="hero-avatar" onclick="showToast('Logo hochladen — hier würde ein Upload-Dialog erscheinen')">
+          <span>A</span>
+          <div class="avatar-edit-hint">📷</div>
+        </div>
+        <div class="hero-info">
+          <div class="hero-name" contenteditable="true" class="editable" spellcheck="false">${p.name}</div>
+          <div class="hero-type">${p.type} · Gegründet ${p.gegründet}</div>
+          <div class="hero-meta">
+            <span class="hero-chip">📍 ${p.standort}</span>
+            <span class="hero-chip">👥 ${p.mitarbeiter} Mitarbeiter</span>
+            <span class="hero-chip">✅ ${p.stats.vermittelt} Vermittlungen</span>
+            <span class="hero-chip" style="color:var(--amber)">★ ${p.rating} (${p.rating_count} Bewertungen)</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-edit" onclick="openProfilAgent()" style="background:var(--purple-bg);border-color:var(--purple-mid);color:var(--purple)">◉ KI-Assistent</button>
+          <button class="btn-edit" onclick="showToast('Profil-Einstellungen geöffnet')">⚙ Einstellungen</button>
+          <button class="btn-publish" onclick="showToast('Profil ist jetzt öffentlich sichtbar ✓')">Profil veröffentlichen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-big" style="color:var(--blue)">${p.stats.vermittelt}</div>
+        <div class="stat-lbl">Erfolgreiche Vermittlungen</div>
+        <div class="stat-sub">seit 2018</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big" style="color:var(--green)">${p.stats.erfolgsquote}%</div>
+        <div class="stat-lbl">Erfolgsquote</div>
+        <div class="stat-sub">Einstellungen / Anfragen</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big" style="color:var(--amber)">${p.stats.durchschnitt_monate}</div>
+        <div class="stat-lbl">Ø Monate bis Einstellung</div>
+        <div class="stat-sub">inkl. Sprachvorbereitung</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big" style="color:var(--purple)">${p.rating}</div>
+        <div class="stat-lbl">Ø Bewertung</div>
+        <div class="stat-sub">${p.rating_count} Arbeitgeber-Reviews</div>
+      </div>
+    </div>
+
+    <div class="profil-cols">
+      <!-- Left column -->
+      <div>
+        <!-- Beschreibung -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Über uns</div>
+            <button class="p-edit-btn" onclick="toggleDescEdit()">✎ Bearbeiten</button>
+          </div>
+          <div id="descView" class="p-desc-view">${p.beschreibung}</div>
+          <textarea id="descEdit" class="p-desc" style="display:none;min-height:100px">${p.beschreibung}</textarea>
+          <div id="descSaveRow" style="display:none;margin-top:10px;display:none;gap:7px">
+            <button class="btn-edit" onclick="saveDesc()">Speichern</button>
+          </div>
+        </div>
+
+        <!-- Leistungen -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Angebotene Leistungen</div>
+            <button class="p-edit-btn" onclick="showToast('Leistungen werden aus Tab «Leistungen & Preise» übernommen')">Aus Leistungskatalog</button>
+          </div>
+          <div class="leistungs-tags">
+            ${p.leistungen_angeboten.map(l=>`<div class="ltag active">✓ ${l}</div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Berufsfelder -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Berufsfelder</div>
+            <button class="p-edit-btn" onclick="showToast('Berufsfelder bearbeiten')">✎ Bearbeiten</button>
+          </div>
+          <div class="leistungs-tags">
+            ${p.berufsfelder.map(b=>`<div class="ltag green">⚕ ${b}</div>`).join('')}
+            <button class="ltag-add" onclick="showToast('Berufsfeld hinzufügen')">+ Hinzufügen</button>
+          </div>
+        </div>
+
+        <!-- Herkunftsländer -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Herkunftsländer</div>
+            <button class="p-edit-btn" onclick="showToast('Länder bearbeiten')">✎ Bearbeiten</button>
+          </div>
+          ${p.herkunftslaender.map(l=>`
+            <div class="land-row">
+              <span style="font-size:16px;margin-right:8px">${l.flag}</span>
+              <span style="font-size:13px;flex:1">${l.name}</span>
+              <div class="land-bar"><div class="land-fill" style="width:${l.pct}%"></div></div>
+              <span class="land-count">${l.count}</span>
+            </div>`).join('')}
+        </div>
+
+        <!-- Team -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Unser Team</div>
+            <button class="p-edit-btn" onclick="showToast('Teammitglied hinzufügen')">+ Hinzufügen</button>
+          </div>
+          <div class="team-grid">
+            ${p.team.map(t=>`
+              <div class="team-card">
+                <div class="avatar ${t.col} tm-av">${t.initials}</div>
+                <div><div class="tm-name">${t.name}</div><div class="tm-role">${t.rolle}</div></div>
+              </div>`).join('')}
+            <div class="team-card tm-add" onclick="showToast('Teammitglied einladen')">+ Mitglied hinzufügen</div>
+          </div>
+        </div>
+
+        <!-- Zertifikate -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Zertifikate &amp; Mitgliedschaften</div>
+            <button class="p-edit-btn" onclick="showToast('Zertifikat hinzufügen')">+ Hinzufügen</button>
+          </div>
+          <div class="cert-list">
+            ${p.zertifikate.map(c=>`
+              <div class="cert-row">
+                <div class="cert-icon">${c.icon}</div>
+                <div><div class="cert-name">${c.name}</div><div class="cert-issuer">${c.issuer}</div></div>
+                <div class="cert-year">${c.year}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Bewertungen -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Arbeitgeber-Bewertungen</div>
+            <span style="font-size:12px;color:var(--text3)">${p.rating_count} Bewertungen</span>
+          </div>
+          <!-- Rating summary -->
+          <div class="rating-hero">
+            <div>
+              <div class="rating-big">${p.rating}</div>
+              <div class="stars-row" style="margin-top:6px">${starsHtml(p.rating)}</div>
+              <div class="rating-count">${p.rating_count} Bewertungen</div>
+            </div>
+            <div class="rating-bars" style="flex:1;margin-left:20px">
+              ${[5,4,3,2,1].map((star,i)=>{
+                const cnt = p.rating_dist[i]||0;
+                const pct = Math.round(cnt/p.rating_count*100);
+                return `<div class="rb-row">
+                  <span style="min-width:8px">${star}</span>
+                  <span style="font-size:12px">★</span>
+                  <div class="rb-bar"><div class="rb-fill" style="width:${pct}%"></div></div>
+                  <span style="min-width:24px;text-align:right">${cnt}</span>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+          <!-- Individual reviews -->
+          ${p.reviews.map(r=>`
+            <div class="review-item">
+              <div class="rv-top">
+                <div class="rv-who">
+                  <div class="rv-av">${r.av}</div>
+                  <div><div class="rv-name">${r.name}</div><div class="rv-org">${r.org}</div></div>
+                </div>
+                <div style="text-align:right">
+                  <div class="rv-stars">${'<span class="rv-star">★</span>'.repeat(r.stars)}</div>
+                  <div class="rv-date">${r.date}</div>
+                </div>
+              </div>
+              <div class="rv-text">${r.text}</div>
+              <div class="rv-tags">${r.tags.map(t=>`<span class="rv-tag">${t}</span>`).join('')}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div>
+        <!-- Profil-Vollständigkeit -->
+        <div class="completeness-bar">
+          <div class="cb-head">
+            <div class="cb-title">Profil-Vollständigkeit</div>
+            <div class="cb-pct">${donePct}%</div>
+          </div>
+          <div class="cb-track"><div class="cb-fill" style="width:${donePct}%"></div></div>
+          <div class="cb-items">
+            ${completeness.map(c=>`<div class="cb-item"><div class="cb-dot ${c.done?'done':'todo'}"></div><span style="${!c.done?'color:var(--amber)':''}">${c.label}</span></div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Kontakt -->
+        <div class="p-card">
+          <div class="p-card-head">
+            <div class="p-card-title">Kontakt &amp; Angaben</div>
+            <button class="p-edit-btn" onclick="toggleContactEdit()">✎ Bearbeiten</button>
+          </div>
+          <div id="contactFields">
+            ${[
+              {label:'Website', val:p.website, icon:'🌐'},
+              {label:'E-Mail', val:p.email, icon:'✉️'},
+              {label:'Telefon', val:p.telefon, icon:'📞'},
+              {label:'Standort', val:p.standort, icon:'📍'},
+              {label:'Gegründet', val:p.gegründet, icon:'📅'},
+              {label:'Mitarbeiter', val:p.mitarbeiter, icon:'👥'},
+              {label:'LinkedIn', val:p.linkedin, icon:'🔗'},
+            ].map(f=>`
+              <div class="info-field">
+                <div class="if-label">${f.icon} ${f.label}</div>
+                <div class="if-value" id="cf-${f.label}">${f.val}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Sichtbarkeit -->
+        <div class="p-card">
+          <div class="p-card-head"><div class="p-card-title">Sichtbarkeit</div></div>
+          ${[
+            {label:'Profil öffentlich', on:true},
+            {label:'In Suchergebnissen', on:true},
+            {label:'Bewertungen anzeigen', on:true},
+            {label:'Team anzeigen', on:false},
+            {label:'Statistiken anzeigen', on:false},
+          ].map(v=>`
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+              <span>${v.label}</span>
+              <label class="tog" style="flex-shrink:0">
+                <input type="checkbox" ${v.on?'checked':''} onchange="showToast('Einstellung gespeichert')">
+                <div class="tog-track"></div><div class="tog-thumb"></div>
+              </label>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleDescEdit(){
+  const view = document.getElementById('descView');
+  const edit = document.getElementById('descEdit');
+  const row = document.getElementById('descSaveRow');
+  if(edit.style.display === 'none'){
+    view.style.display = 'none';
+    edit.style.display = 'block';
+    row.style.display = 'flex';
+    edit.focus();
+  } else {
+    saveDesc();
+  }
+}
+
+function saveDesc(){
+  const edit = document.getElementById('descEdit');
+  const view = document.getElementById('descView');
+  const row = document.getElementById('descSaveRow');
+  PROFIL.beschreibung = edit.value;
+  view.textContent = edit.value;
+  view.style.display = 'block';
+  edit.style.display = 'none';
+  row.style.display = 'none';
+  showToast('Beschreibung gespeichert ✓');
+}
+
+function toggleContactEdit(){
+  showToast('Kontaktfelder bearbeiten — inline Editing');
+}
+</script>
+
+<!-- PROFIL AGENT MODAL -->
+<div class="overlay" id="profilAgentOverlay">
+  <div class="modal" style="width:540px;height:82vh">
+    <div class="mh">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:14px">◉</div>
+        <div>
+          <div class="mh-title">Profil-Assistent</div>
+          <div style="font-size:12px;color:var(--text2)">Ich helfe Ihnen, ein vollständiges Agentur-Profil zu erstellen</div>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeOverlay('profilAgentOverlay')">✕</button>
+    </div>
+    <div class="mb" style="padding:0;display:flex;flex-direction:column">
+      <div id="agentChatMsgs" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--bg)"></div>
+      <div id="agentQuickReplies" style="padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px;background:var(--surface);border-top:1px solid var(--border);min-height:52px"></div>
+    </div>
+    <div class="mf" style="padding:12px 16px">
+      <input id="agentChatInput" class="msg-input" placeholder="Antwort eingeben..." style="flex:1;margin-right:8px" onkeydown="if(event.key==='Enter')sendAgentAnswer()"/>
+      <button class="btn-primary" onclick="sendAgentAnswer()">Senden</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.agent-msg{background:#fff;border:1px solid var(--purple-mid);border-radius:3px 12px 12px 12px;padding:10px 14px;font-size:13px;line-height:1.6;max-width:80%;align-self:flex-start}
+.agent-msg-label{font-size:10px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.user-msg{background:var(--blue);color:#fff;border-radius:12px 3px 12px 12px;padding:10px 14px;font-size:13px;line-height:1.6;max-width:80%;align-self:flex-end}
+.quick-reply{padding:6px 14px;border-radius:20px;border:1px solid var(--purple-mid);background:var(--purple-bg);color:var(--purple);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.quick-reply:hover{background:var(--purple);color:#fff}
+.agent-result-card{background:var(--surface);border:1px solid var(--green-mid);border-radius:var(--rl);padding:14px 16px;max-width:90%;align-self:flex-start;box-shadow:var(--sh)}
+.arc-title{font-size:12px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.arc-field{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-bottom:1px solid var(--border)}
+.arc-field:last-child{border:none}
+.arc-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.arc-value{font-size:12px;color:var(--text)}
+
+.bench-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.bench-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap;cursor:help;display:flex;align-items:center;gap:4px}
+.bench-tag .bench-arrow{font-size:10px}
+.bench-range-hint{font-size:10px;color:var(--text3);white-space:nowrap}
+
+/* ── TALENT MATCHING MODE ── */
+.match-mode-bar{background:var(--purple-bg);border:1px solid var(--purple-mid);border-radius:var(--r);padding:9px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mmb-left{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--purple)}
+.mmb-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);animation:pulse 1.8s infinite}
+.mmb-select{padding:4px 10px;border:1px solid var(--purple-mid);border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--purple);outline:none;font-weight:500}
+.tm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;cursor:pointer;box-shadow:var(--sh);transition:box-shadow .15s,transform .15s;position:relative}
+.tm-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.10);transform:translateY(-1px)}
+.tm-thumb{height:80px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.tm-badge{position:absolute;top:8px;right:8px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;font-family:'DM Mono',monospace}
+.tm-badge-high{background:var(--green-bg);color:var(--green)}
+.tm-badge-mid{background:var(--blue-bg);color:var(--blue)}
+.tm-badge-low{background:var(--surface2);color:var(--text2)}
+.tm-body{padding:10px 13px}
+.tm-name{font-size:12px;font-weight:600;margin-bottom:2px;line-height:1.4}
+.tm-sub{font-size:11px;color:var(--text2);margin-bottom:7px}
+.tm-scores{display:flex;flex-direction:column;gap:3px}
+.tm-score-row{display:flex;align-items:center;gap:6px}
+.tm-score-lbl{font-size:10px;color:var(--text3);width:68px;flex-shrink:0}
+.tm-score-bar{flex:1;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.tm-score-fill{height:100%;border-radius:2px}
+.tm-score-val{font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);min-width:26px;text-align:right}
+.tm-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+</style>
+
+<script>
+// ═══════════════════════════════════════════════════
+// PROFIL AGENT
+// ═══════════════════════════════════════════════════
+const AGENT_QUESTIONS = [
+  {
+    id: 'berufsfelder',
+    question: 'Auf welche Berufsfelder ist Ihre Agentur spezialisiert?',
+    hint: 'z.B. Pflege, Medizin, Handwerk, IT',
+    quickReplies: ['Pflege & Medizin', 'Pflege, Medizin & Handwerk', 'Nur Pflege', 'Alle Gesundheitsberufe'],
+  },
+  {
+    id: 'laender',
+    question: 'Aus welchen Ländern oder Regionen vermitteln Sie hauptsächlich?',
+    hint: 'z.B. Philippinen, Ägypten, Marokko',
+    quickReplies: ['Philippinen & Südostasien', 'MENA-Region', 'Weltweit', 'Philippinen, Ägypten, Marokko'],
+  },
+  {
+    id: 'leistungen',
+    question: 'Welche Leistungen bieten Sie über die reine Vermittlung hinaus an?',
+    hint: 'z.B. Sprachkurs, Relocation, Berufsanerkennung',
+    quickReplies: ['Vollservice inkl. Relocation', 'Vermittlung + Sprache + Anerkennung', 'Nur Vermittlung', 'Alles außer Relocation'],
+  },
+  {
+    id: 'erfahrung',
+    question: 'Seit wann sind Sie tätig und wie viele Vermittlungen haben Sie bisher abgeschlossen?',
+    hint: 'z.B. seit 2018, ca. 300 Vermittlungen',
+    quickReplies: ['Seit 2018, ~300 Vermittlungen', 'Seit 2020, ~150 Vermittlungen', 'Seit 2015, ~500+ Vermittlungen'],
+  },
+  {
+    id: 'alleinstellungsmerkmal',
+    question: 'Was macht Ihre Agentur besonders? Was unterscheidet Sie von anderen?',
+    hint: 'z.B. regionale Expertise, eigene Sprachschule, schnelle Prozesse',
+    quickReplies: ['Eigene Sprachschule vor Ort', 'Sehr schnelle Prozesse (<6 Monate)', 'Tiefe regionale Expertise', 'Full-Service aus einer Hand'],
+  },
+  {
+    id: 'zertifikate',
+    question: 'Haben Sie relevante Zertifizierungen oder Mitgliedschaften?',
+    hint: 'z.B. AZAV-Zulassung, Verbandsmitglied',
+    quickReplies: ['AZAV-Zulassung vorhanden', 'BVFA-Mitglied', 'Mehrere Zertifikate', 'Noch keine'],
+  },
+];
+
+let agentStep = 0;
+let agentAnswers = {};
+let agentTyping = false;
+
+function openProfilAgent(){
+  agentStep = 0;
+  agentAnswers = {};
+  document.getElementById('agentChatMsgs').innerHTML = '';
+  document.getElementById('agentQuickReplies').innerHTML = '';
+  openOverlay('profilAgentOverlay');
+  // Welcome message
+  setTimeout(()=>{
+    addAgentMsg('Hallo! Ich helfe Ihnen dabei, ein vollständiges und überzeugendes Agentur-Profil zu erstellen. Ich stelle Ihnen ein paar kurze Fragen — das dauert nur 2–3 Minuten.');
+    setTimeout(()=> askNextQuestion(), 1200);
+  }, 400);
+}
+
+function askNextQuestion(){
+  if(agentStep >= AGENT_QUESTIONS.length){
+    generateProfile();
+    return;
+  }
+  const q = AGENT_QUESTIONS[agentStep];
+  addAgentMsg(q.question, q.hint);
+  setQuickReplies(q.quickReplies);
+}
+
+function addAgentMsg(text, hint){
+  const msgs = document.getElementById('agentChatMsgs');
+  const el = document.createElement('div');
+  el.style.cssText = 'display:flex;flex-direction:column;gap:3px';
+  el.innerHTML = `
+    <div class="agent-msg">
+      <div class="agent-msg-label">◉ Profil-Assistent</div>
+      ${text}
+      ${hint?`<div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">z.B. ${hint}</div>`:''}
+    </div>`;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMsg(text){
+  const msgs = document.getElementById('agentChatMsgs');
+  const el = document.createElement('div');
+  el.style.cssText = 'display:flex;justify-content:flex-end';
+  el.innerHTML = `<div class="user-msg">${text}</div>`;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTyping(){
+  const msgs = document.getElementById('agentChatMsgs');
+  const el = document.createElement('div');
+  el.id = 'agTyping';
+  el.innerHTML = `<div class="typing" style="background:#fff;border:1px solid var(--purple-mid)"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping(){
+  document.getElementById('agTyping')?.remove();
+}
+
+function setQuickReplies(options){
+  document.getElementById('agentQuickReplies').innerHTML = options.map(o=>
+    `<button class="quick-reply" onclick="sendAgentQuick('${o}')">${o}</button>`
+  ).join('');
+}
+
+function sendAgentQuick(text){
+  sendAgentAnswerWith(text);
+}
+
+function sendAgentAnswer(){
+  const inp = document.getElementById('agentChatInput');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  sendAgentAnswerWith(text);
+}
+
+function sendAgentAnswerWith(text){
+  if(agentTyping) return;
+  agentTyping = true;
+  document.getElementById('agentQuickReplies').innerHTML = '';
+  addUserMsg(text);
+
+  const q = AGENT_QUESTIONS[agentStep];
+  if(q) agentAnswers[q.id] = text;
+  agentStep++;
+
+  addTyping();
+  setTimeout(()=>{
+    removeTyping();
+    agentTyping = false;
+    if(agentStep < AGENT_QUESTIONS.length){
+      // Acknowledge answer briefly
+      const acks = ['Verstanden.', 'Super, danke.', 'Gut.', 'Notiert.', 'Prima.'];
+      const ack = acks[agentStep % acks.length];
+      addAgentMsg(ack + ' ' + (agentStep < AGENT_QUESTIONS.length ? 'Nächste Frage:' : ''));
+      setTimeout(()=> askNextQuestion(), 600);
+    } else {
+      generateProfile();
+    }
+  }, 900);
+}
+
+function generateProfile(){
+  addAgentMsg('Ich erstelle jetzt Ihr Profil auf Basis Ihrer Antworten...');
+  addTyping();
+  setTimeout(()=>{
+    removeTyping();
+
+    // Build generated profile from answers
+    const a = agentAnswers;
+    const beschreibung = `Wir sind eine spezialisierte Vermittlungsagentur im Bereich ${a.berufsfelder||'Pflege & Medizin'} mit Schwerpunkt auf Fachkräften aus ${a.laender||'dem internationalen Raum'}. ${a.alleinstellungsmerkmal||'Unser Full-Service-Ansatz'} macht uns zu einem verlässlichen Partner für Arbeitgeber im Gesundheitswesen. Neben der reinen Vermittlung bieten wir ${a.leistungen||'umfassende Begleitservices'} an — von der Sprachvorbereitung bis zur erfolgreichen Integration.`;
+
+    const msgs = document.getElementById('agentChatMsgs');
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;flex-direction:column;gap:3px';
+    el.innerHTML = `
+      <div class="agent-msg-label" style="padding-left:0">◉ Profil-Assistent</div>
+      <div class="agent-result-card">
+        <div class="arc-title">✓ Profil generiert — bitte prüfen</div>
+        <div class="arc-field"><div class="arc-label">Beschreibung</div><div class="arc-value">${beschreibung}</div></div>
+        <div class="arc-field"><div class="arc-label">Berufsfelder</div><div class="arc-value">${a.berufsfelder||'–'}</div></div>
+        <div class="arc-field"><div class="arc-label">Herkunftsländer</div><div class="arc-value">${a.laender||'–'}</div></div>
+        <div class="arc-field"><div class="arc-label">Leistungen</div><div class="arc-value">${a.leistungen||'–'}</div></div>
+        <div class="arc-field"><div class="arc-label">Erfahrung</div><div class="arc-value">${a.erfahrung||'–'}</div></div>
+        <div class="arc-field"><div class="arc-label">Zertifikate</div><div class="arc-value">${a.zertifikate||'–'}</div></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn-primary" style="flex:1" onclick="applyGeneratedProfile()">✓ Ins Profil übernehmen</button>
+          <button class="btn-secondary" onclick="agentStep=0;agentAnswers={};document.getElementById('agentChatMsgs').innerHTML='';setTimeout(()=>{addAgentMsg('Kein Problem — fangen wir nochmal an.');setTimeout(askNextQuestion,800);},300)">Neu starten</button>
+        </div>
+      </div>`;
+    msgs.appendChild(el);
+    msgs.scrollTop = msgs.scrollHeight;
+    document.getElementById('agentQuickReplies').innerHTML = '';
+  }, 2200);
+}
+
+function applyGeneratedProfile(){
+  closeOverlay('profilAgentOverlay');
+  // Update PROFIL with generated content
+  const a = agentAnswers;
+  if(a.berufsfelder) PROFIL.berufsfelder = a.berufsfelder.split(',').map(s=>s.trim());
+  if(a.laender) PROFIL.beschreibung = `Wir sind eine spezialisierte Vermittlungsagentur im Bereich ${a.berufsfelder||'Pflege & Medizin'} mit Schwerpunkt auf Fachkräften aus ${a.laender}. ${a.alleinstellungsmerkmal||''} Neben der reinen Vermittlung bieten wir ${a.leistungen||'umfassende Services'} an.`;
+  renderProfil();
+  showToast('✓ Profil aus KI-Assistent übernommen — jetzt überprüfen & veröffentlichen');
+}
+</script>
+
+</body>
+</html>
