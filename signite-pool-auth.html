@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talentpool anfragen – Signite</title>
+  <style>
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f8fafc;
+      --color-background-tertiary: #f1f5f9;
+      --color-background-info: #e0f2fe;
+      --color-background-success: #dcfce7;
+      --color-text-primary: #0f172a;
+      --color-text-secondary: #64748b;
+      --color-text-tertiary: #94a3b8;
+      --color-text-info: #0369a1;
+      --color-text-success: #15803d;
+      --color-border-primary: rgba(0,0,0,0.4);
+      --color-border-secondary: rgba(0,0,0,0.2);
+      --color-border-tertiary: rgba(0,0,0,0.1);
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-background-primary: #1e293b;
+        --color-background-secondary: #334155;
+        --color-background-tertiary: #0f172a;
+        --color-background-info: #0c4a6e;
+        --color-background-success: #14532d;
+        --color-text-primary: #f8fafc;
+        --color-text-secondary: #94a3b8;
+        --color-text-tertiary: #64748b;
+        --color-text-info: #7dd3fc;
+        --color-text-success: #86efac;
+        --color-border-primary: rgba(255,255,255,0.4);
+        --color-border-secondary: rgba(255,255,255,0.2);
+        --color-border-tertiary: rgba(255,255,255,0.1);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .auth-card {
+      background: var(--color-background-primary);
+      border-radius: 16px;
+      border: 1px solid var(--color-border-tertiary);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .header-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .header h2 {
+      color: white;
+      font-size: 20px;
+      font-weight: 500;
+      margin: 0 0 0.5rem;
+    }
+
+    .header p {
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .content {
+      padding: 1.5rem 2rem 2rem;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-border-tertiary);
+      transition: all 0.3s;
+    }
+
+    .step-dot.active {
+      background: #2d5a87;
+    }
+
+    .step-content {
+      display: none;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    .step-description {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      text-align: center;
+      margin: 0 0 1.5rem;
+    }
+
+    .info-box {
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .info-box.info {
+      background: var(--color-background-info);
+    }
+
+    .info-box.success {
+      background: var(--color-background-success);
+    }
+
+    .info-box svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .info-box p {
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .info-box.info p {
+      color: var(--color-text-info);
+    }
+
+    .info-box.success p {
+      color: var(--color-text-success);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--color-border-secondary);
+      border-radius: 8px;
+      font-size: 15px;
+      background: var(--color-background-primary);
+      color: var(--color-text-primary);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2d5a87;
+      box-shadow: 0 0 0 3px rgba(45, 90, 135, 0.15);
+    }
+
+    input:disabled {
+      background: var(--color-background-secondary);
+      color: var(--color-text-secondary);
+      border-color: var(--color-border-tertiary);
+    }
+
+    input.error {
+      border-color: #E24B4A;
+    }
+
+    input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: #2d5a87;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      background: #1e3a5f;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-primary.success {
+      background: #15803d;
+    }
+
+    .btn-primary.success:hover {
+      background: #166534;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 0.75rem;
+    }
+
+    .btn-secondary:hover {
+      color: var(--color-text-primary);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      text-align: center;
+      margin: 1rem 0 0;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--color-background-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+
+    .success-content {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .success-content h3 {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      margin: 0 0 0.5rem;
+    }
+
+    .success-content > p {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin: 0 0 1.5rem;
+    }
+
+    .user-info {
+      background: var(--color-background-secondary);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .user-info .label {
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      margin: 0 0 4px;
+    }
+
+    .user-info .value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+
+    .user-info .org {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin: 4px 0 0;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      margin-top: 1rem;
+    }
+
+    .footer span {
+      font-weight: 500;
+    }
+
+    .ankaadia-hint {
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      text-align: center;
+      margin: 0 0 1.25rem;
+      line-height: 1.5;
+      padding: 0 0.5rem;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem;
+      }
+
+      .content {
+        padding: 1.25rem 1.5rem 1.5rem;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="auth-card">
+      <div class="header">
+        <div class="header-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h2>Kandidat anfragen</h2>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; margin-top: 0.5rem;">
+          <span style="color: rgba(255,255,255,0.7); font-size: 13px;">Pflegefachkraft</span>
+          <span style="color: rgba(255,255,255,0.5);">•</span>
+          <span style="color: rgba(255,255,255,0.7); font-size: 13px;">Indien</span>
+          <span style="color: rgba(255,255,255,0.5);">•</span>
+          <span style="color: white; font-size: 13px; font-weight: 500;">ID-7842</span>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="step-indicator">
+          <div class="step-dot active" data-step="1"></div>
+          <div class="step-dot" data-step="2"></div>
+          <div class="step-dot" data-step="3"></div>
+        </div>
+
+        <!-- Step 1: Email Check -->
+        <div id="step-1" class="step-content active">
+          <p class="step-description">
+            Geben Sie Ihre E-Mail-Adresse ein, um fortzufahren
+          </p>
+
+          <div class="form-group">
+            <label for="email-input">E-Mail-Adresse</label>
+            <input type="email" id="email-input" placeholder="ihre.email@unternehmen.de" />
+          </div>
+
+          <button id="check-email-btn" class="btn-primary">Weiter</button>
+
+          <p class="hint">Wir prüfen, ob bereits ein Konto existiert</p>
+        </div>
+
+        <!-- Step 2a: Login -->
+        <div id="step-2-login" class="step-content">
+          <div class="info-box info">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4"/>
+              <path d="M12 8h.01"/>
+            </svg>
+            <p>Willkommen zurück! Bitte melden Sie sich mit Ihrem bestehenden Ankaadia-Konto an.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="login-email">E-Mail-Adresse</label>
+            <input type="email" id="login-email" disabled />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="login-password">Passwort</label>
+            <input type="password" id="login-password" placeholder="••••••••" />
+          </div>
+
+          <button id="login-btn" class="btn-primary">Anmelden</button>
+          <button id="back-from-login" class="btn-secondary">← Andere E-Mail verwenden</button>
+        </div>
+
+        <!-- Step 2b: Register -->
+        <div id="step-2-register" class="step-content">
+          <div class="info-box success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+            <p>Erstellen Sie jetzt Ihr kostenloses Ankaadia-Konto, um Anfragen zu stellen.</p>
+          </div>
+
+          <p class="ankaadia-hint">Ankaadia ist die Plattform, über die Ihre Anfrage sicher abgewickelt wird – von der Kontaktaufnahme bis zur Vermittlung.</p>
+
+          <div class="form-row">
+            <div>
+              <label for="reg-firstname">Vorname</label>
+              <input type="text" id="reg-firstname" placeholder="Max" />
+            </div>
+            <div>
+              <label for="reg-lastname">Nachname</label>
+              <input type="text" id="reg-lastname" placeholder="Mustermann" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-email">E-Mail-Adresse</label>
+            <input type="email" id="reg-email" disabled />
+          </div>
+
+          <div class="form-group">
+            <label for="reg-org">Organisation</label>
+            <input type="text" id="reg-org" placeholder="Muster GmbH" />
+          </div>
+
+          <div class="form-group">
+            <label for="reg-phone">Telefonnummer</label>
+            <input type="tel" id="reg-phone" placeholder="+49 123 456789" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="reg-password">Passwort erstellen</label>
+            <input type="password" id="reg-password" placeholder="Mind. 8 Zeichen" />
+          </div>
+
+          <button id="register-btn" class="btn-primary">Konto erstellen</button>
+          <button id="back-from-register" class="btn-secondary">← Andere E-Mail verwenden</button>
+        </div>
+
+        <!-- Step 3: Success -->
+        <div id="step-3-success" class="step-content">
+          <div class="success-content">
+            <div class="success-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+
+            <h3>Erfolgreich angemeldet!</h3>
+            <p>Sie können jetzt Anfragen an den Talentpool stellen.</p>
+
+            <div class="user-info">
+              <p class="label">Angemeldet als</p>
+              <p class="value" id="logged-in-user">max.mustermann@beispiel.de</p>
+              <p class="org" id="logged-in-org">Muster GmbH</p>
+            </div>
+
+            <button id="start-request-btn" class="btn-primary success">Anfrage starten →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer">Powered by <span>Ankaadia</span></p>
+  </div>
+
+  <script>
+    const emailInput = document.getElementById('email-input');
+    const checkEmailBtn = document.getElementById('check-email-btn');
+    const loginEmail = document.getElementById('login-email');
+    const regEmail = document.getElementById('reg-email');
+    const stepDots = document.querySelectorAll('.step-dot');
+
+    const step1 = document.getElementById('step-1');
+    const step2Login = document.getElementById('step-2-login');
+    const step2Register = document.getElementById('step-2-register');
+    const step3Success = document.getElementById('step-3-success');
+
+    function updateStepIndicator(step) {
+      stepDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i < step);
+      });
+    }
+
+    function showStep(stepEl, stepNum) {
+      [step1, step2Login, step2Register, step3Success].forEach(el => {
+        el.classList.remove('active');
+      });
+      stepEl.classList.add('active');
+      updateStepIndicator(stepNum);
+    }
+
+    checkEmailBtn.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        emailInput.classList.add('error');
+        return;
+      }
+
+      checkEmailBtn.textContent = 'Prüfe...';
+      checkEmailBtn.disabled = true;
+
+      setTimeout(() => {
+        checkEmailBtn.textContent = 'Weiter';
+        checkEmailBtn.disabled = false;
+
+        // Simulate: emails containing "existing" or "test" = existing user
+        const existingUser = email.includes('existing') || email.includes('test');
+
+        if (existingUser) {
+          loginEmail.value = email;
+          showStep(step2Login, 2);
+          document.getElementById('login-password').focus();
+        } else {
+          regEmail.value = email;
+          showStep(step2Register, 2);
+          document.getElementById('reg-firstname').focus();
+        }
+      }, 800);
+    });
+
+    document.getElementById('back-from-login').addEventListener('click', () => {
+      showStep(step1, 1);
+      emailInput.focus();
+    });
+
+    document.getElementById('back-from-register').addEventListener('click', () => {
+      showStep(step1, 1);
+      emailInput.focus();
+    });
+
+    document.getElementById('login-btn').addEventListener('click', () => {
+      const password = document.getElementById('login-password').value;
+      if (!password) {
+        document.getElementById('login-password').classList.add('error');
+        return;
+      }
+
+      const btn = document.getElementById('login-btn');
+      btn.textContent = 'Anmelden...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        document.getElementById('logged-in-user').textContent = loginEmail.value;
+        document.getElementById('logged-in-org').textContent = 'Bestehendes Unternehmen';
+        showStep(step3Success, 3);
+        btn.textContent = 'Anmelden';
+        btn.disabled = false;
+      }, 1000);
+    });
+
+    document.getElementById('register-btn').addEventListener('click', () => {
+      const firstName = document.getElementById('reg-firstname').value.trim();
+      const lastName = document.getElementById('reg-lastname').value.trim();
+      const org = document.getElementById('reg-org').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      // Basic validation
+      let hasError = false;
+      if (!firstName) { document.getElementById('reg-firstname').classList.add('error'); hasError = true; }
+      if (!lastName) { document.getElementById('reg-lastname').classList.add('error'); hasError = true; }
+      if (!org) { document.getElementById('reg-org').classList.add('error'); hasError = true; }
+      if (!phone) { document.getElementById('reg-phone').classList.add('error'); hasError = true; }
+      if (!password || password.length < 8) { document.getElementById('reg-password').classList.add('error'); hasError = true; }
+
+      if (hasError) return;
+
+      const btn = document.getElementById('register-btn');
+      btn.textContent = 'Erstelle Konto...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        document.getElementById('logged-in-user').textContent = `${firstName} ${lastName}`;
+        document.getElementById('logged-in-org').textContent = org;
+        showStep(step3Success, 3);
+        btn.textContent = 'Konto erstellen';
+        btn.disabled = false;
+      }, 1200);
+    });
+
+    document.getElementById('start-request-btn').addEventListener('click', () => {
+      alert('Hier würde das Anfrageformular für den Talentpool öffnen.');
+    });
+
+    // Remove error styling on input
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', () => {
+        input.classList.remove('error');
+      });
+    });
+
+    // Enter key support
+    emailInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkEmailBtn.click();
+    });
+
+    document.getElementById('login-password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') document.getElementById('login-btn').click();
+    });
+
+    document.getElementById('reg-password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') document.getElementById('register-btn').click();
+    });
+  </script>
+</body>
+</html>
