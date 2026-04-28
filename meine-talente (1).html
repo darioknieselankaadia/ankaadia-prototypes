@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signite – Meine Talente</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F3EF;--surface:#FFF;--surface2:#EFEDE8;--surface3:#E5E3DC;
+  --border:#E0DDD6;--border2:#C8C4BB;
+  --text:#18170F;--text2:#6A6760;--text3:#9C9890;
+  --blue:#1B5FDE;--blue-bg:#EBF0FD;--blue-mid:#C5D4FA;
+  --green:#1A7A4A;--green-bg:#E8F5EE;--green-mid:#A8D9BE;
+  --amber:#92500A;--amber-bg:#FDF0E0;--amber-mid:#F9C97A;
+  --red:#C0271A;--red-bg:#FDECEA;--red-mid:#F5B8B3;
+  --purple:#5B3DB8;--purple-bg:#F0ECFD;--purple-mid:#C9BBF5;
+  --r:10px;--rl:14px;
+  --sh:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh-lg:0 8px 32px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;height:100vh;overflow:hidden;display:flex}
+
+/* ── Sidebar ── */
+.sidebar{width:56px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
+.logo{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;margin-bottom:10px}
+.ni{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);transition:all .15s;position:relative}
+.ni:hover{background:var(--surface2);color:var(--text2)}
+.ni.active{background:var(--blue-bg);color:var(--blue)}
+.nbadge{position:absolute;top:3px;right:3px;background:#E84040;color:#fff;font-size:9px;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;font-family:'DM Mono',monospace;font-weight:600}
+
+/* ── Main ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── Topbar ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 28px 0;flex-shrink:0}
+.page-title{font-size:22px;font-weight:600;letter-spacing:-.5px}
+.page-sub{font-size:13px;color:var(--text2);margin-top:2px;margin-bottom:14px}
+.tabs{display:flex}
+.tab{padding:10px 22px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2);transition:all .15s;user-select:none;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{border-bottom-color:var(--blue);color:var(--blue);font-weight:500}
+
+/* ── Tab desc ── */
+.tab-desc{padding:9px 28px;border-bottom:1px solid var(--border);background:var(--surface);font-size:12px;color:var(--text2);display:flex;align-items:center;gap:7px;flex-shrink:0}
+
+/* ── Layout ── */
+.content{flex:1;display:flex;overflow:hidden;min-height:0}
+.filter-panel{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:18px 16px 18px 22px}
+.fp-section{margin-bottom:20px}
+.fp-section-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.fp-reset{font-size:11px;color:var(--blue);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0}
+.fp-pool-chip{display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);color:var(--text2);margin-bottom:5px;cursor:pointer;transition:all .15s;user-select:none}
+.fp-pool-chip.on{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.fp-pool-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fp-divider{height:1px;background:var(--border);margin:14px 0}
+.fp-label{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:5px;margin-top:10px;display:block}
+.fp-label:first-of-type{margin-top:0}
+.fp-select{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none}
+.fp-select:focus{border-color:var(--blue)}
+
+/* ── Talent scroll ── */
+.talent-scroll{flex:1;min-width:0;overflow-y:auto;padding:20px 24px}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+.search-box{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;width:220px}
+.search-box input{background:none;border:none;outline:none;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%}
+.search-box input::placeholder{color:var(--text3)}
+.toolbar-right{display:flex;align-items:center;gap:8px}
+.view-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:2px}
+.vt-btn{width:30px;height:26px;border-radius:6px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text3);transition:all .15s;font-family:'DM Sans',sans-serif}
+.vt-btn:hover{color:var(--text)}
+.vt-btn.on{background:var(--surface2);color:var(--text)}
+.vt-sep{width:1px;height:20px;background:var(--border)}
+.vt-special{height:30px;padding:0 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s}
+.vt-special:hover{border-color:var(--border2)}
+.vt-special.on-match{background:var(--purple);color:#fff;border-color:var(--purple)}
+.vt-special.on-score{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* ── Mode bars ── */
+.mode-bar{border-radius:var(--r);padding:9px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+.mode-bar.match{background:var(--purple-bg);border:1px solid var(--purple-mid);color:var(--purple)}
+.mode-bar.score{background:var(--green-bg);border:1px solid var(--green-mid);color:var(--green)}
+.mb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:pulse 1.8s infinite}
+.match .mb-dot{background:var(--purple)}
+.score .mb-dot{background:var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.mb-select{padding:4px 10px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--surface);outline:none;font-weight:500;cursor:pointer}
+.match .mb-select{border:1px solid var(--purple-mid);color:var(--purple)}
+.score .mb-select{border:1px solid var(--green-mid);color:var(--green)}
+
+/* ── Talent grid ── */
+.talent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px;align-content:start}
+
+/* ── Card: default ── */
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:visible;cursor:pointer;transition:box-shadow .18s,transform .18s;box-shadow:var(--sh);position:relative}
+.tc:hover{box-shadow:0 6px 20px rgba(0,0,0,.10);transform:translateY(-2px)}
+.tc-thumb{height:100px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;overflow:hidden;border-radius:var(--rl) var(--rl) 0 0}
+.c-blue{background:linear-gradient(135deg,#1B5FDE 0%,#2D72EF 100%)}
+.c-teal{background:linear-gradient(135deg,#0E7C5E 0%,#1A9B75 100%)}
+.c-amber{background:linear-gradient(135deg,#92500A 0%,#C27012 100%)}
+.tc-id-badge{position:absolute;top:6px;left:8px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.7);background:rgba(0,0,0,.2);padding:1px 6px;border-radius:4px}
+.tc-req{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.92);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.15);transition:all .15s}
+.tc-req:hover{background:#fff;transform:scale(1.1)}
+.tc-body{padding:11px 13px 13px;border-radius:0 0 var(--rl) var(--rl)}
+.tc-name{font-size:12px;font-weight:600;margin-bottom:3px;line-height:1.4}
+.tc-sub{font-size:11px;color:var(--text2);margin-bottom:7px}
+.tc-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:3px}
+.tag-red{display:inline-flex;padding:2px 7px;background:var(--red-bg);color:var(--red);border-radius:4px;font-size:10px;font-weight:600}
+.tag-green{display:inline-flex;padding:2px 7px;background:var(--green-bg);color:var(--green);border-radius:4px;font-size:10px;font-weight:600}
+.tag-lang{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* ── Card: Score ── */
+.score-strip{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;position:relative}
+.sc-num{font-size:14px;font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0;width:26px}
+.sc-bar-track{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.sc-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.sc-label{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.sc-high .sc-num{color:var(--green)} .sc-high .sc-bar-fill{background:var(--green)} .sc-high .sc-label{background:var(--green-bg);color:var(--green)}
+.sc-mid .sc-num{color:var(--amber)} .sc-mid .sc-bar-fill{background:var(--amber)} .sc-mid .sc-label{background:var(--amber-bg);color:var(--amber)}
+.sc-low .sc-num{color:var(--red)} .sc-low .sc-bar-fill{background:var(--red)} .sc-low .sc-label{background:var(--red-bg);color:var(--red)}
+
+/* Tooltip on hover */
+.sct-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08);gap:8px}
+.sct-row:last-child{border:none}
+.sct-label{color:rgba(255,255,255,.65)}
+.sct-val{font-family:'DM Mono',monospace;font-weight:500}
+.sct-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.4);margin-bottom:7px}
+/* Floating tooltip */
+#floatTooltip{position:fixed;background:#18170F;color:#fff;border-radius:var(--r);padding:11px 13px;font-size:11px;z-index:99999;pointer-events:none;box-shadow:var(--sh-lg);min-width:210px;display:none}
+#floatTooltip::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#18170F;border-bottom:0}
+
+/* ── Card: Match ── */
+.match-pct-badge{position:absolute;top:8px;right:8px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;font-family:'DM Mono',monospace}
+.mb-high{background:var(--green-bg);color:var(--green)}
+.mb-mid{background:var(--blue-bg);color:var(--blue)}
+.mb-low{background:var(--surface2);color:var(--text2)}
+.match-scores{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+.ms-row{display:flex;align-items:center;gap:5px}
+.ms-lbl{font-size:10px;color:var(--text3);width:64px;flex-shrink:0}
+.ms-bar{flex:1;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.ms-fill{height:100%;border-radius:2px}
+.ms-val{font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);min-width:24px;text-align:right}
+.match-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:7px;border-top:1px solid var(--border)}
+.match-bedarf-tag{font-size:10px;color:var(--purple);font-weight:600}
+.match-req-btn{padding:4px 10px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.match-req-btn:hover{background:#1650C2}
+.tc.no-match{opacity:.38;pointer-events:none}
+
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:11px 18px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);z-index:300;transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="logo">S</div>
+  <div class="ni active">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+  </div>
+  <div class="ni" style="position:relative">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="nbadge">3</span>
+  </div>
+  <div class="ni">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+  </div>
+  <div class="ni" style="margin-top:auto">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title">Talentpool</div>
+    <div class="page-sub">Ankaadia Master GmbH</div>
+    <div class="tabs">
+      <div class="tab active">Meine Talente</div>
+      <div class="tab">Eingehende Anfragen</div>
+      <div class="tab">Laufende Aufträge</div>
+      <div class="tab">Leistungen &amp; Preise</div>
+      <div class="tab">Agentur-Profil</div>
+    </div>
+  </div>
+  <div class="tab-desc" id="tabDesc">
+    <span>👤</span>
+    <span id="tabDescText"><strong>Meine Talente</strong> — alle Kandidaten in Ihren Pools. Klick auf eine Karte um ein Leistungspaket zu buchen und eine Anfrage zu starten.</span>
+  </div>
+
+  <div class="content">
+    <!-- Filter -->
+    <div class="filter-panel">
+      <div class="fp-section">
+        <div class="fp-section-title">Talentpools</div>
+        <div class="fp-pool-chip on" onclick="this.classList.toggle('on')"><div class="fp-pool-dot" style="background:var(--blue)"></div>Agentur-Pool</div>
+        <div class="fp-pool-chip" onclick="this.classList.toggle('on')"><div class="fp-pool-dot" style="background:var(--green)"></div>Nurses (DE)</div>
+        <div class="fp-pool-chip" onclick="this.classList.toggle('on')"><div class="fp-pool-dot" style="background:var(--purple)"></div>Expert Talentpool</div>
+        <div class="fp-pool-chip" onclick="this.classList.toggle('on')"><div class="fp-pool-dot" style="background:var(--amber)"></div>Zeki</div>
+      </div>
+      <div class="fp-divider"></div>
+      <div class="fp-section">
+        <div class="fp-section-title">Filter <button class="fp-reset">Zurücksetzen</button></div>
+        <span class="fp-label">Berufsbereich</span>
+        <select class="fp-select"><option>Alle Bereiche (6)</option><option>Gesundheit & Pflege</option><option>Medizin</option><option>Handwerk</option></select>
+        <span class="fp-label" style="margin-top:10px">Berufsgruppe</span>
+        <select class="fp-select"><option>Alle Gruppen (11)</option><option>Krankenpflege</option><option>Altenpflege</option><option>Ärzte</option></select>
+        <span class="fp-label" style="margin-top:10px">Beruf</span>
+        <select class="fp-select"><option>Alle Berufe (37)</option><option>GKP</option><option>Arzt/Ärztin</option><option>Apotheker/in</option></select>
+      </div>
+      <div class="fp-divider"></div>
+      <div class="fp-section">
+        <div class="fp-section-title">Herkunft &amp; Sprache</div>
+        <span class="fp-label">Land</span>
+        <select class="fp-select"><option>Alle Länder</option><option>Philippinen</option><option>Ägypten</option><option>Marokko</option><option>Deutschland</option></select>
+        <span class="fp-label" style="margin-top:10px">Sprachniveau</span>
+        <select class="fp-select"><option>Alle Niveaus</option><option>A1</option><option>A2</option><option>B1</option><option>B2+</option></select>
+      </div>
+      <div class="fp-divider"></div>
+      <div class="fp-section">
+        <div class="fp-section-title">Status</div>
+        <span class="fp-label">Bescheid</span>
+        <select class="fp-select"><option>Alle</option><option>Bescheid vorhanden</option><option>Bescheid fehlt</option></select>
+        <span class="fp-label" style="margin-top:10px">Funktion</span>
+        <select class="fp-select"><option>Alle</option><option>Fachkraft</option><option>Auszubildend/-r</option></select>
+      </div>
+    </div>
+
+    <!-- Scroll area -->
+    <div class="talent-scroll">
+      <div class="toolbar">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="search-box">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input placeholder="Kandidaten suchen..."/>
+          </div>
+          <span style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">12 Kandidaten</span>
+        </div>
+        <div class="toolbar-right">
+          <div class="view-toggle">
+            <button class="vt-btn on" id="btnGrid" title="Kacheln" onclick="setView('grid')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </button>
+            <button class="vt-btn" id="btnList" title="Liste" onclick="setView('list')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="vt-sep"></div>
+          <button class="vt-special" id="btnScore" onclick="setView('score')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Profil-Score
+          </button>
+          <button class="vt-special" id="btnMatch" onclick="setView('match')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            Matching
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode bars -->
+      <div id="matchBar" class="mode-bar match" style="display:none">
+        <div style="display:flex;align-items:center;gap:7px"><div class="mb-dot"></div><span>Kandidaten werden gegen Ihre Bedarfe gematcht</span></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span>Bedarf:</span>
+          <select class="mb-select" id="matchBedarfSel" onchange="renderGrid()">
+            <option value="all">Alle Bedarfe</option>
+            <option value="b-001">GKP – Station 4B (×3)</option>
+            <option value="b-002">Arzt Innere Medizin (×1)</option>
+            <option value="b-003">Pflegefachfrau Azubi (×4)</option>
+          </select>
+        </div>
+      </div>
+      <div id="scoreBar" class="mode-bar score" style="display:none">
+        <div style="display:flex;align-items:center;gap:7px"><div class="mb-dot"></div><span>Profil-Qualität — wie anfrage-tauglich sind Ihre Kandidaten?</span></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span>Sortieren:</span>
+          <select class="mb-select" id="scoreSortSel" onchange="renderGrid()">
+            <option value="desc">Bester zuerst</option>
+            <option value="asc">Schlechtester zuerst</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="talent-grid" id="talentGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="floatTooltip"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const TALENTS = [
+  {id:'001010y4ak',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'c-blue',country:'🇵🇭',lang:'A1',bescheid:false},
+  {id:'001010y4av',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'c-teal',country:'🇪🇬',lang:'A2',bescheid:false},
+  {id:'001010y4ax',name:'Bauten- u. Objektbeschichter/in', role:'Fachkraft',col:'c-amber',country:'🇸🇾',lang:'B1',bescheid:false},
+  {id:'001010y4bw',name:'Arzt/Ärztin',                    role:'Auszubildend/-r',col:'c-blue',country:'🇩🇪',lang:'B1',bescheid:false},
+  {id:'001010y4ce',name:'Arzt/Ärztin',                    role:'Fachkraft',col:'c-teal',country:'🇲🇦',lang:'B1',bescheid:false},
+  {id:'001010y4ch',name:'Arzt/Ärztin',                    role:'Fachkraft',col:'c-blue',country:'🇵🇭',lang:'A2',bescheid:false},
+  {id:'001010y4cj',name:'Arzt/Ärztin',                    role:'Fachkraft',col:'c-teal',country:'🇪🇬',lang:'B2',bescheid:false},
+  {id:'001010y4cv',name:'Arzt/Ärztin',                    role:'Auszubildend/-r',col:'c-amber',country:'🇵🇭',lang:'A1',bescheid:false},
+  {id:'001010y4cx',name:'Pflegefachfrau/-mann',            role:'Fachkraft',col:'c-blue',country:'🇸🇾',lang:'B1',bescheid:false},
+  {id:'0010t0m01w',name:'Apotheker/in',                   role:'Fachkraft',col:'c-teal',country:'🇲🇦',lang:'A2',bescheid:true},
+  {id:'0010t0m02h',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'c-blue',country:'🇩🇪',lang:'B1',bescheid:true},
+  {id:'0010t0m02i',name:'Gesundheits- u. Krankenpfleger/in',role:'Fachkraft',col:'c-amber',country:'🇵🇭',lang:'A2',bescheid:false},
+];
+
+// Profile score criteria per talent (simulated realistic data)
+const PROFILE_DATA = {
+  '001010y4ak': {vollst:70, sprache:1, erfahrung:4,  foto:true,  zeugnisse:true,  anschreiben:false},
+  '001010y4av': {vollst:75, sprache:2, erfahrung:6,  foto:true,  zeugnisse:true,  anschreiben:false},
+  '001010y4ax': {vollst:45, sprache:3, erfahrung:2,  foto:false, zeugnisse:false, anschreiben:false},
+  '001010y4bw': {vollst:30, sprache:3, erfahrung:0,  foto:false, zeugnisse:false, anschreiben:false},
+  '001010y4ce': {vollst:65, sprache:3, erfahrung:3,  foto:true,  zeugnisse:true,  anschreiben:false},
+  '001010y4ch': {vollst:50, sprache:2, erfahrung:2,  foto:false, zeugnisse:true,  anschreiben:false},
+  '001010y4cj': {vollst:82, sprache:4, erfahrung:5,  foto:true,  zeugnisse:true,  anschreiben:true},
+  '001010y4cv': {vollst:35, sprache:1, erfahrung:0,  foto:false, zeugnisse:false, anschreiben:false},
+  '001010y4cx': {vollst:55, sprache:3, erfahrung:2,  foto:true,  zeugnisse:false, anschreiben:false},
+  '0010t0m01w': {vollst:90, sprache:3, erfahrung:4,  foto:true,  zeugnisse:true,  anschreiben:true},
+  '0010t0m02h': {vollst:88, sprache:3, erfahrung:3,  foto:true,  zeugnisse:true,  anschreiben:true},
+  '0010t0m02i': {vollst:60, sprache:2, erfahrung:2,  foto:true,  zeugnisse:true,  anschreiben:false},
+};
+
+// Match scores per bedarf
+const MATCH_SCORES = {
+  'b-001': {'001010y4ak':{g:94,q:98,s:82,v:95},'001010y4av':{g:89,q:95,s:92,v:88},'001010y4ce':{g:81,q:85,s:80,v:90},'001010y4ch':{g:74,q:80,s:55,v:95},'0010t0m02h':{g:88,q:92,s:85,v:90},'0010t0m02i':{g:71,q:75,s:70,v:80}},
+  'b-002': {'001010y4bw':{g:91,q:97,s:85,v:90},'001010y4cj':{g:86,q:88,s:98,v:78},'001010y4ce':{g:72,q:75,s:80,v:70}},
+  'b-003': {'001010y4cx':{g:95,q:90,s:88,v:100},'001010y4cv':{g:92,q:87,s:95,v:98},'001010y4ch':{g:85,q:82,s:90,v:92},'001010y4ax':{g:78,q:80,s:75,v:85}},
+};
+
+const BEDARF_NAMES = {'b-001':'GKP Station 4B','b-002':'Arzt Innere','b-003':'Pflegefachfrau Azubi'};
+
+// ── SCORE CALCULATION ──────────────────────────────────────────────────────
+function calcScore(id){
+  const t = TALENTS.find(x=>x.id===id);
+  const p = PROFILE_DATA[id];
+  if(!p) return {total:50,cls:'sc-mid',label:'Ausbaufähig',items:[]};
+
+  const items = [
+    {label:'Profilvollständigkeit', val:p.vollst,                       weight:0.30},
+    {label:'Bescheid vorhanden',    val:t.bescheid?100:0,               weight:0.25},
+    {label:'Sprachniveau (DE)',     val:Math.min(100,p.sprache*22),     weight:0.20},
+    {label:'Berufserfahrung',       val:Math.min(100,p.erfahrung*15),   weight:0.12},
+    {label:'Dokumente & Zeugnisse', val:p.zeugnisse?100:0,              weight:0.08},
+    {label:'Anschreiben vorhanden', val:p.anschreiben?100:0,            weight:0.05},
+  ];
+
+  const total = Math.round(items.reduce((s,i)=>s+i.val*i.weight,0));
+  const cls   = total>=75?'sc-high':total>=50?'sc-mid':'sc-low';
+  const label = total>=75?'Stark':total>=50?'Ausbaufähig':'Schwach';
+  return {total,cls,label,items};
+}
+
+function getBestMatch(id){
+  let best=null, bestB=null;
+  Object.entries(MATCH_SCORES).forEach(([b,scores])=>{
+    if(scores[id]&&(!best||scores[id].g>best.g)){best=scores[id];bestB=b;}
+  });
+  return best?{...best,bedarfId:bestB}:null;
+}
+
+// ── STATE ──────────────────────────────────────────────────────
+let viewMode = 'grid'; // 'grid' | 'score' | 'match'
+
+function setView(mode){
+  if(mode===viewMode && (mode==='score'||mode==='match')){mode='grid';}
+  viewMode = mode;
+  // Buttons
+  document.getElementById('btnGrid').classList.toggle('on', mode==='grid');
+  document.getElementById('btnList').classList.toggle('on', mode==='list');
+  const bs = document.getElementById('btnScore');
+  const bm = document.getElementById('btnMatch');
+  bs.className = 'vt-special' + (mode==='score'?' on-score':'');
+  bm.className = 'vt-special' + (mode==='match'?' on-match':'');
+  // Bars
+  document.getElementById('scoreBar').style.display = mode==='score'?'flex':'none';
+  document.getElementById('matchBar').style.display = mode==='match'?'flex':'none';
+  // Desc
+  const descs = {
+    grid:  {icon:'👤', text:'<strong>Meine Talente</strong> — alle Kandidaten in Ihren Pools. Klick auf eine Karte um ein Leistungspaket zu buchen und eine Anfrage zu starten.'},
+    list:  {icon:'👤', text:'<strong>Meine Talente</strong> — alle Kandidaten in Ihren Pools. Klick auf eine Karte um ein Leistungspaket zu buchen und eine Anfrage zu starten.'},
+    score: {icon:'📊', text:'<strong>Profil-Score</strong> — wie vollständig und anfrage-tauglich sind Ihre Kandidatenprofile? Score verbessern = mehr Anfragen erhalten.'},
+    match: {icon:'◉',  text:'<strong>Matching</strong> — Ihre Kandidaten gematcht gegen Ihre eigenen offenen Bedarfe. Wählen Sie einen Bedarf um gezielt passende Kandidaten zu sehen.'},
+  };
+  const d = descs[mode]||descs.grid;
+  document.getElementById('tabDesc').children[0].textContent = d.icon;
+  document.getElementById('tabDescText').innerHTML = d.text;
+  renderGrid();
+}
+
+// ── RENDER ──────────────────────────────────────────────────────
+function renderGrid(){
+  const grid = document.getElementById('talentGrid');
+
+  if(viewMode === 'score'){
+    const sortDir = document.getElementById('scoreSortSel')?.value||'desc';
+    const sorted = [...TALENTS].map(t=>({t,sc:calcScore(t.id)}))
+      .sort((a,b)=>sortDir==='desc'?b.sc.total-a.sc.total:a.sc.total-b.sc.total);
+    grid.innerHTML = sorted.map(({t,sc})=>buildScoreCard(t,sc)).join('');
+    return;
+  }
+
+  if(viewMode === 'match'){
+    const selB = document.getElementById('matchBedarfSel')?.value||'all';
+    const scored = TALENTS.map(t=>{
+      let s = selB==='all' ? getBestMatch(t.id)
+        : (MATCH_SCORES[selB]?.[t.id]?{...MATCH_SCORES[selB][t.id],bedarfId:selB}:null);
+      return {t,s};
+    }).sort((a,b)=>{
+      if(!a.s&&!b.s) return 0; if(!a.s) return 1; if(!b.s) return -1;
+      return b.s.g-a.s.g;
+    });
+    grid.innerHTML = scored.map(({t,s})=>buildMatchCard(t,s)).join('');
+    return;
+  }
+
+  // Default grid/list
+  grid.innerHTML = TALENTS.map(t=>buildDefaultCard(t)).join('');
+}
+
+// ── CARD BUILDERS ──────────────────────────────────────────────────────
+function personSvg(size=52){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="rgba(255,255,255,.88)" stroke="none"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>`;
+}
+
+function buildDefaultCard(t){
+  return `<div class="tc">
+    <div class="tc-thumb ${t.col}">
+      <div class="tc-id-badge">${t.id}</div>
+      <button class="tc-req" onclick="toast('Leistungspaket buchen → '+t.name)">+</button>
+      ${personSvg()}
+    </div>
+    <div class="tc-body">
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-sub">${t.country} ${t.role}</div>
+      <div class="tc-footer">
+        ${t.bescheid?'<span class="tag-green">✓ Vollständig</span>':'<span class="tag-red">Bescheid fehlt</span>'}
+        <span class="tag-lang">DE ${t.lang}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildScoreCard(t, sc){
+  const rows = sc.items.map(i=>`
+    <div class="sct-row">
+      <span class="sct-label">${i.label}</span>
+      <span class="sct-val" style="color:${i.val>=75?'#A8D9BE':i.val>=50?'#F9C97A':'#F5B8B3'}">${i.val}%</span>
+    </div>`).join('');
+  const barCol = sc.cls==='sc-high'?'var(--green)':sc.cls==='sc-mid'?'var(--amber)':'var(--red)';
+  return `<div class="tc">
+    <div class="tc-thumb ${t.col}">
+      <div class="tc-id-badge">${t.id}</div>
+      <button class="tc-req" onclick="toast('Profil bearbeiten → '+t.name)">✎</button>
+      ${personSvg()}
+    </div>
+    <div class="tc-body">
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-sub">${t.country} · DE ${t.lang} · ${t.role}</div>
+      <div class="tc-footer">
+        ${t.bescheid?'<span class="tag-green">✓ Bescheid</span>':'<span class="tag-red">Bescheid fehlt</span>'}
+      </div>
+      <div class="score-strip ${sc.cls}" 
+        data-tooltip="${encodeURIComponent(rows)}"
+        onmouseenter="showTooltip(event,this)" 
+        onmouseleave="hideTooltip()">
+        <span class="sc-num">${sc.total}</span>
+        <div class="sc-bar-track"><div class="sc-bar-fill" style="width:${sc.total}%;background:${barCol}"></div></div>
+        <span class="sc-label">${sc.label}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildMatchCard(t, s){
+  if(!s) return `<div class="tc no-match">
+    <div class="tc-thumb ${t.col}" style="height:80px">${personSvg(38)}</div>
+    <div class="tc-body"><div class="tc-name">${t.name}</div>
+    <div class="tc-sub" style="font-size:10px;color:var(--text3)">Kein Match für diesen Bedarf</div></div>
+  </div>`;
+
+  const bc = s.g>=85?'mb-high':s.g>=70?'mb-mid':'mb-low';
+  const sc = v=> v>=85?'var(--green)':v>=70?'var(--blue)':'var(--amber)';
+  return `<div class="tc">
+    <div class="tc-thumb ${t.col}" style="height:85px">
+      <div class="tc-id-badge">${t.id}</div>
+      <div class="match-pct-badge ${bc}">${s.g}%</div>
+      ${personSvg(40)}
+    </div>
+    <div class="tc-body">
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-sub">${t.country} · DE ${t.lang}</div>
+      <div class="match-scores">
+        ${[['Qualifikation',s.q],['Sprache',s.s],['Verfügbarkeit',s.v]].map(([l,v])=>`
+          <div class="ms-row">
+            <span class="ms-lbl">${l}</span>
+            <div class="ms-bar"><div class="ms-fill" style="width:${v}%;background:${sc(v)}"></div></div>
+            <span class="ms-val">${v}%</span>
+          </div>`).join('')}
+      </div>
+      <div class="match-footer">
+        <span class="match-bedarf-tag">→ ${BEDARF_NAMES[s.bedarfId]||''}</span>
+        <button class="match-req-btn" onclick="toast('Anfrage für '+t.name+' gesendet ✓')">Anfragen</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showTooltip(e, el){
+  const tt = document.getElementById('floatTooltip');
+  const rows = decodeURIComponent(el.dataset.tooltip);
+  tt.innerHTML = '<div class="sct-title">Profil-Score Aufschlüsselung</div>' + rows +
+    '<div style="margin-top:7px;padding-top:5px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;color:rgba(255,255,255,.45)">Score verbessern → fehlende Felder ergänzen</div>';
+  tt.style.display = 'block';
+  positionTooltip(e, tt);
+}
+
+function positionTooltip(e, tt){
+  const rect = tt.getBoundingClientRect();
+  const w = rect.width || 220;
+  const h = rect.height || 160;
+  let x = e.clientX - w/2;
+  let y = e.clientY - h - 12;
+  // Keep within viewport
+  if(x < 8) x = 8;
+  if(x + w > window.innerWidth - 8) x = window.innerWidth - w - 8;
+  if(y < 8) y = e.clientY + 16; // flip below if too high
+  tt.style.left = x + 'px';
+  tt.style.top  = y + 'px';
+}
+
+function hideTooltip(){
+  document.getElementById('floatTooltip').style.display = 'none';
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderGrid();
+</script>
+</body>
+</html>
